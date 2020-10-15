@@ -19,14 +19,10 @@ class cSingleStock :
         self.type = ""
         # 最高參考價, 用來計算買點
         self.priceHigh = 0
-        # 最低參考價, 用來計算賣點
-        self.priceLow = 0
-        # 擁有權重
-        # 0 : 沒想法
-        # 1 : 觀看
-        # 2 : 次要
-        # 3 : 主要
-        self.weight = 0
+        # 入手價
+        self.buyPrice = 0
+        # 賣出價
+        self.sellPrice = 0
         # Tag
         self.tag = ""
         # 其他描述
@@ -51,23 +47,45 @@ class cAllStockMgr:
             #print (row_index)
             # 取得相關資料
             single = cSingleStock()
+            # 代碼
             single.id =  excel.getValue (row_index, 0, "", str)
+            # 名稱
             single.name = excel.getValue(row_index, 1)
+            # 上巿/上櫃
             single.location = excel.getValue(row_index, 2)
+            # ETF / 股票 / 特別股
             single.type = excel.getValue(row_index, 3)
+            # 近期高價
             single.priceHigh = excel.getValue (row_index, 4, 0, int)
-            single.priceLow = excel.getValue (row_index, 5, 0, int)
-            single.weight = excel.getValue (row_index, 6, 0, int)
+            # 買入價
+            single.buyPrice = excel.getValue (row_index, 5, 0, int)
+            # 賣出價
+            single.sellPrice = excel.getValue (row_index, 6, 0, int)
+            # 標籤
             single.tag = excel.getValue (row_index, 7)
+            # 雜項
             single.desc = excel.getValue (row_index, 8)
+            # 不取得DR
+            if single.name.endswith ("-DR") == True:
+                continue
+            # 記錄起來
             self.stockMap[single.id] = single
+
+    # 取得所有的股票列表
+    def getAllStock (self):
+        res = {}
+        for key, value in self.stockMap.items():
+            if value.type != "股票":
+                continue
+            res[key] = value
+        return res
     
     # 取得想要及時查看的股票列表
     def getRealTimeStock (self):
         res = {}
         for key, value in self.stockMap.items():
-            # 沒有權重者暫不處理
-            if value.weight == 0:
+            # 沒有買入價就不看
+            if value.buyPrice == 0:
                 continue
             #print ("[%s] %s weight:%d" % (value.id, value.name, value.weight))
             res[value.id] = value

@@ -1,0 +1,42 @@
+[1015/145256.379:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1015/150800.599:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150800.600:ERROR:exception_snapshot_win.cc(99)] thread ID 23344 not found in process
+[1015/150800.612:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150800.612:ERROR:exception_snapshot_win.cc(99)] thread ID 8528 not found in process
+[1015/150826.533:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150826.533:ERROR:exception_snapshot_win.cc(99)] thread ID 17256 not found in process
+[1015/150826.550:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150826.550:ERROR:exception_snapshot_win.cc(99)] thread ID 4560 not found in process
+[1015/150949.959:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150949.959:ERROR:exception_snapshot_win.cc(99)] thread ID 17148 not found in process
+[1015/150949.973:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/150949.973:ERROR:exception_snapshot_win.cc(99)] thread ID 8788 not found in process
+[1015/151957.568:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1015/152720.748:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/152720.749:ERROR:exception_snapshot_win.cc(99)] thread ID 1512 not found in process
+[1015/152720.749:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/152720.749:ERROR:exception_snapshot_win.cc(99)] thread ID 21368 not found in process
+[1015/152720.753:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/152720.753:ERROR:exception_snapshot_win.cc(99)] thread ID 15524 not found in process
+[1015/152720.763:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/152720.763:ERROR:exception_snapshot_win.cc(99)] thread ID 3716 not found in process
+[1015/152720.770:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/152720.771:ERROR:exception_snapshot_win.cc(99)] thread ID 7340 not found in process
+[1015/153752.236:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1015/154431.333:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/154431.333:ERROR:exception_snapshot_win.cc(99)] thread ID 8240 not found in process
+[1015/154431.349:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/154431.349:ERROR:exception_snapshot_win.cc(99)] thread ID 22916 not found in process
+[1015/155809.435:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/155809.435:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/155809.436:ERROR:exception_snapshot_win.cc(99)] thread ID 24376 not found in process
+[1015/155809.436:ERROR:exception_snapshot_win.cc(99)] thread ID 25120 not found in process
+[1015/155809.448:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/155809.448:ERROR:exception_snapshot_win.cc(99)] thread ID 9328 not found in process
+[1015/160825.938:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1015/170234.030:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1015/170253.994:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/170253.995:ERROR:exception_snapshot_win.cc(99)] thread ID 12408 not found in process
+[1015/170254.011:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1015/170254.011:ERROR:exception_snapshot_win.cc(99)] thread ID 25288 not found in process
+[1015/171429.361:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
