@@ -92,5 +92,13 @@ class cAllStockMgr:
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
 
+    # 取得單月營收
+    def getStockTurnRate (self, stockID, key):
+        pass
+    
+    # 取得單季 EPS / 全年EPS
+    def getStockQEPS (self, stockID, key):
+        pass
+
 # 實作 singleton
 AllStockMgr = cAllStockMgr()
