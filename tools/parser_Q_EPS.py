@@ -23,6 +23,15 @@ def add_error (id, name):
         file.writelines ("%s %s\n" % (key, value))
     file.close()
 
+allStockMap = {}
+def add_single (stockID, info, isSave=True):
+    if stockID != None:
+        allStockMap[stockID] = info
+    if isSave == True:
+        file = open ("../info/Q_EPS.txt", 'w', encoding="utf-8")
+        file.writelines (json.dumps(allStockMap))
+        file.close()
+
 # 查詢資料, 並做儲存起來的動作
 url_template = "https://histock.tw/stock/%s/每股盈餘"
 for stockID, stock in allstock.items():
@@ -30,6 +39,11 @@ for stockID, stock in allstock.items():
     filename = "../info/Q_EPS/%s.txt" % (stockID,)
     if check_file (filename) == True:
         print ("[ignore] info exist. " + filename)
+        # 讀檔出來, 並加入股票
+        file = open (filename, "r", encoding="utf-8")
+        info = json.loads (file.read())
+        file.close()
+        add_single (stockID, info, False)
         continue
     url = url_template % (stockID,)
     WebViewMgr.loadURL (url)
@@ -47,6 +61,7 @@ for stockID, stock in allstock.items():
         print ("沒有資料", stock.id, stock.name)
         add_error (stock.id, stock.name)
         continue
+
     # 2012 ~ 2020 共9年
     info = {}
     for index, node in enumerate (source_nodes):
@@ -67,5 +82,7 @@ for stockID, stock in allstock.items():
     file = open (filename, "w", encoding='utf-8')
     file.writelines (json.dumps (info))
     file.close()
+    add_single (stockID, info, False)
 
 WebViewMgr.close()
+add_single (None, None, True)
