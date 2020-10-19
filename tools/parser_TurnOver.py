@@ -62,6 +62,7 @@ for stockID, stock in allstock.items():
             break
         res = {}
         res["年度/月份"] = source_nodes[rowIndex].text
+        # 千元為單位
         res["月營收"] = source_nodes[rowIndex+1].text.replace (",", "")
         res["月增"] = source_nodes[rowIndex+3].text.replace ("%", "")
         res["年増"] = source_nodes[rowIndex+4].text.replace ("%", "")

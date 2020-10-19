@@ -5,6 +5,7 @@ import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
 from utility import *
 from excel_utility import *
+import json
 
 # 單一股票
 class cSingleStock :
@@ -30,11 +31,21 @@ class cSingleStock :
     
 # 股票管理器
 class cAllStockMgr:
+    def __loadJsonFromFile (self, filename):
+        file = open (filename, "r", encoding="utf-8")
+        tmp = file.read ()
+        file.close()
+        return json.loads (tmp)
+
     def __init__(self):
         # 存放所有的股票列表
         self.stockMap = {}
         # 載入股票
         self.__loadAllStock ()
+        # 載入額外資料
+        self.QEPS = self.__loadJsonFromFile ("../info/Q_EPS.txt")
+        self.Basic = self.__loadJsonFromFile ("../info/basic.txt")
+        self.TurnOver = self.__loadJsonFromFile ("../info/TurnOver.txt")
 
     # 載入所有股票資訊
     def __loadAllStock (self):
@@ -91,9 +102,32 @@ class cAllStockMgr:
             res[value.id] = value
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
+    
+    # 取得資料
+    # [能用的KEY]
+    # 股本
+    # 淨值
+    # 營收
+    # * 年度 : 2020/09
+    # QEPS
+    # * 年度 : 2020 or 2020Q2
+    def getInfo (self, stockID, key, *args):
+        if key == "股本":
+            return self.Basic[stockID]["股本"]
+        if key == "淨值":
+            return self.Basic[stockID]["淨值"]
+        if key == "營收":
+            return self.TurnOver[stockID][args[0]][args[1]]
+        if key == "QEPS":
+            return self.QEPS[stockID][args[0]]
 
-    # 取得一些動態變數
-
+    def getInfoInt (self, stockID, key, *args):
+        res = self.getInfo (stockID, key, *args)
+        return int (res)
+    
+    def getInfoFloat (self, stockID, key, *args):
+        res = self.getInfo (stockID, key, *args)
+        return float (res)
 
 # 實作 singleton
 AllStockMgr = cAllStockMgr()
