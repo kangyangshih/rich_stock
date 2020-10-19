@@ -24,8 +24,11 @@ def saveMsg ():
 # 取得所有的股票
 allStock = AllStockMgr.getAllStock ()
 
+infoMap = {}
+
 # 一檔一檔去寫
 for stockID, stock in allStock.items():
+    info = {}
     # 每檔股票做處理
     print ("=== 產出 %s ===" % (stock.name,))
     writeMsg ("==== %s %s =====", stockID, stock.name)
@@ -41,6 +44,9 @@ for stockID, stock in allStock.items():
                       AllStockMgr.getInfoInt (stockID, "營收", "2020/03", "月營收")
     #print (TurnOver_2020Q1)
     TurnOver_2020Q1 = TurnOver_2020Q1 / 100000.0;
+    info["TurnOver_2020Q1"] = TurnOver_2020Q1
+    if TurnOver_2020Q1 == 0:
+        continue
     #  毛利的計算
     pureEarn = value * AllStockMgr.getInfoFloat (stockID, "QEPS", "2020Q1") / 10
     earnRate = ( pureEarn / TurnOver_2020Q1 ) * 100
@@ -50,39 +56,58 @@ for stockID, stock in allStock.items():
                       AllStockMgr.getInfoInt (stockID, "營收", "2020/05", "月營收") + \
                       AllStockMgr.getInfoInt (stockID, "營收", "2020/06", "月營收")
     TurnOver_2020Q2 = TurnOver_2020Q2 / 100000.0;
+    info["TurnOver_2020Q2"] = TurnOver_2020Q2
+    if TurnOver_2020Q2 == 0:
+        continue
     #  毛利的計算
     pureEarn = value * AllStockMgr.getInfoFloat (stockID, "QEPS", "2020Q2") / 10
     earnRate = ( pureEarn / TurnOver_2020Q2 ) * 100
+    info["earnRate"] = earnRate
     writeMsg ("2020Q2 營收 : %3.2f億, EPS : %2.2f 元, 淨利 : %2.2f", TurnOver_2020Q2, AllStockMgr.getInfoFloat (stockID, "QEPS", "2020Q2"), earnRate)
     # 2020Q3 預估
     writeMsg ("=2020Q3 EPS=")
     # 7月
     TurnOver_7 = AllStockMgr.getInfoInt (stockID, "營收", "2020/07", "月營收") / 100000.0
     eps_7 = TurnOver_7 / value * 10 * earnRate / 100
+    info["TurnOver_7"] = TurnOver_7
+    info["eps_7"] = eps_7
     writeMsg ("2020 7月 營收 %3.2f億, 估 EPS : %2.2f元", TurnOver_7, eps_7)
-    # 8月
     TurnOver_8 = AllStockMgr.getInfoInt (stockID, "營收", "2020/08", "月營收") / 100000.0
     eps_8 = TurnOver_8 / value * 10 * earnRate / 100
+    info["TurnOver_8"] = TurnOver_8
+    info["eps_8"] = eps_8
     writeMsg ("2020 8月 營收 %3.2f億, 估 EPS : %2.2f元", TurnOver_8, eps_8)
     # 9月
     TurnOver_9 = AllStockMgr.getInfoInt (stockID, "營收", "2020/09", "月營收") / 100000.0
     eps_9 = TurnOver_9 / value * 10 * earnRate / 100
+    info["TurnOver_9"] = TurnOver_9
+    info["eps_9"] = eps_9
     writeMsg ("2020 9月 營收 %3.2f億, 估 EPS : %2.2f元", TurnOver_9, eps_9)
     TurnOver_2020Q3 = TurnOver_7 + TurnOver_8 + TurnOver_9
     EPSQ3 = eps_7 + eps_8 + eps_9
+    info["TurnOver_2020Q3"] = TurnOver_2020Q3
     writeMsg ("2020Q3 營收 : %3.2f億, 估EPS : %2.2f 元", TurnOver_2020Q3, EPSQ3)
     # 2020 全年EPS估
     writeMsg ("=2020 估 EPS=")
     EPS2020 = AllStockMgr.getInfoFloat (stockID, "QEPS", "2020Q1") + \
               AllStockMgr.getInfoFloat (stockID, "QEPS", "2020Q2") + \
               EPSQ3 + EPSQ3
+    info["EPS2020"] = EPS2020
     # 目前股價 / 本益比
     res = RealTimeMgr.get_stock (stockID)
-    msg = "現價 : %3.2f, 估EPS : %2.2f 元, 本益比 : %.1f\n" % ( res["now_price"], EPS2020, res["now_price"] / EPS2020)
+    tmp = 0
+    if EPS2020 > 0:
+        tmp = res["now_price"] / EPS2020
+    info["本益比"] = tmp
+    msg = "現價 : %3.2f, 估EPS : %2.2f 元, 本益比 : %.1f\n" % ( res["now_price"], EPS2020, tmp)
     writeMsg (msg)
     print (msg)
     saveMsg()
+    infoMap[stockID] = info
     # 目前只做一檔
     #break
 
+file = open ("../info/2020_eps.txt", "w", encoding="utf-8")
+file.writelines (json.dumps (infoMap))
+file.close()
 
