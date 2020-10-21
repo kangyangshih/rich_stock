@@ -47,3 +47,51 @@
 [1015/182736.516:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
 [1016/172850.959:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
 [1016/175128.731:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1021/141927.257:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/141927.258:ERROR:exception_snapshot_win.cc(99)] thread ID 13448 not found in process
+[1021/141927.283:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/141927.283:ERROR:exception_snapshot_win.cc(99)] thread ID 7112 not found in process
+[1021/143640.170:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143640.169:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143640.170:ERROR:exception_snapshot_win.cc(99)] thread ID 13608 not found in process
+[1021/143640.170:ERROR:exception_snapshot_win.cc(99)] thread ID 272 not found in process
+[1021/143640.181:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143640.181:ERROR:exception_snapshot_win.cc(99)] thread ID 7904 not found in process
+[1021/143752.594:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143752.594:ERROR:exception_snapshot_win.cc(99)] thread ID 8852 not found in process
+[1021/143752.605:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143752.605:ERROR:exception_snapshot_win.cc(99)] thread ID 7896 not found in process
+[1021/143908.889:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143908.889:ERROR:exception_snapshot_win.cc(99)] thread ID 7260 not found in process
+[1021/143908.899:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/143908.899:ERROR:exception_snapshot_win.cc(99)] thread ID 9264 not found in process
+[1021/144913.091:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1021/145923.132:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/145923.132:ERROR:exception_snapshot_win.cc(99)] thread ID 8968 not found in process
+[1021/145923.146:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/145923.146:ERROR:exception_snapshot_win.cc(99)] thread ID 9892 not found in process
+[1021/150108.425:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150108.425:ERROR:exception_snapshot_win.cc(99)] thread ID 13896 not found in process
+[1021/150108.425:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150108.425:ERROR:exception_snapshot_win.cc(99)] thread ID 9408 not found in process
+[1021/150108.435:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150108.435:ERROR:exception_snapshot_win.cc(99)] thread ID 13464 not found in process
+[1021/150232.472:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150232.472:ERROR:exception_snapshot_win.cc(99)] thread ID 9252 not found in process
+[1021/150232.473:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150232.473:ERROR:exception_snapshot_win.cc(99)] thread ID 1788 not found in process
+[1021/150232.488:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/150232.488:ERROR:exception_snapshot_win.cc(99)] thread ID 520 not found in process
+[1021/151653.879:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/151653.879:ERROR:exception_snapshot_win.cc(99)] thread ID 384 not found in process
+[1021/151653.891:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/151653.891:ERROR:exception_snapshot_win.cc(99)] thread ID 12260 not found in process
+[1021/152722.032:ERROR:directory_reader_win.cc(43)] FindFirstFile: 系統找不到指定的路徑。 (0x3)
+[1021/161435.987:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/161435.988:ERROR:exception_snapshot_win.cc(99)] thread ID 11804 not found in process
+[1021/161436.000:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/161436.000:ERROR:exception_snapshot_win.cc(99)] thread ID 10508 not found in process
+[1021/161716.228:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/161716.228:ERROR:exception_snapshot_win.cc(99)] thread ID 11940 not found in process
+[1021/161716.239:ERROR:process_reader_win.cc(123)] NtOpenThread: {拒絕存取} 程序已請求存取一物件，但未被授與存取權。 (0xc0000022)
+[1021/161716.239:ERROR:exception_snapshot_win.cc(99)] thread ID 11576 not found in process

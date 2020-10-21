@@ -17,11 +17,11 @@ import json
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
-check_dir ("../info/dividend/")
+check_dir ("../info/performance/")
 errorMap = {}
 def add_error (id, name):
     errorMap[id] = name
-    file = open ("error_dividend.txt", "w", encoding="utf-8")
+    file = open ("error_performance.txt", "w", encoding="utf-8")
     for key, value in errorMap.items():
         file.writelines ("%s %s\n" % (key, value))
     file.close()
@@ -31,17 +31,15 @@ def add_single (stockID, info, isSave=True):
     if stockID != None:
         allStockMap[stockID] = info
     if isSave == True:
-        file = open ("../info/dividend.txt", 'w', encoding="utf-8")
+        file = open ("../info/performance.txt", 'w', encoding="utf-8")
         file.writelines (json.dumps(allStockMap))
         file.close()
 
 # 查詢資料, 並做儲存起來的動作
-url_template = "https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=%s"
+url_template = "https://goodinfo.tw/StockInfo/StockBzPerformance.asp?STOCK_ID=%s"
 for stockID, stock in allstock.items():
-    if stockID != "3293":
-        continue
     print ("==[處理 %s]==" % (stockID,))
-    filename = "../info/dividend/%s.txt" % (stockID,)
+    filename = "../info/performance/%s.txt" % (stockID,)
     #if check_file (filename) == True:
     #    print ("[ignore] info exist. " + filename)
     #    # 讀檔出來, 並加入股票
@@ -62,20 +60,30 @@ for stockID, stock in allstock.items():
         nodes = rowNode.find_elements_by_xpath ('.//td')
         tmp_list = []
         for node in nodes:
-            print (node.text)
+            #print (node.text)
             tmp_list.append (node.text)
         # 取得想要的資料
         tmp = {}
         tmp["年度"] = tmp_list[0]
-        tmp["股利"] = tmp_list[1]
-        tmp["股票"] = tmp_list[2]
-        break
+        tmp["股利"] = tmp_list[3]
+        tmp["股票"] = tmp_list[6]
+        tmp["PRE_EPS"] = tmp_list[20]
+        tmp["盈餘分配率"] = tmp_list[23]
+        #print (tmp_list)
+        print (tmp)
+        # 儲存起來
+        info[tmp["年度"]] = tmp
+        #break
     # 寫入檔案
-    #file = open (filename, "w", encoding='utf-8')
-    #file.writelines (json.dumps (info))
-    #file.close()
-    #add_single (stockID, info, False)
+    print (len(info))
+    if len(info) == 0:
+        break
+    else:
+        file = open (filename, "w", encoding='utf-8')
+        file.writelines (json.dumps (info))
+        file.close()
+        add_single (stockID, info, False)
     break
 
-#WebViewMgr.close()
+WebViewMgr.close()
 add_single (None, None, True)
