@@ -28,6 +28,28 @@ class cSingleStock :
         self.tag = ""
         # 其他描述
         self.desc = ""
+        self.netInfo = {}
+
+    def getInfo (self, *args):
+        #print (args)
+        # 取得直接參數
+        if args[0] in self.__dict__:
+            return self.__dict__[args[0]]
+        # 取得網路參數
+        target = self.netInfo
+        #print (self.netInfo)
+        for index in range (len(args)):
+            target = target[args[index]]
+        return target
+    
+    def getInfoInt (self, *args):
+        res = self.getInfo (*args)
+        return int(res.replace (",", ""))
+    
+    def getInfoFloat (self, *args):
+        res = self.getInfo (*args)
+        return float (res.replace (",", ""))
+
     
 # 股票管理器
 class cAllStockMgr:
@@ -75,14 +97,23 @@ class cAllStockMgr:
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 continue
+            # 取得資訊
+            infoFilename = "../info/%s.txt" % (single.id,)
+            # 沒有個人資訊也不做處理
+            if check_file(infoFilename) == True:
+                tmp, single.netInfo = getFromCache (infoFilename)
             # 記錄起來
             self.stockMap[single.id] = single
 
     # 取得所有的股票列表
-    def getAllStock (self):
+    def getAllStock (self, isNeedNetInfo=False):
         res = {}
         for key, value in self.stockMap.items():
+            # 不是股票不回傳
             if value.type != "股票":
+                continue
+            # 沒有網路資訊不做回傳
+            if isNeedNetInfo == True and len(value.netInfo) == 0:
                 continue
             res[key] = value
         return res
@@ -98,6 +129,7 @@ class cAllStockMgr:
             res[value.id] = value
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
+
     
 
 # 實作 singleton
