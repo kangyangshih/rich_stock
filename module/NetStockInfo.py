@@ -14,9 +14,34 @@ class cNetStockInfo:
     def __init__(self):
         pass
     
-    # 取得及時資訊
-    def getYahooRealtime (self, stock_id, realtime=False):
-        stock_id = str(stock_id)
+    #--------------------------------------------
+    # 從 Yahoo 取得基本資料
+    #--------------------------------------------
+    def getYahooBasic (self, stockID):
+        url_template = "https://tw.stock.yahoo.com/d/s/company_%s.html"
+        url = url_template % (stockID,)
+        print ("[getYahooBasic] " + url)
+        WebViewMgr.loadURL (url)
+        info = {}
+        # 取得股本位置
+        equity = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]')
+        equity = equity.strip ("\n億")
+        info["股本"] = equity
+        # 每股淨值
+        netAssetValue = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[2]/tbody/tr[6]/td[3]')
+        # 每股淨值: 　　32.38元
+        netAssetValue = netAssetValue.replace ("每股淨值:", "").replace (" ", "").replace ("　", "")
+        netAssetValue = netAssetValue.strip ("元")
+        #print (netAssetValue)
+        info["淨值"] = netAssetValue
+        # 回傳結果
+        return info
+    
+    #--------------------------------------------
+    # 從 Yahoo 取得及時資訊
+    #--------------------------------------------
+    def getYahooRealtime (self, stockID, realtime=False):
+        stockID = str(stockID)
         name_list = [
             # 更新時間
             "update_time"
@@ -37,17 +62,15 @@ class cNetStockInfo:
         ]
         now_time = time.gmtime()
         # 從 yahoo 取得
-        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stock_id, "cache/%s.html" % (stock_id,) if realtime == True else "")
+        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, "cache/%s.html" % (stockID,) if realtime == True else "")
         soup = BeautifulSoup(html_text, "html.parser")
         info_list = soup.find_all ("td", bgcolor="#FFFfff")
-        result = {"id":stock_id}
+        result = {"id":stockID}
         for index in range(len(info_list)):
             if index >= len(name_list):
                 break
             #print ("name:%s, value:%s" % (name_list[index], info_list[index].string))
             result[name_list[index]] = info_list[index].string
-        #print ("stock_id:", stock_id)
-        #print (result)
         if (result["now_price"] == "-"):
             result["now_result"] = 0
             result["now_num"] = "0"
@@ -64,7 +87,9 @@ class cNetStockInfo:
         # 回傳結果
         return result
 
-    # 取得每季的EPS資訊
+    #--------------------------------------------
+    # 從 Histock 取得每季的EPS資訊
+    #--------------------------------------------
     def getHistockQEPS (self, stockID):
         #------------------------------
         # 取得每股盈餘
@@ -144,5 +169,70 @@ class cNetStockInfo:
         #print (info)
         # 回傳結果
         return info
+
+    #--------------------------------------------
+    # 從 HiStock 取得月營收資料
+    #--------------------------------------------
+    def getHistockTurnOver (self, stockID):
+        url_template = "https://histock.tw/stock/%s/財務報表"
+        url = url_template % (stockID,)
+        WebViewMgr.loadURL (url)
+        # 利用 xpath 找到東西
+        source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock text-center tbBasic"]/tbody/tr/td')
+        if len(source_nodes) == 0:
+            print ("沒有資料", stock.id, stock.name)
+            add_error (stock.id, stock.name)
+            return {}
+        # 2018/1 ~ 2020/9
+        info = {}
+        # 月份/單月/去年/單月月增/單月年增/累計/去年累計/累計年增
+        for index in range (0, 100):
+            rowIndex = index * 8
+            if rowIndex >= len(source_nodes):
+                break
+            res = {}
+            res["年度/月份"] = source_nodes[rowIndex].text
+            # 千元為單位
+            res["月營收"] = source_nodes[rowIndex+1].text.replace (",", "")
+            res["月增"] = source_nodes[rowIndex+3].text.replace ("%", "")
+            res["年増"] = source_nodes[rowIndex+4].text.replace ("%", "")
+            res["累計營收"] = source_nodes[rowIndex+5].text.replace (",", "")
+            res["累計年增"] = source_nodes[rowIndex+7].text.replace("%", "")
+            #print (res["年度/月份"])
+            info[res["年度/月份"]] = res
+        # 回傳結果
+        return info
+
+    #--------------------------------------------
+    # 從 Histock 取得流動比和速動比
+    # 流動比率一般要求是要在200%以上，越高越好，代表短期在還債上越沒有壓力。
+    # 速動比率一般要求是要在100%以上
+    #--------------------------------------------
+    def getHistockLSRate (self, stockID):
+        url_template = "https://histock.tw/stock/%s/流速動比率"
+        url = url_template % (stockID,)
+        WebViewMgr.loadURL (url)
+        # 利用 xpath 找到東西
+        source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock tbBasic"]/tbody/tr/td')
+        if len(source_nodes) == 0:
+            print ("沒有資料", stock.id, stock.name)
+            add_error (stock.id, stock.name)
+            return {}
+        # 2018/1 ~ 2020/9
+        info = {}
+        # 年度/季別	流動比	速動比
+        for index in range (0, 100):
+            rowIndex = index * 3
+            if rowIndex >= len(source_nodes):
+                break
+            res = {}
+            res["年度/季別"] = source_nodes[rowIndex].text
+            res["流動比"] = source_nodes[rowIndex+1].text.replace ("%", "")
+            res["速動比"] = source_nodes[rowIndex+2].text.replace ("%", "")
+            info[res["年度/季別"]] = res
+        # 回傳結果
+        return info
+
+
 
 NetStockInfo = cNetStockInfo ()
