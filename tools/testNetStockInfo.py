@@ -1,6 +1,3 @@
-# DESC : 用來取得每一季的EPS
-# DATE : 20202/10/15
-
 # 載入所有 python 共用模組
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")

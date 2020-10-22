@@ -40,10 +40,6 @@ class cAllStockMgr:
     def __init__(self):
         # 存放所有的股票列表
         self.stockMap = {}
-        # 載入額外資料
-        self.QEPS = self.__loadJsonFromFile ("../info/Q_EPS.txt")
-        self.Basic = self.__loadJsonFromFile ("../info/basic.txt")
-        self.TurnOver = self.__loadJsonFromFile ("../info/TurnOver.txt")
         # 載入股票
         self.__loadAllStock ()
 
@@ -88,16 +84,6 @@ class cAllStockMgr:
         for key, value in self.stockMap.items():
             if value.type != "股票":
                 continue
-            # 沒有額外資訊就不記錄
-            if value.id not in self.QEPS:
-                print ("%s not QEPS" % (value.name,))
-                continue
-            if value.id not in self.Basic:
-                print ("%s not Basic" % (value.name,))
-                continue
-            if value.id not in self.TurnOver:
-                print ("%s not TurnOver" % (value.name,))
-                continue
             res[key] = value
         return res
     
@@ -113,41 +99,6 @@ class cAllStockMgr:
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
     
-    # 取得資料
-    # [能用的KEY]
-    # 股本
-    # 淨值
-    # 營收
-    # * 年度 : 2020/09
-    # QEPS
-    # * 年度 : 2020 or 2020Q2
-    def getInfo (self, stockID, key, *args):
-        if key == "股本":
-            return self.Basic[stockID]["股本"]
-        if key == "淨值":
-            return self.Basic[stockID]["淨值"]
-        if key == "營收":
-            if stockID not in self.TurnOver:
-                return "0"
-            if args[0] not in self.TurnOver[stockID]:
-                return "0"
-            if args[1] not in self.TurnOver[stockID][args[0]]:
-                return "0"
-            return self.TurnOver[stockID][args[0]][args[1]]
-        if key == "QEPS":
-            return self.QEPS[stockID][args[0]]
-
-    def getInfoInt (self, stockID, key, *args):
-        res = self.getInfo (stockID, key, *args)
-        if res == "-":
-            return 0
-        return int (res)
-    
-    def getInfoFloat (self, stockID, key, *args):
-        res = self.getInfo (stockID, key, *args)
-        if res == "-":
-            return 0
-        return float (res)
 
 # 實作 singleton
 AllStockMgr = cAllStockMgr()

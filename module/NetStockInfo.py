@@ -25,6 +25,10 @@ class cNetStockInfo:
         info = {}
         # 取得股本位置
         equity = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]')
+        # 如果載入失敗就等10秒再重載入
+        if equity == None:
+            time.sleep (30)
+            return self.getYahooBasic (stockID)
         equity = equity.strip ("\n億")
         info["股本"] = equity
         # 每股淨值
@@ -106,8 +110,8 @@ class cNetStockInfo:
         # 利用 xpath 找到資料
         source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock text-center tbBasic"]/tbody/tr/td')
         if len(source_nodes) == 0:
-            print ("沒有資料", stock.id, stock.name)
-            return {}
+            print ("沒有資料", stockID)
+            return False, {}
  
         # 2012 ~ 2020 共9年
         info = {}
@@ -168,7 +172,7 @@ class cNetStockInfo:
 
         #print (info)
         # 回傳結果
-        return info
+        return True, info
 
     #--------------------------------------------
     # 從 HiStock 取得月營收資料
@@ -180,9 +184,8 @@ class cNetStockInfo:
         # 利用 xpath 找到東西
         source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock text-center tbBasic"]/tbody/tr/td')
         if len(source_nodes) == 0:
-            print ("沒有資料", stock.id, stock.name)
-            add_error (stock.id, stock.name)
-            return {}
+            print ("沒有資料", stockID)
+            return False, {}
         # 2018/1 ~ 2020/9
         info = {}
         # 月份/單月/去年/單月月增/單月年增/累計/去年累計/累計年增
@@ -201,7 +204,7 @@ class cNetStockInfo:
             #print (res["年度/月份"])
             info[res["年度/月份"]] = res
         # 回傳結果
-        return info
+        return True, info
 
     #--------------------------------------------
     # 從 Histock 取得流動比和速動比
@@ -215,9 +218,8 @@ class cNetStockInfo:
         # 利用 xpath 找到東西
         source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock tbBasic"]/tbody/tr/td')
         if len(source_nodes) == 0:
-            print ("沒有資料", stock.id, stock.name)
-            add_error (stock.id, stock.name)
-            return {}
+            print ("沒有資料", stockID)
+            return False, {}
         # 2018/1 ~ 2020/9
         info = {}
         # 年度/季別	流動比	速動比
@@ -231,7 +233,7 @@ class cNetStockInfo:
             res["速動比"] = source_nodes[rowIndex+2].text.replace ("%", "")
             info[res["年度/季別"]] = res
         # 回傳結果
-        return info
+        return True, info
 
 
 
