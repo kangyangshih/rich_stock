@@ -30,7 +30,7 @@ infoMap = {}
 for stockID, stock in allStock.items():
     info = {}
     # 每檔股票做處理
-    print ("=== 產出 %s ===" % (stock.name,))
+    print ("=== 產出 %s, %s ===" % (stock.id, stock.name))
     writeMsg ("==== %s %s =====", stockID, stock.name)
     value = stock.getInfoFloat ("股本")
     writeMsg ("股本 : %.2f 億", value)
