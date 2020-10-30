@@ -39,15 +39,21 @@ class cSingleStock :
         target = self.netInfo
         #print (self.netInfo)
         for index in range (len(args)):
+            if args[index] not in target:
+                return None
             target = target[args[index]]
         return target
     
     def getInfoInt (self, *args):
         res = self.getInfo (*args)
+        if res == None:
+            return None
         return int(res.replace (",", ""))
     
     def getInfoFloat (self, *args):
         res = self.getInfo (*args)
+        if res == None:
+            return None
         return float (res.replace (",", ""))
 
     
@@ -68,6 +74,8 @@ class cAllStockMgr:
     # 載入所有股票資訊
     def __loadAllStock (self):
         print ("[cStockMgr][__loadAllStock] start")
+        res, tmp2020 = getFromCache ("../info/eps_2020.txt")
+        #print (tmp2020)
         excel = getExcelSheet ("../all_stock.xlsx", "all_stock")
         for row_index in range (1, 5000):
             if excel.getValue (row_index, 0, None) == None:
@@ -102,6 +110,11 @@ class cAllStockMgr:
             # 沒有個人資訊也不做處理
             if check_file(infoFilename) == True:
                 tmp, single.netInfo = getFromCache (infoFilename)
+            #if single.id == "3293":
+            #    print (single.id)
+            #    print (tmp2020[single.id])
+            if single.id in tmp2020:
+                single.netInfo.update (tmp2020[single.id])
             # 記錄起來
             self.stockMap[single.id] = single
 
@@ -130,7 +143,6 @@ class cAllStockMgr:
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
 
-    
 
 # 實作 singleton
 AllStockMgr = cAllStockMgr()
