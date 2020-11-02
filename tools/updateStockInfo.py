@@ -41,17 +41,21 @@ for stockID, stock in allstock.items():
     #print (NetStockInfo.getHistockQEPS (stockID))
     res, info["QEPS"] = NetStockInfo.getHistockQEPS (stockID)
     if res == False:
+        print ("1")
         continue
     # 每月營收
     #print (NetStockInfo.getHistockTurnOver (stockID))
     res, info["月營收"] = NetStockInfo.getHistockTurnOver (stockID)
     if res == False:
+        print ("2")
         continue
     # 取得流動比 / 速動比
     #print (NetStockInfo.getHistockLSRate (stockID))
     res, info["流動/速動比"] = NetStockInfo.getHistockLSRate (stockID)
     if res == False:
-        continue
+        # 金融股都不會有這個值
+        info["流動/速動比"] = None
+        #print ("3")
     # 把資料存起來
     saveCache (stockID, info)
 

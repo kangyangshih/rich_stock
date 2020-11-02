@@ -96,12 +96,14 @@ class cAllStockMgr:
             single.priceHigh = excel.getValue (row_index, 4, 0, int)
             # 買入價
             single.buyPrice = excel.getValue (row_index, 5, 0, int)
-            # 賣出價
-            single.sellPrice = excel.getValue (row_index, 6, 0, int)
+            # 持有價
+            single.holdPrice = excel.getValue (row_index, 6, 0, int)
+            # 停損價
+            single.sellPrice = excel.getValue (row_index, 7, 0, int)
             # 標籤
-            single.tag = excel.getValue (row_index, 7)
+            single.tag = excel.getValue (row_index, 8)
             # 雜項
-            single.desc = excel.getValue (row_index, 8)
+            single.desc = excel.getValue (row_index, 9)
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 continue
@@ -110,9 +112,6 @@ class cAllStockMgr:
             # 沒有個人資訊也不做處理
             if check_file(infoFilename) == True:
                 tmp, single.netInfo = getFromCache (infoFilename)
-            #if single.id == "3293":
-            #    print (single.id)
-            #    print (tmp2020[single.id])
             if single.id in tmp2020:
                 single.netInfo.update (tmp2020[single.id])
             # 記錄起來
@@ -124,9 +123,11 @@ class cAllStockMgr:
         for key, value in self.stockMap.items():
             # 不是股票不回傳
             if value.type != "股票":
+                #print ("[ignore][不是股票] "+value.name)
                 continue
             # 沒有網路資訊不做回傳
             if isNeedNetInfo == True and len(value.netInfo) == 0:
+                #print ("[ignore][isNeedNetInfo] "+value.name)
                 continue
             res[key] = value
         return res

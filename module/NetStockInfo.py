@@ -66,7 +66,7 @@ class cNetStockInfo:
         ]
         now_time = time.gmtime()
         # 從 yahoo 取得
-        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, "cache/%s.html" % (stockID,) if realtime == True else "")
+        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, "cache/%s.html" % (stockID,) if realtime == False else "")
         soup = BeautifulSoup(html_text, "html.parser")
         info_list = soup.find_all ("td", bgcolor="#FFFfff")
         result = {"id":stockID}
