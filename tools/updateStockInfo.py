@@ -31,6 +31,7 @@ miss_qeps = 0
 miss_turnover = 0
 epsKey = "2020Q3"
 turnOverKey = "2020/10"
+threeKey = "2020/11/16"
 for stockID, stock in allstock.items():
     # 載入暫存資料
     info = getFromCache (stockID)
@@ -75,7 +76,19 @@ for stockID, stock in allstock.items():
     #     # 金融股都不會有這個值
     #     info["流動/速動比"] = None
     #     #print ("3")
-        
+
+    # 取得三大法人進出
+    if "三大法人" not in info or threeKey != info["三大法人"][0]["date"]:
+        res, info["三大法人"] = NetStockInfo.getHistockThree (stockID)
+        if res == False:
+            print ("4")
+            continue
+        if threeKey != info["三大法人"][0]["date"]:
+            miss_turnover += 1
+            print (stock.name, "還未有", threeKey, "三大法人")
+        else:
+            print (threeKey, json.dumps(info["三大法人"][0]))
+    
     # 把資料存起來
     saveCache (stockID, info)
 

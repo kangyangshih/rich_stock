@@ -6,6 +6,7 @@ from utility import *
 from excel_utility import *
 import json
 from WebViewMgr import WebViewMgr
+#WebViewMgr.debugMode ()
 from bs4 import BeautifulSoup
 from lxml import etree
 
@@ -208,6 +209,42 @@ class cNetStockInfo:
             info[res["年度/月份"]] = res
         # 回傳結果
         return True, info
+    
+    # 從 Histock 取得三大法人
+    def getHistockThree (self, stockID):
+        url_template = "https://histock.tw/stock/chips.aspx?no=%s"
+        url = url_template % (stockID,)
+        WebViewMgr.loadURL (url)
+        # 利用 xpath 找到東西
+        xpath = '//*[@class="tb-stock tbChip w50p pr0"]/tbody/tr'
+        source_nodes = WebViewMgr.getNodes (xpath)
+        res = []
+        for source_node in source_nodes:
+            nodes = source_node.find_elements_by_xpath ('.//td')
+            if len(nodes) == 0:
+                continue
+            #print ("~~~~")
+            tmp = []
+            for node in nodes:
+                #print (node.text)
+                if node.text.isdigit () == True:
+                    tmp.append (int(node.text))
+                    #print ("is number")
+                elif node.text[0] == '-' and node.text[1:].isdigit() == True:
+                    tmp.append (int(node.text))
+                    #print ("is number")
+                else:
+                    tmp.append (node.text)
+            res.append ({
+                'date':tmp[0],
+                'out':tmp[1],
+                'in':tmp[2],
+                'self_0':tmp[3],
+                'self_1':tmp[4],
+                'total':tmp[5],
+            })
+        return True, res
+
 
     #--------------------------------------------
     # 從 Histock 取得流動比和速動比
