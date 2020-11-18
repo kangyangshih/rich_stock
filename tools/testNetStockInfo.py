@@ -24,7 +24,9 @@ for stockID, stock in allstock.items():
     # 取得流動比 / 速動比
     #print (NetStockInfo.getHistockLSRate (stockID))
     # 取得30日三大法人
-    print (NetStockInfo.getHistockThree (stockID))
+    #print (NetStockInfo.getHistockThree (stockID))
+    # 取得配股配息
+    print (NetStockInfo.getHistockStockDivide (stockID))
 
 
 

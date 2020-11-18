@@ -210,7 +210,40 @@ class cNetStockInfo:
         # 回傳結果
         return True, info
     
+    #--------------------------------------------
+    # 配股配息
+    #--------------------------------------------
+    def getHistockStockDivide (self, stockID):
+        url_template = "https://histock.tw/stock/%s/除權除息"
+        url = url_template % (stockID,)
+        WebViewMgr.loadURL (url)
+        # 利用 xpath 找到東西
+        xpath = '//*[@class="tb-stock text-center tbBasic"]/tbody/tr'
+        source_nodes = WebViewMgr.getNodes (xpath)
+        res = {}
+        for source_node in source_nodes:
+            nodes = source_node.find_elements_by_xpath ('.//td')
+            if len(nodes) == 0:
+                continue
+            #print ("~~~~")
+            tmp = []
+            for node in nodes:
+                #print (node.text)
+                tmp.append (node.text)
+            res[tmp[0]] = {
+                '所屬年度':tmp[0],
+                '除權息前股價':tmp[4],
+                '股票股利':tmp[5],
+                '現金股利':tmp[6],
+                'EPS':tmp[7],
+                '配息率':tmp[8],
+                '現金殖利率':tmp[9],
+            }
+        return True, res
+
+    #--------------------------------------------
     # 從 Histock 取得三大法人
+    #--------------------------------------------
     def getHistockThree (self, stockID):
         url_template = "https://histock.tw/stock/chips.aspx?no=%s"
         url = url_template % (stockID,)
@@ -227,14 +260,15 @@ class cNetStockInfo:
             tmp = []
             for node in nodes:
                 #print (node.text)
-                if node.text.isdigit () == True:
-                    tmp.append (int(node.text))
-                    #print ("is number")
-                elif node.text[0] == '-' and node.text[1:].isdigit() == True:
-                    tmp.append (int(node.text))
-                    #print ("is number")
-                else:
-                    tmp.append (node.text)
+                # if node.text.isdigit () == True:
+                #     tmp.append (int(node.text))
+                #     #print ("is number")
+                # elif node.text[0] == '-' and node.text[1:].isdigit() == True:
+                #     tmp.append (int(node.text))
+                #     #print ("is number")
+                # else:
+                #    tmp.append (node.text)
+                tmp.append (node.text)
             res.append ({
                 'date':tmp[0],
                 'out':tmp[1],

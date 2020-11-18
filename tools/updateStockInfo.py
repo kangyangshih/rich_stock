@@ -31,7 +31,8 @@ miss_qeps = 0
 miss_turnover = 0
 epsKey = "2020Q3"
 turnOverKey = "2020/10"
-threeKey = "2020/11/16"
+threeKey = "2020/11/17"
+sdKey = "2019"
 for stockID, stock in allstock.items():
     # 載入暫存資料
     info = getFromCache (stockID)
@@ -89,6 +90,22 @@ for stockID, stock in allstock.items():
         else:
             print (threeKey, json.dumps(info["三大法人"][0]))
     
+    # 取得配股息進出
+    # if "配股息" not in info or sdKey not in info["配股息"]:
+    #     res, info["配股息"] = NetStockInfo.getHistockStockDivide (stockID)
+    #     if res == False:
+    #         print ("5")
+    #         continue
+    #     if sdKey not in info["配股息"]:
+    #         miss_turnover += 1
+    #         print (stock.name, "還未有", sdKey, "配股息")
+    #     else:
+    #         print (sdKey, json.dumps(info["配股息"][sdKey]))
+    if "配股息" not in info:
+        res, info["配股息"] = NetStockInfo.getHistockStockDivide (stockID)
+        if res == False:
+            continue
+
     # 把資料存起來
     saveCache (stockID, info)
 

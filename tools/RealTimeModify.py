@@ -17,6 +17,8 @@ import json
 def printStockInfo (stockID, stock):
     # 取得及時報價
     info = NetStockInfo.getYahooRealtime (stockID, False)
+    # 取得全年 EPS
+
     #print (info)
     res = "%s[%s] %s(%s) %.2f 量 : %s" % (
         # 名稱
@@ -32,11 +34,23 @@ def printStockInfo (stockID, stock):
         # 今日量能
         info["now_vol"]
     )
+
     # 回傳結果
-    if stock.buyPrice * 1.02 > info["now_price"]:
-        return 1, res
-    elif stock.buyPrice * 1.1 < info["now_price"]:
+    # if stock.buyPrice * 1.05 < info["now_price"]:
+    #     return 1, res
+    # elif stock.buyPrice * 1.15 < info["now_price"]:
+    #     return 2, res
+    # elif stock.buyPrice * 1.3 < info["now_price"]:
+    #     return 2, res
+    # else:
+    #     return 0, res
+
+    if stock.buyPrice * 1.3 < info["now_price"]:
+        return 3, res
+    elif stock.buyPrice * 1.2 < info["now_price"]:
         return 2, res
+    elif stock.buyPrice * 1.1 < info["now_price"]:
+        return 1, res
     else:
         return 0, res
 
@@ -53,7 +67,7 @@ for stockID, stock in allStock.items():
     if stock.holdPrice != 0:
         stockList[0][stockID] = stock
     # 定存股放在最後
-    elif stock.tag.find ("定存股") != -1:
+    elif stock.operationType.find ("定存") != -1:
         stockList[2][stockID] = stock
     # 一般區
     else:
@@ -61,6 +75,9 @@ for stockID, stock in allStock.items():
 
 # 定時做監控
 clear_console ()
+# 清除暫存檔
+del_dir ("cache")
+check_dir ("cache")
 # 持有的股票, 股性波動大的, 定存股型的
 for index, info in enumerate (stockList):
     if index == 0:
@@ -69,21 +86,43 @@ for index, info in enumerate (stockList):
         print ("========觀察股========")
     else:
         print ("========定存股========")
+
     # 印出內容
     buyList = []
     modifyList = []
+    ignoreList = []
     for stockID , stock in info.items():
         res, msg = printStockInfo (stockID, stock)
-        if res == 1:
+        # 買入股票
+        if index == 0:
             buyList.append (msg)
-        elif res == 2 and index == 2:
-            pass
-        else:
-            modifyList.append (msg)
-    print ("--- 可進場 ---")
-    for msg in buyList:
-        print (msg)
-    print ("--- 等待中 ---")
-    for msg in modifyList:
-        print (msg)
+        # 觀察股 (有設定股價)
+        elif index == 1:
+            if res == 0:
+                buyList.append (msg)
+            elif res == 1:
+                modifyList.append (msg)
+            else:
+                ignoreList.append (msg)
+        # 定存股
+        elif index == 2:
+            if res == 0:
+                buyList.append (msg)
+            elif res == 1:
+                modifyList.append (msg)
+            else:
+                ignoreList.append (msg)
 
+    # 顯示到畫面上
+    if len(buyList) > 0:
+        print ("--- 可進場 ---")
+        for msg in buyList:
+            print (msg)
+    if len(modifyList) > 0:
+        print ("--- 等待中 ---")
+        for msg in modifyList:
+            print (msg)
+    # if len(ignoreList) > 0:
+    #     print ("--- 忽略的 ---")
+    #     for msg in ignoreList:
+    #         print (msg)
