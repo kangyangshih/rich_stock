@@ -126,3 +126,4 @@ for index, info in enumerate (stockList):
     #     print ("--- 忽略的 ---")
     #     for msg in ignoreList:
     #         print (msg)
+

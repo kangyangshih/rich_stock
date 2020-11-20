@@ -29,7 +29,7 @@ def saveCache (stockID, info):
 allstock = AllStockMgr.getAllStock ()
 miss_qeps = 0
 miss_turnover = 0
-threeKey = "2020/11/19"
+threeKey = "2020/11/20"
 
 epsKey = "2020Q3"
 turnOverKey = "2020/10"
@@ -43,7 +43,8 @@ for stockID, stock in allstock.items():
     # 及時報價
     #print (NetStockInfo.getYahooRealtime (stockID, False))
     # 基本資料
-    info.update (NetStockInfo.getYahooBasic (stockID, info))
+    if "股本" not in info:
+        info.update (NetStockInfo.getYahooBasic (stockID))
 
     # 每季EPS
     #print (NetStockInfo.getHistockQEPS (stockID))

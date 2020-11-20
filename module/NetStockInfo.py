@@ -18,10 +18,8 @@ class cNetStockInfo:
     #--------------------------------------------
     # 從 Yahoo 取得基本資料
     #--------------------------------------------
-    def getYahooBasic (self, stockID, info):
+    def getYahooBasic (self, stockID):
         #  如果有股本就暫不處理
-        if "股本" in info:
-            return {}
         url_template = "https://tw.stock.yahoo.com/d/s/company_%s.html"
         url = url_template % (stockID,)
         print ("[getYahooBasic] " + url)
