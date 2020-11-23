@@ -24,6 +24,10 @@ class cSingleStock :
         self.priceHigh = 0
         # 入手價
         self.buyPrice = 0
+        # 空單價
+        self.emptyPrice = 0
+        # hold price
+        self.holdPrice = 0
         # 賣出價
         self.sellPrice = 0
         # Tag
@@ -94,19 +98,26 @@ class cAllStockMgr:
             single.location = excel.getValue(row_index, 2)
             # ETF / 股票 / 特別股
             single.type = excel.getValue(row_index, 3)
+            # [狀態]
+            # 區間
+            # 長多
+            # 長空
+            # 偏多
+            # 偏空
             single.operationType = excel.getValue(row_index, 4)
             # 近期高價
             single.priceHigh = excel.getValue (row_index, 5, 0, int)
             # 買入價
             single.buyPrice = excel.getValue (row_index, 6, 0, int)
+            single.emptyPrice = excel.getValue (row_index, 7, 0, int)
             # 持有價
-            single.holdPrice = excel.getValue (row_index, 7, 0, int)
+            single.holdPrice = excel.getValue (row_index, 8, 0, int)
             # 停損價
-            single.sellPrice = excel.getValue (row_index, 8, 0, int)
+            single.sellPrice = excel.getValue (row_index, 9, 0, int)
             # 標籤
-            single.tag = excel.getValue (row_index, 9)
+            single.tag = excel.getValue (row_index, 10)
             # 雜項
-            single.desc = excel.getValue (row_index, 10)
+            single.desc = excel.getValue (row_index, 11)
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 continue
