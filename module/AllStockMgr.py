@@ -98,15 +98,13 @@ class cAllStockMgr:
             single.location = excel.getValue(row_index, 2)
             # ETF / 股票 / 特別股
             single.type = excel.getValue(row_index, 3)
-            # [狀態]
-            # 區間
-            # 長多
-            # 長空
-            # 偏多
-            # 偏空
+            # [看法]
+            # 核心
+            # 觀察
+            # 看戲
+            # 定存
             single.operationType = excel.getValue(row_index, 4)
-            # 近期高價
-            single.priceHigh = excel.getValue (row_index, 5, 0, int)
+            single.future = excel.getValue (row_index, 5)
             # 買入價
             single.buyPrice = excel.getValue (row_index, 6, 0, int)
             single.emptyPrice = excel.getValue (row_index, 7, 0, int)

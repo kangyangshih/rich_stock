@@ -26,22 +26,38 @@ def saveCache (stockID, info):
 
 # 取得所有的股票
 allstock = AllStockMgr.getAllStock ()
+priorityKey = ["持有", "核心", "觀察", "定存", "看戲"]
+stockOrder = {}
+for key in priorityKey:
+    stockOrder[key] = {}
+
+for stockID, stock in allstock.items():
+    # 特別處理持有型股票
+    if stock.holdPrice != 0:
+        stockOrder["持有"][stockID] = stock
+        continue
+    for key, value in stockOrder.items():
+        if stock.operationType == key:
+            value[stockID] = stock
+            break
+    
 # 清除暫存檔
-#del_dir ("cache")
-#check_dir ("cache")
+del_dir ("cache")
+check_dir ("cache")
 
 file = open("daily.txt", "w", encoding="utf-8")
-# 先輸出持有股票
-for stockID, stock in allstock.items():
-    # 不是持有股票就暫時不需要查看
-    if stock.holdPrice == 0:
-        continue
-    # 載入暫存資料
-    info = getFromCache (stockID)
-    # 寫入標題
-    file.writelines ("=== [%s] %s ===\n" % (stock.id, stock.name))
-    # 寫入今天的結果
-    info = NetStockInfo.getYahooRealtime (stockID, False)
-    # 
+def write (strFormat, *args):
+    file.writelines ((strFormat+"\n") % args)
+# 依照重要性來做處理
+for key in priorityKey:
+    file.writelines ("#-------------------------------\n")
+    file.writelines ("# %s\n" % (key,))
+    file.writelines ("#-------------------------------\n")
+    # 一隻一隻去抓資料處理
+    for stockID, stock in stockOrder[key].items():
+        file.writelines
+
+    # 暫時只抓持有的
+    break
 
 file.close()
