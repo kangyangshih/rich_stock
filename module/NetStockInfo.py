@@ -200,7 +200,7 @@ class cNetStockInfo:
             # 千元為單位
             res["月營收"] = source_nodes[rowIndex+1].text.replace (",", "")
             res["月增"] = source_nodes[rowIndex+3].text.replace ("%", "")
-            res["年増"] = source_nodes[rowIndex+4].text.replace ("%", "")
+            res["年增"] = source_nodes[rowIndex+4].text.replace ("%", "")
             res["累計營收"] = source_nodes[rowIndex+5].text.replace (",", "")
             res["累計年增"] = source_nodes[rowIndex+7].text.replace("%", "")
             #print (res["年度/月份"])
