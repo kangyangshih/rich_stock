@@ -45,7 +45,7 @@ for stockID, stock in allstock.items():
 del_dir ("cache")
 check_dir ("cache")
 
-file = open("daily.txt", "w", encoding="utf-8")
+file = open("../daily.txt", "w", encoding="utf-8")
 def write (strFormat, *args):
     file.writelines ((strFormat+"\n") % args)
 # 依照重要性來做處理
