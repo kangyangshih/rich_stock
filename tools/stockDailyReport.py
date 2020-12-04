@@ -41,6 +41,7 @@ priorityKey = [
     "觀察", 
     "定存", 
     "看戲",
+    "雜項",
 ]
 
 stockOrder = {}
@@ -52,12 +53,18 @@ for stockID, stock in allstock.items():
     if stock.holdPrice != 0:
         stockOrder["持有"][stockID] = stock
         continue
+    # 如果有在裏面, 就依照順序
+    isOrder = False
     for key, value in stockOrder.items():
         # 換個判定寫法
         #if stock.operationType == key:
         if stock.operationType.find (key) != -1:
             value[stockID] = stock
+            isOrder = True
             break
+    # 如果沒在裏面就放在最後
+    if isOrder == False and stock.operationType != "":
+        stockOrder["雜項"][stockID] = stock
     
 file = open("../daily.txt", "w", encoding="utf-8")
 def write (strFormat, *args):

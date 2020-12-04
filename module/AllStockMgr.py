@@ -98,6 +98,7 @@ class cSingleStock :
         #------------------------
         # 可以加入自己的評價
         self._write (file, res, "[本日簡評]")
+        self._write (file, res, self.operationType)
         # 2020 預估 EPS
         eps2020 = 0
         if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
