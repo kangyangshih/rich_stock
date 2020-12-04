@@ -100,6 +100,7 @@ class cSingleStock :
         self._write (file, res, "[個股相關資訊]")
         # 分類類型
         self._write (file, res, self.operationType)
+        self._write (file, res, "")
 
         #------------------------
         # 可以加入自己的評價
