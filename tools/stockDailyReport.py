@@ -33,6 +33,7 @@ allstock = AllStockMgr.getAllStock ()
 priorityKey = [
     "持有", 
     "核心", 
+    "衛星",
     "台積電", 
     "聯發科",
     "被動元件", 
