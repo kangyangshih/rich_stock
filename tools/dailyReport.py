@@ -9,21 +9,6 @@ from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
 import json
 
-def getFromCache (stockID):
-    filename = "../info/%s.txt" % (stockID,)
-    if check_file (filename) == False:
-        return {}
-    file = open (filename, "r", encoding="utf-8")
-    tmp = file.read ()
-    file.close()
-    return json.loads (tmp)
-
-def saveCache (stockID, info):
-    filename = "../info/%s.txt" % (stockID,)
-    file = open (filename, "w", encoding="utf-8")
-    file.writelines (json.dumps (info))
-    file.close()
-
 # 清除暫存檔
 #del_dir ("cache")
 #check_dir ("cache")
@@ -68,6 +53,7 @@ for stockID, stock in allstock.items():
         stockOrder["雜項"][stockID] = stock
     
 file = open("../daily.txt", "w", encoding="utf-8")
+
 def write (strFormat, *args):
     strtmp = (strFormat+"\n") % args
     print (strtmp, end="")
@@ -87,6 +73,7 @@ for key in priorityKey:
 
         # 暫時只先抓一隻
         #break
+        
     # 暫時只抓持有的
     #break
 
