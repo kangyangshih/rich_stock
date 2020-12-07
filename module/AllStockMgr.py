@@ -127,7 +127,19 @@ class cSingleStock :
         #------------------------
         # 最近五天3大法人動作
         self._write (file, res, "[近日三大法人動向]")
-        for index in range (5):
+        out_total, in_total = self._getThreeArg (1, 5, isABS=True)
+        # 平均操作值
+        self._write (file, res, "[近五日三大法人平均值] 外資: %.2f, 法人: %.2f", out_total, in_total)
+        # 判定最近一天的結果
+        today_out = float(self.getInfo ("三大法人")[0]["out"].replace(",", ""))
+        today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
+        if today_out > out_total*2:
+            self._write (file, res, "%s 外資大買", self.getInfo ("三大法人")[0]["date"])
+        elif today_in < -out_total * 2:
+            self._write (file, res, "%s 外資大賣", self.getInfo ("三大法人")[0]["date"])
+            
+        # 顯示近幾日結果
+        for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
             self._write (file, res, "%s 外資:%s, 投信:%s", 
                 self.getInfo ("三大法人")[index]["date"], 
@@ -211,6 +223,7 @@ class cSingleStock :
         # 回傳結果
         return res
     
+    # 依照過去的配息, 取得未來可能的配息率
     def _getStockDividenRate (self):
         sdList = self.getInfo ("配股配息")
         sdRate = 0
@@ -222,12 +235,35 @@ class cSingleStock :
             if sdList[index]["配息率"] != "-":
                 tmp = float (sdList[index]["配息率"].replace ('%', ""))
             #mp = float (sdList[index]["配息率"].replace ('%', ""))
+            # 配息超過 100 就算 100
             if tmp > 100:
                 tmp = 100
+            # 配息低於 0 就算 0
             if tmp < 0:
                 tmp = 0
             sdRate += tmp
+        # 回傳五年平低的結果
         return sdRate / 5
+    
+    # 取得近五年的外資買賣平均值
+    def _getThreeArg (self, offset=0, counter=5, isABS=True):
+        # 外資買賣超總額
+        out_total = 0
+        # 投信買賣超總額
+        in_total = 0
+        # 統計5日結果
+        for index in range (offset, counter+offset):
+            if isABS == False:
+                out_total += float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
+                in_total += float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+            else:
+                out_total += abs(float (self.getInfo ("三大法人")[index]["out"].replace (",", "")))
+                in_total += abs(float (self.getInfo ("三大法人")[index]["in"].replace (",", "")))
+            #print (out_total, in_total)
+        #print (out_total/counter, in_total/counter)
+        # 回傳平均結果
+        return out_total/counter, in_total/counter
+
 
 # 股票管理器
 class cAllStockMgr:
