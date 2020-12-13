@@ -152,21 +152,27 @@ class cSingleStock :
         # 近三個月的營收
         self._write (file, res, "[最近月營收]")
         self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+            self.getInfo ("月營收", "2020/11", "年度/月份"),
+            self.getInfo ("月營收", "2020/11", "月增"),
+            self.getInfo ("月營收", "2020/11", "年增"),
+            self.getInfo ("月營收", "2020/11", "累計年增"),
+        )
+        self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/10", "年度/月份"),
             self.getInfo ("月營收", "2020/10", "月增"),
-            self.getInfo ("月營收", "2020/10", "年増"),
+            self.getInfo ("月營收", "2020/10", "年增"),
             self.getInfo ("月營收", "2020/10", "累計年增"),
         )
         self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/09", "年度/月份"),
             self.getInfo ("月營收", "2020/09", "月增"),
-            self.getInfo ("月營收", "2020/09", "年増"),
+            self.getInfo ("月營收", "2020/09", "年增"),
             self.getInfo ("月營收", "2020/09", "累計年增"),
         )
         self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/08", "年度/月份"),
             self.getInfo ("月營收", "2020/08", "月增"),
-            self.getInfo ("月營收", "2020/08", "年増"),
+            self.getInfo ("月營收", "2020/08", "年增"),
             self.getInfo ("月營收", "2020/08", "累計年增"),
         )
         self._write (file, res, "")

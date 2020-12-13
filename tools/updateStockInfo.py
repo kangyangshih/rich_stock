@@ -32,7 +32,7 @@ miss_turnover = 0
 threeKey = "2020/12/11"
 
 epsKey = "2020Q3"
-turnOverKey = "2020/10"
+turnOverKey = "2020/11"
 sdKey = "2019"
 for stockID, stock in allstock.items():
     # 載入暫存資料

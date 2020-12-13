@@ -20,7 +20,7 @@ for stockID, stock in allstock.items():
     # 基本資料
     #print (NetStockInfo.getYahooBasic (stockID))
     # 每月營收
-    #print (NetStockInfo.getHistockTurnOver (stockID))
+    print (NetStockInfo.getHistockTurnOver (stockID))
     # 取得流動比 / 速動比
     #print (NetStockInfo.getHistockLSRate (stockID))
     # 取得30日三大法人
