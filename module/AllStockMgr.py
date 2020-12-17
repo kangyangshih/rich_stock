@@ -85,7 +85,7 @@ class cSingleStock :
         #------------------------
         # 寫入基本資料
         self._write (file, res, "#-------------------------------")
-        self._write (file, res, "# %s(%s) 股本 %.2f 億", self.id, self.name, self.getInfoFloat ("股本"))
+        self._write (file, res, "# %s(%s) 股本 %.2f 億", self.name, self.id, self.getInfoFloat ("股本"))
         self._write (file, res, "#-------------------------------")
         #------------------------
         # 今天的漲跌幅
@@ -151,26 +151,30 @@ class cSingleStock :
         #------------------------
         # 近三個月的營收
         self._write (file, res, "[最近月營收]")
-        self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/11", "年度/月份"),
+            self.getInfoInt ("月營收", "2020/11", "月營收")/100000.0,
             self.getInfo ("月營收", "2020/11", "月增"),
             self.getInfo ("月營收", "2020/11", "年增"),
             self.getInfo ("月營收", "2020/11", "累計年增"),
         )
-        self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/10", "年度/月份"),
+            self.getInfoInt ("月營收", "2020/10", "月營收")/100000.0,
             self.getInfo ("月營收", "2020/10", "月增"),
             self.getInfo ("月營收", "2020/10", "年增"),
             self.getInfo ("月營收", "2020/10", "累計年增"),
         )
-        self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/09", "年度/月份"),
+            self.getInfoInt ("月營收", "2020/09", "月營收")/100000.0,
             self.getInfo ("月營收", "2020/09", "月增"),
             self.getInfo ("月營收", "2020/09", "年增"),
             self.getInfo ("月營收", "2020/09", "累計年增"),
         )
-        self._write (file, res, "%s 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
             self.getInfo ("月營收", "2020/08", "年度/月份"),
+            self.getInfoInt ("月營收", "2020/08", "月營收")/100000.0,
             self.getInfo ("月營收", "2020/08", "月增"),
             self.getInfo ("月營收", "2020/08", "年增"),
             self.getInfo ("月營收", "2020/08", "累計年增"),
