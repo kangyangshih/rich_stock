@@ -19,10 +19,15 @@ priorityKey = [
     "持有", 
     "核心", 
     "衛星",
+    "短期注意",
     "定存", 
     "電腦選",
     "阮老師",
     "老師選",
+    "導線架",
+    "太陽能", 
+    "風電",
+    "DRAM",
     "遊戲",
     "鑽針",
     "通路",
@@ -38,8 +43,6 @@ priorityKey = [
     "散熱",
     "PCB", 
     "Tesla",
-    "太陽能",
-    "風電",
     "Mini-LED",
     "PC",
     "電信",
@@ -57,8 +60,10 @@ priorityKey = [
     "電源供應器",
     "資料中心",
     "光學鏡頭廠",
+    "生醫股",
     "金融股",
     "電機機械",
+    "營建",
     "觀察",
     "雜項",
 ]
@@ -92,6 +97,10 @@ def write (strFormat, *args):
     print (strtmp, end="")
     file.writelines (strtmp)
 
+# 輸出外資連5買、連3買、近3日買超
+# 輸出投信連5買、連3買、近3日買超
+# 輸出殖利率的排行榜
+
 # 依照重要性來做處理
 for key in priorityKey:
     write ("#-------------------------------")
@@ -99,14 +108,10 @@ for key in priorityKey:
     write ("#-------------------------------")
     # 一隻一隻去抓資料處理
     for stockID, stock in stockOrder[key].items():
-
         # 把資料 dump 下來
         stock.dumpInfo (file)
-        #print (res)
-
         # 暫時只先抓一隻
         #break
-        
     # 暫時只抓持有的
     #break
 

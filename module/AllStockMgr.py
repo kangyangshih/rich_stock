@@ -96,30 +96,48 @@ class cSingleStock :
         self._write (file, res, "")
 
         #------------------------
+        # 持有價
+        if self.holdPrice > 0:
+            self._write (file, res, "[持有價] %s", self.holdPrice)
+        # 買入價或是空單價
+        if self.buyPrice > 0:
+            self._write (file, res, "[買入價] %s", self.buyPrice)
+        elif self.emptyPrice > 0:
+            self._write (file, res, "[空單價] %s", self.emptyPrice)
+        self._write (file, res, "")
+
+        #------------------------
         # 個股簡評
         self._write (file, res, "[個股相關資訊]")
         # 分類類型
         self._write (file, res, self.operationType)
+
+        if self.desc != "":
+            self._write (file, res, self.desc)
+
         self._write (file, res, "")
 
         #------------------------
         # 可以加入自己的評價
         self._write (file, res, "[本日簡評]")
         # 2020 預估 EPS
-        eps2020 = 0
-        if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
-            eps2020 = self.getInfoFloat ("QEPS", "2020Q3", "EPS") * 2 \
-                    + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
-                    + self.getInfoFloat ("QEPS", "2020Q1", "EPS")
+        eps2020 = self._get2020EPS ()
+        if eps2020 != None:
             self._write (file, res, "2020 預估全年 EPS : %.2f", eps2020)
         else:
             self._write (file, res, "無法預估2020 EPS")
+            eps2020 = 0
 
         # 2021 預估配股配息和目前殖利率
         #print (self._getStockDividenRate())
         sd2021_money = eps2020 * self._getStockDividenRate() / 100
         self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
-        self._write (file, res, "目前殖利率預估 : %.2f %%", sd2021_money / realtime["now_price"] * 100 )
+        now_sd_rate = sd2021_money / realtime["now_price"] * 100
+        self._write (file, res, "目前殖利率預估 : %.2f %%",  now_sd_rate)
+        # 計算 6% 殖利率的價格
+        if now_sd_rate < 6 and eps2020 > 0:
+            target_price = sd2021_money / 0.06
+            self._write (file, res, "[6%% 的買入價] : %.2f",  target_price)
 
         # 結束
         self._write (file, res, "")
@@ -234,10 +252,10 @@ class cSingleStock :
         return res
     
     # 依照過去的配息, 取得未來可能的配息率
-    def _getStockDividenRate (self):
+    def _getStockDividenRate (self, years = 3):
         sdList = self.getInfo ("配股配息")
         sdRate = 0
-        for index in range (5):
+        for index in range (years):
             # 不滿五年就不印了
             if index >= len(sdList):
                 return sdRate / (index-1)
@@ -253,7 +271,17 @@ class cSingleStock :
                 tmp = 0
             sdRate += tmp
         # 回傳五年平低的結果
-        return sdRate / 5
+        return sdRate / years
+
+    # 取得2020 EPS 預估    
+    def _get2020EPS (self):
+        if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
+            eps2020 = self.getInfoFloat ("QEPS", "2020Q3", "EPS") * 2 \
+                    + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                    + self.getInfoFloat ("QEPS", "2020Q1", "EPS")
+            return eps2020
+        else:
+            return None
     
     # 取得近五年的外資買賣平均值
     def _getThreeArg (self, offset=0, counter=5, isABS=True):
@@ -321,7 +349,7 @@ class cAllStockMgr:
             single.buyPrice = excel.getValue (row_index, 6, 0, int)
             single.emptyPrice = excel.getValue (row_index, 7, 0, int)
             # 持有價
-            single.holdPrice = excel.getValue (row_index, 8, 0, int)
+            single.holdPrice = excel.getValue (row_index, 8, 0, float)
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, int)
             # 標籤
