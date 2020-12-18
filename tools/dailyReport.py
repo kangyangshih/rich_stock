@@ -89,8 +89,8 @@ for stockID, stock in allstock.items():
     # 如果沒在裏面就放在最後
     if isOrder == False and stock.operationType != "":
         stockOrder["雜項"][stockID] = stock
-    
-file = open("../daily.txt", "w", encoding="utf-8")
+
+file = open("../specialInfo.txt", "w", encoding="utf-8")
 
 def write (strFormat, *args):
     strtmp = (strFormat+"\n") % args
@@ -98,9 +98,82 @@ def write (strFormat, *args):
     file.writelines (strtmp)
 
 # 輸出外資連5買、連3買、近3日買超
+out_buy_sell_map = {
+    # 有三日賣超
+    -3:{},
+    # 有四日賣超
+    -4:{},
+    # 有五日賣超
+    -5:{},
+    # 有三天買超
+    3:{},
+    # 有四天買超
+    4:{},
+    # 有五天買超
+    5:{},
+}
+for key in priorityKey:
+    for stockID, stock in stockOrder[key].items():
+        # 取得買賣超
+        tmp, num = stock.getOutBuySell ()
+        if tmp in out_buy_sell_map:
+            out_buy_sell_map[tmp][stock.id] = stock
+
+# 做輸出的動作
+write ("#-------------------------------")
+write ("# 外資買超")
+write ("#-------------------------------")
+for index in (5, 4, 3):
+    write ("\n# 外資 %s 日買超清單", index)
+    for stockID, stock in out_buy_sell_map[index].items():
+        tmp, num = stock.getOutBuySell ()
+        out_tmp, in_tmp = stock._getThreeArg ()
+        write ("%s(%s) 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["out"],
+            num,
+            out_tmp,
+        )
+    
+write ("#-------------------------------")
+write ("# 外資賣超")
+write ("#-------------------------------")
+for index in (-5, -4, -3):
+    write ("\n# 外資 %s 日買超清單", index)
+    for stockID, stock in out_buy_sell_map[index].items():
+        tmp, num = stock.getOutBuySell ()
+        out_tmp, in_tmp = stock._getThreeArg ()
+        #today_out = float(self.getInfo ("三大法人")[0]["out"].replace(",", ""))
+        write ("%s(%s) 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["out"],
+            num,
+            out_tmp,
+        )
+
 # 輸出投信連5買、連3買、近3日買超
+# in_buy_sell_map = {
+#     # 有三日賣超
+#     -3:{},
+#     # 有四日賣超
+#     -4:{},
+#     # 有五日賣超
+#     -5:{},
+#     # 有三天買超
+#     3:{},
+#     # 有四天買超
+#     4:{},
+#     # 有五天買超
+#     5:{},
+# }
+
 # 輸出殖利率的排行榜
 
+# 每日個股資訊
+file.close()
+file = open("../daily.txt", "w", encoding="utf-8")
 # 依照重要性來做處理
 for key in priorityKey:
     write ("#-------------------------------")

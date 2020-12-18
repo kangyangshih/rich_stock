@@ -78,7 +78,7 @@ class cSingleStock :
             file.writelines (strtmp)
         # 把字串存起來
         res.append (strtmp)
-
+    
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
@@ -302,7 +302,48 @@ class cSingleStock :
         # 回傳平均結果
         return out_total/counter, in_total/counter
 
-
+    # 取得外資買賣超
+    def getOutBuySell (self):
+        # 顯示近幾日結果
+        out_list = [0, 0, 0]
+        for index in range (5):
+            # 處理外資的部分
+            out_tmp = float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
+            # 0 放買
+            if out_tmp > 0:
+                out_list[0] += 1
+            # 1 放賣
+            elif out_tmp < 0:
+                out_list[1] += 1
+            # 2 放總值
+            out_list[2] += out_tmp
+        if out_list[2] > 0:
+            return out_list[0], out_list[2]
+        if out_list[2] < 0:
+            return -out_list[1], out_list[2]
+        return 0, 0
+    
+    # 取得投信買賣超
+    def getInBuySell (self):
+        # 顯示近幾日結果
+        in_list = [0, 0, 0]
+        for index in range (5):
+            # 處理投信的部分
+            in_tmp = float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+            # 0 放買
+            if in_tmp > 0:
+                in_list[0] += 1
+            # 1 放賣
+            elif in_tmp < 0:
+                in_list[1] += 1
+            # 2 放總值
+            in_list[2] += in_tmp
+        if in_list[2] > 0:
+            return in_list[0], in_list[2]
+        if in_list[2] < 0:
+            return -in_list[1], in_list[2]
+        return 0, 0
+            
 # 股票管理器
 class cAllStockMgr:
     def __loadJsonFromFile (self, filename):
