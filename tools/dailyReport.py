@@ -64,7 +64,6 @@ priorityKey = [
     "金融股",
     "電機機械",
     "營建",
-    "觀察",
     "雜項",
 ]
 
@@ -82,6 +81,10 @@ for stockID, stock in allstock.items():
     for key, value in stockOrder.items():
         # 換個判定寫法
         #if stock.operationType == key:
+        if stock.future.find (key) != -1:
+            value[stockID] = stock
+            isOrder = True
+            break
         if stock.operationType.find (key) != -1:
             value[stockID] = stock
             isOrder = True
@@ -135,6 +138,7 @@ for index in (5, 4, 3):
             num,
             out_tmp,
         )
+        stock.dumpInfo (file)
     
 write ("#-------------------------------")
 write ("# 外資賣超")
@@ -152,6 +156,7 @@ for index in (-5, -4, -3):
             num,
             out_tmp,
         )
+        stock.dumpInfo (file)
 
 # 輸出投信連5買、連3買、近3日買超
 # in_buy_sell_map = {

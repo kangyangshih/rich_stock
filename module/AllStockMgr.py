@@ -108,7 +108,7 @@ class cSingleStock :
 
         #------------------------
         # 個股簡評
-        self._write (file, res, "[個股相關資訊]")
+        self._write (file, res, "[個股相關資訊] %s", self.future)
         # 分類類型
         self._write (file, res, self.operationType)
 
@@ -138,6 +138,11 @@ class cSingleStock :
         if now_sd_rate < 6 and eps2020 > 0:
             target_price = sd2021_money / 0.06
             self._write (file, res, "[6%% 的買入價] : %.2f",  target_price)
+        # 定存型股票多顯示8%買入價
+        if eps2020 > 0 and self.future.find ("定存") != -1:
+            target_price = sd2021_money / 0.08
+            self._write (file, res, "[8%% 的買入價] : %.2f",  target_price)
+
 
         # 結束
         self._write (file, res, "")
@@ -394,9 +399,9 @@ class cAllStockMgr:
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, int)
             # 標籤
-            single.tag = excel.getValue (row_index, 10)
+            single.tag = excel.getValue (row_index, 10).replace ("%", "%%")
             # 雜項
-            single.desc = excel.getValue (row_index, 11)
+            single.desc = excel.getValue (row_index, 11).replace ("%", "%%")
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 continue
