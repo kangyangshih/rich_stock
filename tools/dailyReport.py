@@ -16,9 +16,11 @@ import json
 # 取得所有的股票
 allstock = AllStockMgr.getAllStock ()
 priorityKey = [
-    "持有", 
+    "持有",
     "核心", 
     "衛星",
+    "當沖多",
+    "當沖空",
     "短期注意",
     "定存", 
     "電腦選",
