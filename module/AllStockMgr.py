@@ -160,7 +160,7 @@ class cSingleStock :
             self._write (file, res, "%s 外資大買", self.getInfo ("三大法人")[0]["date"])
         elif today_in < -out_total * 2:
             self._write (file, res, "%s 外資大賣", self.getInfo ("三大法人")[0]["date"])
-            
+        # 計算外本比，投本比
         # 顯示近幾日結果
         for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
