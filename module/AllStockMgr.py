@@ -152,19 +152,18 @@ class cSingleStock :
         # 結束
         self._write (file, res, "")
 
+        # 平均操作值
+        #out_total, in_total = self._getThreeArg (1, 5, isABS=True)
+        #self._write (file, res, "[近五日三大法人平均值] 外資: %.0f, 法人: %.0f\n", out_total, in_total)
+
         #------------------------
         # 最近五天3大法人動作
         #------------------------
         self._write (file, res, "[近日三大法人動向]")
-        # 平均操作值
-        out_total, in_total = self._getThreeArg (1, 5, isABS=True)
-        self._write (file, res, "[近五日三大法人平均值] 外資: %.0f, 法人: %.0f", out_total, in_total)
         # 最近 15 天，三大法人買賣超數量
         out_total, in_total = self._getThreeTotal (15)
         out_total_rate = self._getBuyRate (out_total)
-        self._write (file, res, "[近 15 日外資總值] 外資: %.0f, 外本比: %.4f %%", out_total, out_total_rate)
         in_total_rate = self._getBuyRate (in_total)
-        self._write (file, res, "[近 15 日投信總值] 投信: %.0f, 投本比: %.4f %%", in_total, in_total_rate)
         # 判定最近一天的結果, 計算外本比，投本比
         # 外投比 2%->追蹤名單，3~6%->準備發動，
         # 1張=1000股，1=100%,一張面額=10元
@@ -174,10 +173,12 @@ class cSingleStock :
         today_out_rate = self._getBuyRate (today_out)
         #print (today_out_rate, type(today_out_rate))
         self._write (file, res, "本日外資 : %.0f, 外本比:%.4f %%", today_out, today_out_rate)
+        self._write (file, res, "近 15 日外資: %.0f, 外本比: %.4f %%\n", out_total, out_total_rate)
         # 投本比
         today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
         today_in_rate = self._getBuyRate (today_in)
         self._write (file, res, "本日投信 : %.0f, 投本比:%.4f %%", today_in, today_in_rate)
+        self._write (file, res, "近 15 日投信: %.0f, 投本比: %.4f %%\n", in_total, in_total_rate)
         # 顯示近幾日結果
         for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
