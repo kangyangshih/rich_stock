@@ -263,7 +263,12 @@ class cSingleStock :
         for index in range (years):
             # 不滿五年就不印了
             if index >= len(sdList):
-                return sdRate / (index-1)
+                #print (len(sdList))
+                #print (sdList)
+                if index == 0:
+                    return 0
+                else:
+                    return sdRate / (index)
             tmp = 0
             if sdList[index]["配息率"] != "-":
                 tmp = float (sdList[index]["配息率"].replace ('%', ""))
