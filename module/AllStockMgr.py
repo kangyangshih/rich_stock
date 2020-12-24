@@ -9,6 +9,7 @@ import json
 sys.path.append (r"..\module")
 from NetStockInfo import NetStockInfo
 
+#-----------------------------------------------------
 # 單一股票
 class cSingleStock :
     def __init__(self):
@@ -79,6 +80,10 @@ class cSingleStock :
         # 把字串存起來
         res.append (strtmp)
     
+    # 計算投本比、外本比
+    def _getBuyRate (self, num):
+        return (num / (self.getInfoFloat ("股本") * 10000))
+
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
@@ -149,18 +154,30 @@ class cSingleStock :
 
         #------------------------
         # 最近五天3大法人動作
+        #------------------------
         self._write (file, res, "[近日三大法人動向]")
-        out_total, in_total = self._getThreeArg (1, 5, isABS=True)
         # 平均操作值
-        self._write (file, res, "[近五日三大法人平均值] 外資: %.2f, 法人: %.2f", out_total, in_total)
-        # 判定最近一天的結果
+        out_total, in_total = self._getThreeArg (1, 5, isABS=True)
+        self._write (file, res, "[近五日三大法人平均值] 外資: %.0f, 法人: %.0f", out_total, in_total)
+        # 最近 15 天，三大法人買賣超數量
+        out_total, in_total = self._getThreeTotal (15)
+        out_total_rate = self._getBuyRate (out_total)
+        self._write (file, res, "[近 15 日外資總值] 外資: %.0f, 外本比: %.4f %%", out_total, out_total_rate)
+        in_total_rate = self._getBuyRate (in_total)
+        self._write (file, res, "[近 15 日投信總值] 投信: %.0f, 投本比: %.4f %%", in_total, in_total_rate)
+        # 判定最近一天的結果, 計算外本比，投本比
+        # 外投比 2%->追蹤名單，3~6%->準備發動，
+        # 1張=1000股，1=100%,一張面額=10元
+        # 外本比
         today_out = float(self.getInfo ("三大法人")[0]["out"].replace(",", ""))
+        #print (today_out, type(today_out))
+        today_out_rate = self._getBuyRate (today_out)
+        #print (today_out_rate, type(today_out_rate))
+        self._write (file, res, "本日外資 : %.0f, 外本比:%.4f %%", today_out, today_out_rate)
+        # 投本比
         today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
-        if today_out > out_total*2:
-            self._write (file, res, "%s 外資大買", self.getInfo ("三大法人")[0]["date"])
-        elif today_in < -out_total * 2:
-            self._write (file, res, "%s 外資大賣", self.getInfo ("三大法人")[0]["date"])
-        # 計算外本比，投本比
+        today_in_rate = self._getBuyRate (today_in)
+        self._write (file, res, "本日投信 : %.0f, 投本比:%.4f %%", today_in, today_in_rate)
         # 顯示近幾日結果
         for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
@@ -225,8 +242,10 @@ class cSingleStock :
         #------------------------
         # 回傳結果
         return res
-    
+
+    #---------------------------------------
     # 依照過去的配息, 取得未來可能的配息率
+    #---------------------------------------
     def _getStockDividenRate (self, years = 3):
         sdList = self.getInfo ("配股配息")
         sdRate = 0
@@ -253,7 +272,9 @@ class cSingleStock :
         # 回傳五年平低的結果
         return sdRate / years
 
+    #---------------------------------------
     # 取得2020 EPS 預估    
+    #---------------------------------------
     def _get2020EPS (self):
         if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
             eps2020 = self.getInfoFloat ("QEPS", "2020Q3", "EPS") * 2 \
@@ -263,7 +284,9 @@ class cSingleStock :
         else:
             return None
     
+    #---------------------------------------
     # 取得近五年的外資買賣平均值
+    #---------------------------------------
     def _getThreeArg (self, offset=0, counter=5, isABS=True):
         # 外資買賣超總額
         out_total = 0
@@ -278,11 +301,28 @@ class cSingleStock :
                 out_total += abs(float (self.getInfo ("三大法人")[index]["out"].replace (",", "")))
                 in_total += abs(float (self.getInfo ("三大法人")[index]["in"].replace (",", "")))
             #print (out_total, in_total)
-        #print (out_total/counter, in_total/counter)
         # 回傳平均結果
         return out_total/counter, in_total/counter
+    
+    #---------------------------------------
+    # 取得指定時間的買賣超
+    #---------------------------------------
+    def _getThreeTotal (self, offset):
+        # 外資買賣超總額
+        out_total = 0
+        # 投信買賣超總額
+        in_total = 0
+        # 統計指定區間的結果
+        for index in range (0, offset):
+            out_total += float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
+            in_total += float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+        
+        # 回傳平均結果
+        return out_total, in_total
 
+    #---------------------------------------
     # 取得外資買賣超
+    #---------------------------------------
     def getOutBuySell (self):
         # 顯示近幾日結果
         out_list = [0, 0, 0]
@@ -303,7 +343,9 @@ class cSingleStock :
             return -out_list[1], out_list[2]
         return 0, 0
     
+    #---------------------------------------
     # 取得投信買賣超
+    #---------------------------------------
     def getInBuySell (self):
         # 顯示近幾日結果
         in_list = [0, 0, 0]
@@ -324,6 +366,7 @@ class cSingleStock :
             return -in_list[1], in_list[2]
         return 0, 0
             
+#-----------------------------------------------------
 # 股票管理器
 class cAllStockMgr:
     def __loadJsonFromFile (self, filename):

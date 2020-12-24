@@ -25,11 +25,26 @@ def saveCache (stockID, info):
     file.writelines (json.dumps (info))
     file.close()
 
+def getFromContinueCache (stockID):
+    filename = "../info/%s_continue.txt" % (stockID,)
+    if check_file (filename) == False:
+        return {}
+    file = open (filename, "r", encoding="utf-8")
+    tmp = file.read ()
+    file.close()
+    return json.loads (tmp)
+
+def saveContinueCache (stockID, info):
+    filename = "../info/%s_continue.txt" % (stockID,)
+    file = open (filename, "w", encoding="utf-8")
+    file.writelines (json.dumps (info))
+    file.close()
+
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 miss_qeps = 0
 miss_turnover = 0
-threeKey = "2020/12/23"
+threeKey = "2020/12/24"
 
 epsKey = "2020Q3"
 turnOverKey = "2020/11"
@@ -41,6 +56,8 @@ check_dir ("cache")
 for stockID, stock in allstock.items():
     # 載入暫存資料
     info = getFromCache (stockID)
+    # 連續型的資料
+    continueInfo = getFromContinueCache (stockID)
     # if len(info) != 0:
     #     continue
     # 為了寫資料方便, 暫時不抓沒資料的
@@ -78,14 +95,10 @@ for stockID, stock in allstock.items():
             print (stock.name, "還未有", turnOverKey, "月營收")
         else:
             print (turnOverKey, json.dumps(info["月營收"][turnOverKey]))
-
-    # 取得流動比 / 速動比
-    #print (NetStockInfo.getHistockLSRate (stockID))
-    # res, info["流動/速動比"] = NetStockInfo.getHistockLSRate (stockID)
-    # if res == False:
-    #     # 金融股都不會有這個值
-    #     info["流動/速動比"] = None
-    #     #print ("3")
+    # 把每月營收 Copy 到連續資料中
+    if "月營收" not in continueInfo:
+        continueInfo["月營收"] = {}
+    continueInfo["月營收"].update (info["月營收"])
 
     # 取得三大法人進出
     if "三大法人" not in info or threeKey != info["三大法人"][0]["date"]:
@@ -98,6 +111,11 @@ for stockID, stock in allstock.items():
             print (stock.name, "還未有", threeKey, "三大法人")
         else:
             print (threeKey, json.dumps(info["三大法人"][0]))
+    # 把三大法人資訊加入每日資料
+    if "三大法人" not in continueInfo:
+        continueInfo["三大法人"] = {}
+    for tmp in info["三大法人"]:
+        continueInfo["三大法人"][tmp["date"]] = tmp
     
     # 取得配股息進出 (每年一次，不會太頻繁)
     if "配股配息" not in info:
@@ -111,6 +129,7 @@ for stockID, stock in allstock.items():
 
     # 把資料存起來
     saveCache (stockID, info)
+    saveContinueCache (stockID, continueInfo)
 
     #break
 
