@@ -174,60 +174,30 @@ class cSingleStock :
         #------------------------
         # 近三個月的營收
         self._write (file, res, "[最近月營收]")
-        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
-            self.getInfo ("月營收", "2020/11", "年度/月份"),
-            self.getInfoInt ("月營收", "2020/11", "月營收")/100000.0,
-            self.getInfo ("月營收", "2020/11", "月增"),
-            self.getInfo ("月營收", "2020/11", "年增"),
-            self.getInfo ("月營收", "2020/11", "累計年增"),
-        )
-        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
-            self.getInfo ("月營收", "2020/10", "年度/月份"),
-            self.getInfoInt ("月營收", "2020/10", "月營收")/100000.0,
-            self.getInfo ("月營收", "2020/10", "月增"),
-            self.getInfo ("月營收", "2020/10", "年增"),
-            self.getInfo ("月營收", "2020/10", "累計年增"),
-        )
-        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
-            self.getInfo ("月營收", "2020/09", "年度/月份"),
-            self.getInfoInt ("月營收", "2020/09", "月營收")/100000.0,
-            self.getInfo ("月營收", "2020/09", "月增"),
-            self.getInfo ("月營收", "2020/09", "年增"),
-            self.getInfo ("月營收", "2020/09", "累計年增"),
-        )
-        self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
-            self.getInfo ("月營收", "2020/08", "年度/月份"),
-            self.getInfoInt ("月營收", "2020/08", "月營收")/100000.0,
-            self.getInfo ("月營收", "2020/08", "月增"),
-            self.getInfo ("月營收", "2020/08", "年增"),
-            self.getInfo ("月營收", "2020/08", "累計年增"),
-        )
+        monthList = ["2020/11", "2020/10", "2020/09", "2020/08"]
+        for month in monthList:
+            self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+                self.getInfo ("月營收", month, "年度/月份"),
+                self.getInfoInt ("月營收", month, "月營收")/100000.0,
+                self.getInfo ("月營收", month, "月增"),
+                self.getInfo ("月營收", month, "年增"),
+                self.getInfo ("月營收", month, "累計年增"),
+            )
         self._write (file, res, "")
 
         #------------------------
         # 前三季 EPS
         self._write (file, res, "[2020前三季EPS]")
-        self._write (file, res, 
-            "2020Q3 EPS:%s, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
-            self.getInfo ("QEPS", "2020Q3", "EPS"),
-            self.getInfo ("QEPS", "2020Q3", "毛利率"),
-            self.getInfo ("QEPS", "2020Q3", "營業利益率"),
-            self.getInfo ("QEPS", "2020Q3", "稅前淨利率"),
-        )
-        self._write (file, res, 
-            "2020Q2 EPS:%s, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
-            self.getInfo ("QEPS", "2020Q2", "EPS"),
-            self.getInfo ("QEPS", "2020Q2", "毛利率"),
-            self.getInfo ("QEPS", "2020Q2", "營業利益率"),
-            self.getInfo ("QEPS", "2020Q2", "稅前淨利率"),
-        )
-        self._write (file, res, 
-            "2020Q1 EPS:%s, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
-            self.getInfo ("QEPS", "2020Q1", "EPS"),
-            self.getInfo ("QEPS", "2020Q1", "毛利率"),
-            self.getInfo ("QEPS", "2020Q1", "營業利益率"),
-            self.getInfo ("QEPS", "2020Q1", "稅前淨利率"),
-        )
+        quarterlyList = ["2020Q3", "2020Q2", "2020Q1"]
+        for quarterly in quarterlyList:
+            self._write (file, res, 
+                "%s EPS:%s, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
+                quarterly,
+                self.getInfo ("QEPS", quarterly, "EPS"),
+                self.getInfo ("QEPS", quarterly, "毛利率"),
+                self.getInfo ("QEPS", quarterly, "營業利益率"),
+                self.getInfo ("QEPS", quarterly, "稅前淨利率"),
+            )
 
         #------------------------
         # 去年EPS
