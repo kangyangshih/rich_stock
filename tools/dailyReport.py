@@ -117,12 +117,52 @@ out_buy_sell_map = {
     # 有五天買超
     5:{},
 }
+
+# 輸出投信連5買、連3買、近3日買超
+in_buy_sell_map = {
+    # 有三日賣超
+    -3:{},
+    # 有四日賣超
+    -4:{},
+    # 有五日賣超
+    -5:{},
+    # 有三天買超
+    3:{},
+    # 有四天買超
+    4:{},
+    # 有五天買超
+    5:{},
+}
+
 for key in priorityKey:
     for stockID, stock in stockOrder[key].items():
         # 取得買賣超
         tmp, num = stock.getOutBuySell ()
+        # 取得15日累積
+        out_total, in_total = stock._getThreeTotal (15)
+        # 計算外本比、投本比
+        out_total_rate = stock._getBuyRate (out_total)
+        # 處理外資
+        if tmp > 0 and out_total_rate < 0.02:
+            continue
+        # 好了才寫入
         if tmp in out_buy_sell_map:
             out_buy_sell_map[tmp][stock.id] = stock
+
+for key in priorityKey:
+    for stockID, stock in stockOrder[key].items():
+        # 取得買賣超
+        tmp, num = stock.getInBuySell ()
+        # 取得15日累積
+        out_total, in_total = stock._getThreeTotal (15)
+        # 計算外本比、投本比
+        in_total_rate = stock._getBuyRate (in_total)
+        # 處理外資
+        if tmp > 0 and in_total_rate < 0.015:
+            continue
+        # 好了才寫入
+        if tmp in in_buy_sell_map:
+            in_buy_sell_map[tmp][stock.id] = stock
 
 # 做輸出的動作
 write ("#-------------------------------")
@@ -132,6 +172,7 @@ for index in (5, 4, 3):
     write ("\n# 外資 %s 日買超清單", index)
     for stockID, stock in out_buy_sell_map[index].items():
         tmp, num = stock.getOutBuySell ()
+        # 取得5日累積
         out_tmp, in_tmp = stock._getThreeArg ()
         write ("%s(%s) 今日: %s, 五日累積: %.0f, 平均: %.0f", 
             stock.name, 
@@ -160,21 +201,40 @@ for index in (-5, -4, -3):
         )
         stock.dumpInfo (file)
 
-# 輸出投信連5買、連3買、近3日買超
-# in_buy_sell_map = {
-#     # 有三日賣超
-#     -3:{},
-#     # 有四日賣超
-#     -4:{},
-#     # 有五日賣超
-#     -5:{},
-#     # 有三天買超
-#     3:{},
-#     # 有四天買超
-#     4:{},
-#     # 有五天買超
-#     5:{},
-# }
+write ("#-------------------------------")
+write ("# 投信買超")
+write ("#-------------------------------")
+for index in (5, 4, 3):
+    write ("\n# 投信 %s 日買超清單", index)
+    for stockID, stock in in_buy_sell_map[index].items():
+        tmp, num = stock.getInBuySell ()
+        # 取得5日累積
+        out_tmp, in_tmp = stock._getThreeArg ()
+        write ("%s(%s) 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["in"],
+            num,
+            in_tmp,
+        )
+        stock.dumpInfo (file)
+    
+write ("#-------------------------------")
+write ("# 投信賣超")
+write ("#-------------------------------")
+for index in (-5, -4, -3):
+    write ("\n# 投信 %s 日買超清單", index)
+    for stockID, stock in in_buy_sell_map[index].items():
+        tmp, num = stock.getInBuySell ()
+        out_tmp, in_tmp = stock._getThreeArg ()
+        write ("%s(%s) 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["in"],
+            num,
+            in_tmp,
+        )
+        stock.dumpInfo (file)
 
 # 輸出殖利率的排行榜
 
