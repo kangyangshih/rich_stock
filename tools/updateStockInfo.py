@@ -44,7 +44,7 @@ def saveContinueCache (stockID, info):
 allstock = AllStockMgr.getAllStock ()
 miss_qeps = 0
 miss_turnover = 0
-threeKey = "2020/12/29"
+threeKey = "2020/12/30"
 
 epsKey = "2020Q3"
 turnOverKey = "2020/11"
