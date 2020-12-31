@@ -76,7 +76,8 @@ for stockID, stock in allstock.items():
     # 特別處理持有型股票
     if stock.holdPrice != 0:
         stockOrder["持有"][stockID] = stock
-        continue
+        # 就重覆寫沒關係
+        #continue
     # 如果有在裏面, 就依照順序
     isOrder = False
     for key, value in stockOrder.items():
@@ -85,11 +86,13 @@ for stockID, stock in allstock.items():
         if stock.future.find (key) != -1:
             value[stockID] = stock
             isOrder = True
-            break
+            # 就重覆寫沒關係
+            #break
         if stock.operationType.find (key) != -1:
             value[stockID] = stock
             isOrder = True
-            break
+            # 就重覆寫沒關係
+            #break
     # 如果沒在裏面就放在最後
     if isOrder == False and stock.operationType != "":
         stockOrder["雜項"][stockID] = stock
