@@ -61,8 +61,8 @@ for stockID, stock in allstock.items():
     # if len(info) != 0:
     #     continue
     # 為了寫資料方便, 暫時不抓沒資料的
-    if stock.operationType == "":
-        continue
+    #if stock.operationType == "":
+    #    continue
 
     # 及時報價
     #print (NetStockInfo.getYahooRealtime (stockID, False))
