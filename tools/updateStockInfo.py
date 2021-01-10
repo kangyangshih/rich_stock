@@ -50,8 +50,8 @@ epsKey = "2020Q3"
 turnOverKey = "2020/11"
 sdKey = "2019"
 
-del_dir ("cache")
-check_dir ("cache")
+#del_dir ("cache")
+#check_dir ("cache")
 
 for stockID, stock in allstock.items():
     # 載入暫存資料
