@@ -104,6 +104,63 @@ def write (strFormat, *args):
     print (strtmp, end="")
     file.writelines (strtmp)
 
+# 輸出外資/投信合買
+out_in_buy_sell_map = {
+    10:{},
+    9:{},
+    8:{},
+    -10:{},
+    -9:{},
+    -8:{},
+}
+for stockID, stock in allstock.items():
+    # 取得買賣超
+    out_day, out_num = stock.getOutBuySell ()
+    # 取得15日累積
+    out_total, in_total = stock._getThreeTotal (15)
+    # 計算外本比、投本比
+    out_total_rate = stock._getBuyRate (out_total)
+    # 處理外資
+    if out_num > 0 and out_total_rate < 0.01:
+        continue
+    # 取得買賣超
+    in_day, in_num = stock.getInBuySell ()
+    # 計算外本比、投本比
+    in_total_rate = stock._getBuyRate (in_total)
+    # 記錄下來
+    total_day = in_day + out_day
+    if total_day in out_in_buy_sell_map:
+        out_in_buy_sell_map[total_day][stockID] = stock
+
+# 做輸出的動作
+write ("#-------------------------------")
+write ("# 外資/投信買超")
+write ("#-------------------------------")
+for index in (10, 9, 8, -10, -9, -8):
+    write ("\n# 外資/投信 %s 日買超清單", index)
+    for stockID, stock in out_in_buy_sell_map[index].items():
+        tmp, num = stock.getOutBuySell ()
+        # 取得5日累積
+        out_tmp, in_tmp = stock._getThreeArg ()
+        write ("%s(%s) 外資 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["out"],
+            num,
+            out_tmp,
+        )
+        tmp, num = stock.getInBuySell ()
+        # 取得5日累積
+        out_tmp, in_tmp = stock._getThreeArg ()
+        write ("%s(%s) 投信 今日: %s, 五日累積: %.0f, 平均: %.0f", 
+            stock.name, 
+            stock.id, 
+            stock.getInfo ("三大法人")[0]["in"],
+            num,
+            in_tmp,
+        )
+        stock.dumpInfo (file)
+    
 # 輸出外資連5買、連3買、近3日買超
 out_buy_sell_map = {
     # 有三日賣超
@@ -123,13 +180,13 @@ out_buy_sell_map = {
 # 輸出投信連5買、連3買、近3日買超
 in_buy_sell_map = {
     # 有三日賣超
-    -3:{},
+    #-3:{},
     # 有四日賣超
     -4:{},
     # 有五日賣超
     -5:{},
     # 有三天買超
-    3:{},
+    #3:{},
     # 有四天買超
     4:{},
     # 有五天買超
@@ -171,6 +228,8 @@ write ("#-------------------------------")
 write ("# 外資買超")
 write ("#-------------------------------")
 for index in (5, 4, 3):
+    if index not in out_buy_sell_map:
+        continue
     write ("\n# 外資 %s 日買超清單", index)
     for stockID, stock in out_buy_sell_map[index].items():
         tmp, num = stock.getOutBuySell ()
@@ -189,6 +248,8 @@ write ("#-------------------------------")
 write ("# 外資賣超")
 write ("#-------------------------------")
 for index in (-5, -4, -3):
+    if index not in out_buy_sell_map:
+        continue
     write ("\n# 外資 %s 日買超清單", index)
     for stockID, stock in out_buy_sell_map[index].items():
         tmp, num = stock.getOutBuySell ()
@@ -207,6 +268,8 @@ write ("#-------------------------------")
 write ("# 投信買超")
 write ("#-------------------------------")
 for index in (5, 4, 3):
+    if index not in in_buy_sell_map:
+        continue
     write ("\n# 投信 %s 日買超清單", index)
     for stockID, stock in in_buy_sell_map[index].items():
         tmp, num = stock.getInBuySell ()
@@ -225,6 +288,8 @@ write ("#-------------------------------")
 write ("# 投信賣超")
 write ("#-------------------------------")
 for index in (-5, -4, -3):
+    if index not in in_buy_sell_map:
+        continue
     write ("\n# 投信 %s 日買超清單", index)
     for stockID, stock in in_buy_sell_map[index].items():
         tmp, num = stock.getInBuySell ()
