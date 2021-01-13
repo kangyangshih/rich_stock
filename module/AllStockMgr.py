@@ -192,8 +192,10 @@ class cSingleStock :
         #------------------------
         # 近三個月的營收
         self._write (file, res, "[最近月營收]")
-        monthList = ["2020/11", "2020/10", "2020/09", "2020/08"]
+        monthList = ["2020/12", "2020/11", "2020/10", "2020/09", "2020/08"]
         for month in monthList:
+            if month not in self.netInfo["月營收"]:
+                continue
             self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
                 self.getInfo ("月營收", month, "年度/月份"),
                 self.getInfoInt ("月營收", month, "月營收")/100000.0,
