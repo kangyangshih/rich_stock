@@ -44,14 +44,14 @@ def saveContinueCache (stockID, info):
 allstock = AllStockMgr.getAllStock ()
 miss_qeps = 0
 miss_turnover = 0
-threeKey = "2021/01/11"
+threeKey = "2021/01/12"
 
 epsKey = "2020Q3"
 turnOverKey = "2020/12"
 sdKey = "2019"
 
-#del_dir ("cache")
-#check_dir ("cache")
+del_dir ("cache")
+check_dir ("cache")
 
 for stockID, stock in allstock.items():
     # 載入暫存資料
@@ -61,8 +61,8 @@ for stockID, stock in allstock.items():
     # if len(info) != 0:
     #     continue
     # 為了寫資料方便, 暫時不抓沒資料的
-    #if stock.operationType == "":
-    #    continue
+    if stock.operationType == "":
+        continue
 
     # 及時報價
     #print (NetStockInfo.getYahooRealtime (stockID, False))
