@@ -10,8 +10,9 @@ from NetStockInfo import NetStockInfo
 import json
 
 # 清除暫存檔
-#del_dir ("cache")
-#check_dir ("cache")
+if len(sys.argv) > 1:
+    del_dir ("cache")
+    check_dir ("cache")
 
 # 取得所有的股票
 allstock = AllStockMgr.getAllStock ()

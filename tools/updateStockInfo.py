@@ -40,18 +40,19 @@ def saveContinueCache (stockID, info):
     file.writelines (json.dumps (info))
     file.close()
 
+is_all = False
+if len(sys.argv) > 1:
+    is_all = True
+
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 miss_qeps = 0
 miss_turnover = 0
-threeKey = "2021/01/14"
+threeKey = "2021/01/15"
 
 epsKey = "2020Q3"
 turnOverKey = "2020/12"
 sdKey = "2019"
-
-del_dir ("cache")
-check_dir ("cache")
 
 for stockID, stock in allstock.items():
     # 載入暫存資料
@@ -61,7 +62,7 @@ for stockID, stock in allstock.items():
     # if len(info) != 0:
     #     continue
     # 為了寫資料方便, 暫時不抓沒資料的
-    if stock.operationType == "":
+    if stock.operationType == "" and is_all == False:
         continue
 
     # 及時報價
