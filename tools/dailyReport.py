@@ -1,5 +1,6 @@
 # DESC : 每天的股票日報
 # DATE : 2020/11/23
+# dailyReport.py del
 
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
