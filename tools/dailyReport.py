@@ -106,7 +106,58 @@ def write (strFormat, *args):
     print (strtmp, end="")
     file.writelines (strtmp)
 
+#----------------------------------------------
+# 輸出過去五日外本比、投本比買超前五名
+#----------------------------------------------
+def getRangeTotalRate (day):
+    out_total_map = {}
+    in_total_map = {}
+    total_total_map = {}
+    for stockID, stock in allstock.items():
+        # 取得 5 日累積
+        out_total, in_total = stock._getThreeTotal (day)
+        # 取得 5 日的外本比
+        out_total_rate = stock._getBuyRate (out_total)
+        if out_total_rate > 0.01:
+            if out_total_rate not in out_total_map:
+                out_total_map[out_total_rate] = []
+            out_total_map[out_total_rate].append (stockID)
+        # 取得 5 日的投本比
+        in_total_rate = stock._getBuyRate (in_total)
+        if in_total_rate > 0.01:
+            if in_total_rate not in in_total_map:
+                in_total_map[in_total_rate] = []
+            in_total_map[in_total_rate].append (stockID)
+        # 取得 5 日的總合比
+        all_total_rate = stock._getBuyRate (out_total + in_total)
+        if all_total_rate > 0.01:
+            if all_total_rate not in total_total_map:
+                total_total_map[all_total_rate] = []
+            total_total_map[all_total_rate].append (stockID)
+    return out_total_map, in_total_map, total_total_map
+
+# 做輸出的動作
+def printTotalRate (title, header, tmpMap, num=10):
+    write ("#-------------------------------")
+    write (title)
+    write ("#-------------------------------")
+    keyList = [value for value in tmpMap.keys()]
+    keyList.sort (reverse=True)
+    keyList = keyList[:num]
+    for key in keyList:
+        for stockID in tmpMap[key]:
+            write ("%s : %.4f" % ( header, key))
+            allstock[stockID].dumpInfo(file)
+
+for day in (5, 10):
+    out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
+    #printTotalRate ("外資累計 %s 日買超排行榜" % (day,), "外資累計 %s 日買超" % (day,), out_total_map)
+    #printTotalRate ("投信累計 %s 日買超排行榜" % (day,), "投信累計 %s 日買超" % (day,), in_total_map)
+    printTotalRate ("外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map)
+
+#----------------------------------------------
 # 輸出外資/投信合買
+#----------------------------------------------
 out_in_buy_sell_map = {
     10:{},
     9:{},
@@ -305,9 +356,9 @@ for index in (-5, -4, -3):
         )
         stock.dumpInfo (file)
 
-# 輸出殖利率的排行榜
-
+#----------------------------------------------
 # 每日個股資訊
+#----------------------------------------------
 file.close()
 file = open("../daily.txt", "w", encoding="utf-8")
 # 依照重要性來做處理
