@@ -99,12 +99,33 @@ for stockID, stock in allstock.items():
     if isOrder == False and stock.operationType != "":
         stockOrder["雜項"][stockID] = stock
 
-file = open("../specialInfo.txt", "w", encoding="utf-8")
+file = open ("../price.txt", "w", encoding="utf-8")
 
 def write (strFormat, *args):
     strtmp = (strFormat+"\n") % args
     print (strtmp, end="")
     file.writelines (strtmp)
+
+#----------------------------------------------
+# 買入價/放空價的調整
+#----------------------------------------------
+modify_list = []
+for stockID, stock in allstock.items():
+    if stock.holdPrice != 0:
+        modify_list.append (stockID)
+        continue
+    if stock.buyPrice != 0:
+        modify_list.append (stockID)
+        continue
+    if stock.emptyPrice != 0:
+        modify_list.append (stockID)
+        continue
+    
+for stockID in modify_list:
+    allstock[stockID].dumpInfo (file)
+
+file.close()
+file = open("../specialInfo.txt", "w", encoding="utf-8")
 
 #----------------------------------------------
 # 輸出過去五日外本比、投本比買超前五名

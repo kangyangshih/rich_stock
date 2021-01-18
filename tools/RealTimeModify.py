@@ -30,7 +30,15 @@ for key in priorityKey:
 
 # 把想要監控的做一下分類
 for stockID, stock in allstock.items():
-    pass
+    if stock.holdPrice != 0:
+        stockOrder["持有"] = stock
+        continue
+    if stock.buyPrice != 0:
+        stockOrder["做多"] = stock
+        continue
+    if stock.emptyPrice != 0:
+        stockOrder["做空"] = stock
+
 
 # 做一個定時更新的動作
 while True:
@@ -39,11 +47,7 @@ while True:
 
     # 持有股
 
-    # 接近買進目標價 5% 的
-
-    # 接近放空目錄價 5% 的
-
     # 核心股
 
     # 提醒下次更新時間
-    pass
+    break
