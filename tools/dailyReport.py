@@ -174,7 +174,7 @@ for day in (5, 10):
     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
     #printTotalRate ("外資累計 %s 日買超排行榜" % (day,), "外資累計 %s 日買超" % (day,), out_total_map)
     #printTotalRate ("投信累計 %s 日買超排行榜" % (day,), "投信累計 %s 日買超" % (day,), in_total_map)
-    printTotalRate ("外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map)
+    printTotalRate ("外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
 
 #----------------------------------------------
 # 輸出外資/投信合買
