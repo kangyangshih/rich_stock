@@ -193,10 +193,12 @@ class cSingleStock :
         # 顯示近幾日結果
         for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
-            self._write (file, res, "%s 外資:%s, 投信:%s", 
+            self._write (file, res, "%s 外資:%s, 投信:%s, 自營商(自行):%s, 自營商(避險):%s", 
                 self.getInfo ("三大法人")[index]["date"], 
                 self.getInfo ("三大法人")[index]["out"], 
                 self.getInfo ("三大法人")[index]["in"],
+                self.getInfo ("三大法人")[index]["self_0"],
+                self.getInfo ("三大法人")[index]["self_1"],
             )
         self._write (file, res, "")
 

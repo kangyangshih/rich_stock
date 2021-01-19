@@ -61,10 +61,15 @@ for filename in filelist:
                 # continue
             # print (tokenList)
             # print (tokenList[6], tokenList[15], tokenList[38])
-        reader = csv.reader(file, delimiter=',', quotechar='"')
-        for row in reader:
+        rows = csv.reader(file, delimiter=',', quotechar='"')
+        for row in rows:
+            if row[0] not in allstock:
+                continue
+            if row[0] != "3293":
+                continue
             print (row)
-        
+            print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
+            
         file.close()
 
 
