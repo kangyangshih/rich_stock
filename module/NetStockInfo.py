@@ -260,11 +260,17 @@ class cNetStockInfo:
                 #print (node.text)
                 tmp.append (node.text)
             res.append ({
+                # 日期
                 'date':tmp[0],
+                # 外資
                 'out':tmp[1],
+                # 投信
                 'in':tmp[2],
+                # 自營
                 'self_0':tmp[3],
+                # 避險
                 'self_1':tmp[4],
+                # 總計
                 'total':tmp[5],
             })
         return True, res
