@@ -400,8 +400,6 @@ class cAllStockMgr:
     # 載入所有股票資訊
     def __loadAllStock (self):
         print ("[cStockMgr][__loadAllStock] start")
-        res, tmp2020 = getFromCache ("../info/eps_2020.txt")
-        #print (tmp2020)
         excel = getExcelSheet ("../all_stock.xlsx", "all_stock")
         for row_index in range (1, 5000):
             if excel.getValue (row_index, 0, None) == None:
@@ -434,18 +432,17 @@ class cAllStockMgr:
             single.sellPrice = excel.getValue (row_index, 9, 0, int)
             # 標籤
             single.tag = excel.getValue (row_index, 10).replace ("%", "%%")
+            # 取得一點影響到大盤的點數
+            single.pointToAll = excel.getValue (row_index, 11, 0, float)
             # 雜項
-            single.desc = excel.getValue (row_index, 11).replace ("%", "%%")
+            single.desc = excel.getValue (row_index, 12).replace ("%", "%%")
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 continue
             # 取得資訊
             infoFilename = "../info/%s.txt" % (single.id,)
             # 沒有個人資訊也不做處理
-            if check_file(infoFilename) == True:
-                tmp, single.netInfo = getFromCache (infoFilename)
-            if single.id in tmp2020:
-                single.netInfo.update (tmp2020[single.id])
+            single.netInfo = getFromCache (infoFilename, {})
             # 記錄起來
             self.stockMap[single.id] = single
 
