@@ -193,10 +193,14 @@ class cSingleStock :
         # 顯示近幾日結果
         for index in range (6):
             #self._write (file, res, "%s", json.dumps (self.getInfo ("三大法人")[index]))
-            self._write (file, res, "%s 外資:%s, 投信:%s, 自營商(自行):%s, 自營商(避險):%s", 
+            self._write (file, res, "%s 外資:%s(%s,%s), 投信:%s(%s,%s), 自營商(自行):%s, 自營商(避險):%s", 
                 self.getInfo ("三大法人")[index]["date"], 
-                self.getInfo ("三大法人")[index]["out"], 
+                self.getInfo ("三大法人")[index]["out"],
+                self.getInfo ("三大法人")[index]["out_buy"],
+                self.getInfo ("三大法人")[index]["out_sell"],
                 self.getInfo ("三大法人")[index]["in"],
+                self.getInfo ("三大法人")[index]["in_buy"],
+                self.getInfo ("三大法人")[index]["in_sell"],
                 self.getInfo ("三大法人")[index]["self_0"],
                 self.getInfo ("三大法人")[index]["self_1"],
             )
@@ -441,8 +445,20 @@ class cAllStockMgr:
                 continue
             # 取得資訊
             infoFilename = "../info/%s.txt" % (single.id,)
+            #---------
+            # 轉三大法人的資料變成 list
+            #---------
             # 沒有個人資訊也不做處理
             single.netInfo = getFromCache (infoFilename, {})
+            # 要處理三大法人, 從 dict 變 list
+            #print (single.id, single.name)
+            keyList = [value for value in single.netInfo["三大法人"].keys()]
+            keyList.sort (reverse=True)
+            #print (keyList)
+            res = []
+            for key in keyList:
+                res.append (single.netInfo["三大法人"][key])
+            single.netInfo["三大法人"] = res            
             # 記錄起來
             self.stockMap[single.id] = single
 

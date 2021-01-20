@@ -56,6 +56,7 @@ def getCSVRowNumber (value):
 # 先取得 ../tmp 下的 csv 檔案
 filelist = get_dir_file_list ("../threeDaily")
 for filename in filelist:
+
     #---------------------
     # 處理上櫃的內容
     if filename.find ("BIGD_") != -1:
@@ -65,6 +66,8 @@ for filename in filelist:
         purename = purename[8:-4]
         #print (purename)
         threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
+        if filename.find ("BIGD_109") != -1:
+            threeKey = "2020/%s/%s" % (purename[:2], purename[-2:])
         print ("上櫃檔案, 日期:", threeKey)
         # 做開檔的的動作
         file = open (filename, "r", encoding="utf-8")
@@ -75,8 +78,8 @@ for filename in filelist:
                 continue
             # 載入暫存資料
             info = getFromCache (row[0])
-            # 連續型的資料
-            continueInfo = getFromContinueCache (row[0])
+            if "三大法人" not in info:
+                info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
             #print (row)
             #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
@@ -103,19 +106,45 @@ for filename in filelist:
                 "total" : getCSVRowNumber(row[23]),
             }
             #print (tmp)
-            # 插進去頭
-            if info["三大法人"][0]["date"] != threeKey:
-                info["三大法人"].insert (0, tmp)
-            else:
-                info["三大法人"][0] = tmp
-            # 更新continueInfo
-            continueInfo["三大法人"][threeKey] = tmp
-            # 更新continueInfo
-            continueInfo["三大法人"][threeKey] = tmp
+            info["三大法人"][threeKey] = tmp
             # 做存入的動作
             saveCache (stockID, info)
-            saveContinueCache (stockID, continueInfo)
         file.close()
+
+        # 要補沒有資料的部分
+        tmp = {
+            # 日期
+            "date" : threeKey,
+            # 外資
+            "out_buy" : "0",
+            "out_sell" : "0",
+            "out" : "0",
+            # 投信
+            "in_buy" : "0",
+            "in_sell" : "0",
+            "in" : "0",
+            # 自營商(自行買賣)
+            "self_0_buy" : "0",
+            "self_0_sell" : "0",
+            "self_0" : "0",
+            # 自營商(避險)
+            "self_1_buy" : "0",
+            "self_1_sell" : "0",
+            "self_1" : "0",
+            # 總計
+            "total" : "0",
+        }
+        for stockID, stock in allstock.items():
+            if stock.location != "上櫃":
+                continue
+            info = getFromCache (stockID)
+            if "三大法人" not in  info:
+                info["三大法人"] = {}
+            if threeKey not in info["三大法人"]:
+                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
+                info["三大法人"][threeKey] = tmp
+                saveCache (stockID, info)
+
     #---------------------
     # 處理上巿內容
     if filename.find ("T86_ALL_") != -1:
@@ -125,6 +154,8 @@ for filename in filelist:
         purename = purename[12:-4]
         #print (purename)
         threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
+        if filename.find ("T86_ALL_2020") != -1:
+            threeKey = "2020/%s/%s" % (purename[:2], purename[-2:])
         print ("上巿檔案, 日期:", threeKey)
         file = open (filename, "r", encoding="utf-8")
         rows = csv.reader(file, delimiter=',', quotechar='"')
@@ -136,11 +167,8 @@ for filename in filelist:
                 continue
             # 載入暫存資料
             info = getFromCache (row[0])
-            # 連續型的資料
-            continueInfo = getFromContinueCache (row[0])
-            # 己有更新的，就暫時不用處理
-            if info["三大法人"][0]["date"] != threeKey:
-                continue
+            if "三大法人" not in info:
+                info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
             #print (row)
             #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
@@ -167,18 +195,44 @@ for filename in filelist:
                 "total" : getCSVRowNumber(row[18]),
             }
             #print (tmp)
-            # 插進去頭
-            if info["三大法人"][0]["date"] != threeKey:
-                info["三大法人"].insert (0, tmp)
-            else:
-                info["三大法人"][0] = tmp
-            # 更新continueInfo
-            continueInfo["三大法人"][threeKey] = tmp
+            info["三大法人"][threeKey] = tmp
             # 做存入的動作
             saveCache (stockID, info)
-            saveContinueCache (stockID, continueInfo)
         file.close()
 
+        # 要補沒有資料的部分
+        tmp = {
+            # 日期
+            "date" : threeKey,
+            # 外資
+            "out_buy" : "0",
+            "out_sell" : "0",
+            "out" : "0",
+            # 投信
+            "in_buy" : "0",
+            "in_sell" : "0",
+            "in" : "0",
+            # 自營商(自行買賣)
+            "self_0_buy" : "0",
+            "self_0_sell" : "0",
+            "self_0" : "0",
+            # 自營商(避險)
+            "self_1_buy" : "0",
+            "self_1_sell" : "0",
+            "self_1" : "0",
+            # 總計
+            "total" : "0",
+        }
+        for stockID, stock in allstock.items():
+            if stock.location != "上巿":
+                continue
+            info = getFromCache (stockID)
+            if "三大法人" not in  info:
+                info["三大法人"] = {}
+            if threeKey not in info["三大法人"]:
+                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
+                info["三大法人"][threeKey] = tmp
+                saveCache (stockID, info)
 
 
 
