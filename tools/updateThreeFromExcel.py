@@ -42,34 +42,141 @@ def saveContinueCache (stockID, info):
     file.close()
 
 allstock = AllStockMgr.getAllStock ()
-threeKey = "2021/01/19"
+
+# 取得內容
+def getCSVRowNumber (value):
+    if value == "":
+        return "0"
+    if value == "0":
+        return "0"
+    if value.find (",") == -1:
+        return "0"
+    return value[:-4]
 
 # 先取得 ../tmp 下的 csv 檔案
-filelist = get_dir_file_list ("../tmp")
+filelist = get_dir_file_list ("../threeDaily")
 for filename in filelist:
     #---------------------
     # 處理上櫃的內容
     if filename.find ("BIGD_") != -1:
+        # 取得 threeKey
+        print ("處理:", filename)
+        purename = getPureFilename (filename)
+        purename = purename[8:-4]
+        #print (purename)
+        threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
+        print ("上櫃檔案, 日期:", threeKey)
+        # 做開檔的的動作
         file = open (filename, "r", encoding="utf-8")
-        # for line in file:
-            # line = line.strip ("\n ")
-            # tokenList = line.split (",")
-            # # 不是想要的就暫時不處理
-            # if tokenList[0] not in allstock:
-                # continue
-            # if tokenList[0] != "3293":
-                # continue
-            # print (tokenList)
-            # print (tokenList[6], tokenList[15], tokenList[38])
         rows = csv.reader(file, delimiter=',', quotechar='"')
         for row in rows:
+            stockID = row[0]
             if row[0] not in allstock:
                 continue
-            if row[0] != "3293":
+            # 載入暫存資料
+            info = getFromCache (row[0])
+            # 連續型的資料
+            continueInfo = getFromContinueCache (row[0])
+            #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
+            #print (row)
+            #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : getCSVRowNumber(row[8]),
+                "out_sell" : getCSVRowNumber(row[9]),
+                "out" : getCSVRowNumber(row[10]),
+                # 投信
+                "in_buy" : getCSVRowNumber(row[11]),
+                "in_sell" : getCSVRowNumber(row[12]),
+                "in" : getCSVRowNumber(row[13]),
+                # 自營商(自行買賣)
+                "self_0_buy" : getCSVRowNumber(row[14]),
+                "self_0_sell" : getCSVRowNumber(row[15]),
+                "self_0" : getCSVRowNumber(row[16]),
+                # 自營商(避險)
+                "self_1_buy" : getCSVRowNumber(row[17]),
+                "self_1_sell" : getCSVRowNumber(row[18]),
+                "self_1" : getCSVRowNumber(row[19]),
+                # 總計
+                "total" : getCSVRowNumber(row[23]),
+            }
+            #print (tmp)
+            # 插進去頭
+            if info["三大法人"][0]["date"] != threeKey:
+                info["三大法人"].insert (0, tmp)
+            else:
+                info["三大法人"][0] = tmp
+            # 更新continueInfo
+            continueInfo["三大法人"][threeKey] = tmp
+            # 更新continueInfo
+            continueInfo["三大法人"][threeKey] = tmp
+            # 做存入的動作
+            saveCache (stockID, info)
+            saveContinueCache (stockID, continueInfo)
+        file.close()
+    #---------------------
+    # 處理上巿內容
+    if filename.find ("T86_ALL_") != -1:
+        # 取得 threeKey
+        print ("處理:", filename)
+        purename = getPureFilename (filename)
+        purename = purename[12:-4]
+        #print (purename)
+        threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
+        print ("上巿檔案, 日期:", threeKey)
+        file = open (filename, "r", encoding="utf-8")
+        rows = csv.reader(file, delimiter=',', quotechar='"')
+        for row in rows:
+            if len(row) == 0:
                 continue
-            print (row)
-            print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
-            
+            stockID = row[0]
+            if row[0] not in allstock:
+                continue
+            # 載入暫存資料
+            info = getFromCache (row[0])
+            # 連續型的資料
+            continueInfo = getFromContinueCache (row[0])
+            # 己有更新的，就暫時不用處理
+            if info["三大法人"][0]["date"] != threeKey:
+                continue
+            #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
+            #print (row)
+            #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : getCSVRowNumber(row[2]),
+                "out_sell" : getCSVRowNumber(row[3]),
+                "out" : getCSVRowNumber(row[4]),
+                # 投信
+                "in_buy" : getCSVRowNumber(row[8]),
+                "in_sell" : getCSVRowNumber(row[9]),
+                "in" : getCSVRowNumber(row[10]),
+                # 自營商(自行買賣)
+                "self_0_buy" : getCSVRowNumber(row[12]),
+                "self_0_sell" : getCSVRowNumber(row[13]),
+                "self_0" : getCSVRowNumber(row[14]),
+                # 自營商(避險)
+                "self_1_buy" : getCSVRowNumber(row[15]),
+                "self_1_sell" : getCSVRowNumber(row[16]),
+                "self_1" : getCSVRowNumber(row[17]),
+                # 總計
+                "total" : getCSVRowNumber(row[18]),
+            }
+            #print (tmp)
+            # 插進去頭
+            if info["三大法人"][0]["date"] != threeKey:
+                info["三大法人"].insert (0, tmp)
+            else:
+                info["三大法人"][0] = tmp
+            # 更新continueInfo
+            continueInfo["三大法人"][threeKey] = tmp
+            # 做存入的動作
+            saveCache (stockID, info)
+            saveContinueCache (stockID, continueInfo)
         file.close()
 
 
