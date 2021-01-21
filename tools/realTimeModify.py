@@ -124,7 +124,7 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
         #print ("%s %s %s %s" % (stock.name, stock.id, realtime["now_price"], stock.buyPrice))
         # 如果差太遠就先不理他
         if float(realtime["pre_date_price"]) * 0.9 > stock.buyPrice:
-            print ("%s(%s) 現價(%s)和買價(%s)差太遠, 不列入及時" % (stock.name, stock.id, realtime["now_price"], stock.buyPrice))
+            print ("%s(%s) 現價(%s)和買價(%s)差太遠, 不列入及時" % (stock.name, stock.id, realtime["pre_date_price"], stock.buyPrice))
             if stockID not in removeList:
                 removeList.append (stockID)
             return
