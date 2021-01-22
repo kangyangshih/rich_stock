@@ -90,7 +90,7 @@ class cSingleStock :
         #------------------------
         # 寫入基本資料
         self._write (file, res, "#-------------------------------")
-        self._write (file, res, "# %s(%s) 股本 %.2f 億", self.name, self.id, self.getInfoFloat ("股本"))
+        self._write (file, res, "# %s(%s) %s 股本 %.2f 億", self.name, self.id, self.location, self.getInfoFloat ("股本"))
         self._write (file, res, "#-------------------------------")
         #------------------------
         # 今天的漲跌幅
