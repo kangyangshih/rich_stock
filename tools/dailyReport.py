@@ -17,6 +17,8 @@ if len(sys.argv) > 1:
 
 # 取得所有的股票
 allstock = AllStockMgr.getAllStock ()
+
+#exit_program()
 priorityKey = [
     "持有",
     "核心", 

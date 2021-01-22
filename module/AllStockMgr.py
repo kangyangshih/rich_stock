@@ -420,7 +420,7 @@ class cAllStockMgr:
         excel = getExcelSheet ("../all_stock.xlsx", "all_stock")
         for row_index in range (1, 5000):
             if excel.getValue (row_index, 0, None) == None:
-                print ("結束嚕, 共有 " + str(len(self.stockMap)))
+                print ("\n結束嚕, 共有 " + str(len(self.stockMap)))
                 break
             #print (row_index)
             # 取得相關資料
@@ -455,6 +455,10 @@ class cAllStockMgr:
             single.desc = excel.getValue (row_index, 12).replace ("%", "%%")
             # 不取得DR
             if single.name.endswith ("-DR") == True:
+                print (single.name, "DR股不列入")
+                continue
+            if single.name.find ("*") != -1:
+                print (single.name, "票面價值不等於10塊的不列入(不知道怎麼操作)")
                 continue
             # 取得資訊
             infoFilename = "../info/%s.txt" % (single.id,)
