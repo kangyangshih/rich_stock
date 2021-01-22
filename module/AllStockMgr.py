@@ -94,7 +94,7 @@ class cSingleStock :
         self._write (file, res, "#-------------------------------")
         #------------------------
         # 今天的漲跌幅
-        realtime = NetStockInfo.getYahooRealtime (self.id, False)
+        realtime = NetStockInfo.getYahooRealtime (self.id, False, 0)
         #print (realtime)
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["now_price"], realtime["now_result"], realtime["now_vol"])
@@ -164,7 +164,7 @@ class cSingleStock :
         today_out = float(self.getInfo ("三大法人")[0]["out"].replace(",", ""))
         today_out_rate = self._getBuyRate (today_out)
         self._write (file, res, "本日外資 : %.0f, 外本比:%.4f %%", today_out, today_out_rate)
-        for day in (5, 10, 15):
+        for day in (5, 10, 15, 30):
             # 最近 15 天，三大法人買賣超數量
             out_total, in_total = self._getThreeTotal (day)
             out_total_rate = self._getBuyRate (out_total)
@@ -179,7 +179,7 @@ class cSingleStock :
         today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
         today_in_rate = self._getBuyRate (today_in)
         self._write (file, res, "本日投信 : %.0f, 投本比:%.4f %%", today_in, today_in_rate)
-        for day in (5, 10, 15):
+        for day in (5, 10, 15, 30):
             # 最近 15 天，三大法人買賣超數量
             out_total, in_total = self._getThreeTotal (day)
             in_total_rate = self._getBuyRate (in_total)

@@ -153,7 +153,12 @@ while True:
         tmpDict = {}
         for stockID, stock in stockMap.items():
             # 取得及時資訊
-            realtime = NetStockInfo.getYahooRealtime (stock.id, realtime=True)
+            #print (stock.id, stock.name)
+            realtime = None
+            try:
+                realtime = NetStockInfo.getYahooRealtime (stock.id, realtime=True)
+            except:
+                continue
             if stockType == "做多" or stockType == "短期注意":
                 tmp = printRealtimeStock (stockType, stock, g_removeList, realtime, False)
                 # 買入提示
@@ -167,6 +172,8 @@ while True:
             else:
                 # 做印出來的動作
                 printRealtimeStock (stockType, stock, g_removeList, realtime, True)
+            # 做存起來的動作
+            saveCache (removeCache, g_removeList)
         # 排列做處理
         if stockType == "做多" or stockType == "短期注意":
             if len(buyList) > 0:
@@ -181,8 +188,12 @@ while True:
                     if info != None:
                         print (info)
         print ("")
-    # 做存起來的動作
-    saveCache (removeCache, g_removeList)
+    # 更新一下列表
+    for stockType, stockMap in stockOrder.items():
+        for removeStockID in g_removeList:
+            if removeStockID in stockMap:
+                stockMap.pop (removeStockID)
+
     # 提醒下次更新時間
     #break
     printCountDown (120)

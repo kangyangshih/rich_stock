@@ -46,7 +46,7 @@ class cNetStockInfo:
     #--------------------------------------------
     # 從 Yahoo 取得及時資訊
     #--------------------------------------------
-    def getYahooRealtime (self, stockID, realtime=False):
+    def getYahooRealtime (self, stockID, realtime=False, timeInterval=0.5):
         stockID = str(stockID)
         name_list = [
             # 更新時間
@@ -69,6 +69,9 @@ class cNetStockInfo:
         now_time = time.gmtime()
         # 從 yahoo 取得
         html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, "cache/%s.html" % (stockID,) if realtime == False else "")
+        #file = open ("tmp.html", "w", encoding="utf-8")
+        #file.writelines (html_text)
+        #file.close()
         soup = BeautifulSoup(html_text, "html.parser")
         info_list = soup.find_all ("td", bgcolor="#FFFfff")
         result = {"id":stockID}
@@ -92,6 +95,9 @@ class cNetStockInfo:
         result["now_vol"] = int (result["now_num"].replace (",", ""))
         # 處理型別
         result["now_price"] = float(result["now_price"])
+        # 做休息一下的動作
+        if timeInterval > 0:
+            time.sleep (timeInterval)
         # 回傳結果
         return result
 
