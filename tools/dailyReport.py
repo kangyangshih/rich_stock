@@ -160,23 +160,48 @@ def getRangeTotalRate (day):
             total_total_map[all_total_rate].append (stockID)
     return out_total_map, in_total_map, total_total_map
 
+# 取得今天的外本比、投本比前 10 名
+def getInOutRate ():
+    out_map = {}
+    in_map = {}
+    all_map = {}
+    for stockID, stock in allstock.items():
+        out_total, in_total = stock._getThreeTotal (1)
+        out_total_rate = stock._getBuyRate (out_total)
+        if out_total_rate >= 0.001:
+            if out_total_rate not in out_map:
+                out_map[out_total_rate] = []
+            out_map[out_total_rate].append (stockID)
+        in_total_rate = stock._getBuyRate (in_total)
+        if in_total_rate >= 0.001:
+            if in_total_rate not in in_map:
+                in_map[in_total_rate] = []
+            in_map[in_total_rate].append (stockID)
+        all_total_rate = stock._getBuyRate (out_total + in_total)
+        if all_total_rate >= 0.001:
+            if all_total_rate not in all_map:
+                all_map[all_total_rate] = []
+            all_map[all_total_rate].append (stockID)
+    return out_map, in_map, all_map
+
 # 做輸出的動作
-def printTotalRate (title, header, tmpMap, num=10):
+def printTotalRate (title, header, tmpMap, num=15):
     write ("#-------------------------------")
     write (title)
     write ("#-------------------------------")
-    keyList = [value for value in tmpMap.keys()]
-    keyList.sort (reverse=True)
-    keyList = keyList[:num]
-    for key in keyList:
-        for stockID in tmpMap[key]:
-            write ("%s : %.4f" % ( header, key))
-            allstock[stockID].dumpInfo(file)
+    stockIDList = changeDict2List (tmpMap)
+    stockIDList = stockIDList[:num]
+    for stockID in stockIDList:
+        write ("%s : %.4f" % ( header, getKeyByValue(tmpMap, stockID)))
+        allstock[stockID].dumpInfo(file)
+
+out_map, in_map, all_map = getInOutRate ()
+printTotalRate ("外資+投信今日買超排行榜", "外資+投信買超", all_map, 5)
+printTotalRate ("投信今日買超排行榜", "投信買超", in_map, 5)
+printTotalRate ("外資今日買超排行榜", "外資買超", out_map, 5)
 
 for day in (5, 30):
     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-    #printTotalRate ("外資累計 %s 日買超排行榜" % (day,), "外資累計 %s 日買超" % (day,), out_total_map)
-    #printTotalRate ("投信累計 %s 日買超排行榜" % (day,), "投信累計 %s 日買超" % (day,), in_total_map)
     printTotalRate ("外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
 
 #----------------------------------------------
