@@ -94,6 +94,11 @@ class cSingleStock :
         self._write (file, res, "# %s", self.getInfo ("產業類別"))
         self._write (file, res, "#-------------------------------")
         #------------------------
+        # 營業比重
+        self._write (file, res, "%s", self.getInfo ("營業比重"))
+        self._write (file, res, "")
+        
+        #------------------------
         # 今天的漲跌幅
         realtime = NetStockInfo.getYahooRealtime (self.id, False, 0)
         #print (realtime)
@@ -115,7 +120,6 @@ class cSingleStock :
         #------------------------
         # 個股簡評
         self._write (file, res, "[個股相關資訊] %s", self.future)
-        self._write (file, res, "%s", self.getInfo ("營業比重"))
         # 分類類型
         self._write (file, res, self.operationType)
 
