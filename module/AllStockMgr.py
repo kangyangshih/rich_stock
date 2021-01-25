@@ -91,6 +91,7 @@ class cSingleStock :
         # 寫入基本資料
         self._write (file, res, "#-------------------------------")
         self._write (file, res, "# %s(%s) %s 股本 %.2f 億", self.name, self.id, self.location, self.getInfoFloat ("股本"))
+        self._write (file, res, "# %s", self.getInfo ("產業類別"))
         self._write (file, res, "#-------------------------------")
         #------------------------
         # 今天的漲跌幅
@@ -114,6 +115,7 @@ class cSingleStock :
         #------------------------
         # 個股簡評
         self._write (file, res, "[個股相關資訊] %s", self.future)
+        self._write (file, res, "%s", self.getInfo ("營業比重"))
         # 分類類型
         self._write (file, res, self.operationType)
 

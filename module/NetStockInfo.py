@@ -25,21 +25,37 @@ class cNetStockInfo:
         print ("[getYahooBasic] " + url)
         WebViewMgr.loadURL (url)
         info = {}
+        #--------------------------------
         # 取得股本位置
+        #                             /html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]
         equity = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]')
         # 如果載入失敗就等10秒再重載入
         if equity == None:
-            time.sleep (30)
+            time.sleep (10)
             return self.getYahooBasic (stockID)
         equity = equity.strip ("\n億")
         info["股本"] = equity
+        #--------------------------------
         # 每股淨值
+        #                                    /html/body/table[1]/tbody/tr[2]/td/table[2]/tbody/tr[6]/td[3]
         netAssetValue = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[2]/tbody/tr[6]/td[3]')
         # 每股淨值: 　　32.38元
         netAssetValue = netAssetValue.replace ("每股淨值:", "").replace (" ", "").replace ("　", "")
         netAssetValue = netAssetValue.strip ("元")
-        #print (netAssetValue)
+        print ("淨值", netAssetValue)
         info["淨值"] = netAssetValue
+        #--------------------------------
+        # 產業類別
+        bType = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[2]/td[2]')
+        bType = bType.strip (" ")
+        print ("產業類別", bType)
+        info["產業類別"] = bType
+        #--------------------------------
+        # 營業比重
+        bRate = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[11]/td[2]')
+        bRate = bRate.strip (" ")
+        print ("營業比重", bRate)
+        info["營業比重"] = bRate
         # 回傳結果
         return info
     
@@ -68,7 +84,8 @@ class cNetStockInfo:
         ]
         now_time = time.gmtime()
         # 從 yahoo 取得
-        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, "cache/%s.html" % (stockID,) if realtime == False else "")
+        cache_filename = "cache/%s.html" % (stockID,)
+        html_text = get_url ("https://tw.stock.yahoo.com/q/q?s="+stockID, cache_filename if realtime == False else "")
         #file = open ("tmp.html", "w", encoding="utf-8")
         #file.writelines (html_text)
         #file.close()
@@ -80,6 +97,17 @@ class cNetStockInfo:
                 break
             #print ("name:%s, value:%s" % (name_list[index], info_list[index].string))
             result[name_list[index]] = info_list[index].string
+        # 如果是抓到新版本的，就先不處理
+        if "now_price" not in result:
+            print ("[error] get new type! try again")
+            # 休息一下
+            time.sleep (1)
+            # 刪除暫存
+            del_file (cache_filename)
+            # 再來一次
+            return self.getYahooRealtime (stockID, realtime, timeInterval)
+        
+        # 正常做處理
         if (result["now_price"] == "-"):
             result["now_result"] = 0
             result["now_num"] = "0"

@@ -10,39 +10,9 @@ from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
 import json
 
-def getFromCache (stockID):
-    filename = "../info/%s.txt" % (stockID,)
-    if check_file (filename) == False:
-        return {}
-    file = open (filename, "r", encoding="utf-8")
-    tmp = file.read ()
-    file.close()
-    return json.loads (tmp)
+def getCacheFilename (stockID):
+    return "../info/%s.txt" % (stockID,)
 
-def saveCache (stockID, info):
-    filename = "../info/%s.txt" % (stockID,)
-    file = open (filename, "w", encoding="utf-8")
-    file.writelines (json.dumps (info))
-    file.close()
-
-def getFromContinueCache (stockID):
-    filename = "../info/%s_continue.txt" % (stockID,)
-    if check_file (filename) == False:
-        return {}
-    file = open (filename, "r", encoding="utf-8")
-    tmp = file.read ()
-    file.close()
-    return json.loads (tmp)
-
-def saveContinueCache (stockID, info):
-    filename = "../info/%s_continue.txt" % (stockID,)
-    file = open (filename, "w", encoding="utf-8")
-    file.writelines (json.dumps (info))
-    file.close()
-
-#is_all = False
-#if len(sys.argv) > 1:
-#    is_all = True
 is_all = True
 
 # 取得所有的股票清單
@@ -56,9 +26,7 @@ sdKey = "2019"
 
 for stockID, stock in allstock.items():
     # 載入暫存資料
-    info = getFromCache (stockID)
-    # 連續型的資料
-    continueInfo = getFromContinueCache (stockID)
+    info = getFromCache (getCacheFilename(stockID), {})
 
     # 為了寫資料方便, 暫時不抓沒資料的
     if stock.operationType == "" and is_all == False:
@@ -66,7 +34,8 @@ for stockID, stock in allstock.items():
 
     #------------------------------------------
     # 基本資料
-    if "股本" not in info:
+    #if "股本" not in info: 
+    if "產業類別" not in info:
         info.update (NetStockInfo.getYahooBasic (stockID))
 
     #------------------------------------------
@@ -98,12 +67,6 @@ for stockID, stock in allstock.items():
             print (turnOverKey, json.dumps(info["月營收"][turnOverKey]))
 
     #------------------------------------------
-    # 把每月營收 Copy 到連續資料中
-    if "月營收" not in continueInfo:
-        continueInfo["月營收"] = {}
-    continueInfo["月營收"].update (info["月營收"])
-
-    #------------------------------------------
     # 取得配股息進出 (每年一次，不會太頻繁)
     if "配股配息" not in info:
         res, info["配股配息"] = NetStockInfo.getHistockStockDivide (stockID)
@@ -116,7 +79,7 @@ for stockID, stock in allstock.items():
 
     #------------------------------------------
     # 把資料存起來
-    saveCache (stockID, info)
+    saveCache (getCacheFilename(stockID), info)
 
 
 

@@ -196,9 +196,9 @@ def printTotalRate (title, header, tmpMap, num=15):
         allstock[stockID].dumpInfo(file)
 
 out_map, in_map, all_map = getInOutRate ()
-printTotalRate ("外資+投信今日買超排行榜", "外資+投信買超", all_map, 5)
 printTotalRate ("投信今日買超排行榜", "投信買超", in_map, 5)
 printTotalRate ("外資今日買超排行榜", "外資買超", out_map, 5)
+printTotalRate ("外資+投信今日買超排行榜", "外資+投信買超", all_map, 5)
 
 for day in (5, 30):
     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)

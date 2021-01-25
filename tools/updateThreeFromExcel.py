@@ -11,35 +11,8 @@ from NetStockInfo import NetStockInfo
 import json
 import csv
 
-def getFromCache (stockID):
-    filename = "../info/%s.txt" % (stockID,)
-    if check_file (filename) == False:
-        return {}
-    file = open (filename, "r", encoding="utf-8")
-    tmp = file.read ()
-    file.close()
-    return json.loads (tmp)
-
-def saveCache (stockID, info):
-    filename = "../info/%s.txt" % (stockID,)
-    file = open (filename, "w", encoding="utf-8")
-    file.writelines (json.dumps (info))
-    file.close()
-
-def getFromContinueCache (stockID):
-    filename = "../info/%s_continue.txt" % (stockID,)
-    if check_file (filename) == False:
-        return {}
-    file = open (filename, "r", encoding="utf-8")
-    tmp = file.read ()
-    file.close()
-    return json.loads (tmp)
-
-def saveContinueCache (stockID, info):
-    filename = "../info/%s_continue.txt" % (stockID,)
-    file = open (filename, "w", encoding="utf-8")
-    file.writelines (json.dumps (info))
-    file.close()
+def getCacheFilename (stockID):
+    return "../info/%s.txt" % (stockID,)
 
 allstock = AllStockMgr.getAllStock ()
 
@@ -77,7 +50,7 @@ for filename in filelist:
             if row[0] not in allstock:
                 continue
             # 載入暫存資料
-            info = getFromCache (row[0])
+            info = getFromCache (getCacheFilename (row[0]), {})
             if "三大法人" not in info:
                 info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
@@ -108,7 +81,7 @@ for filename in filelist:
             #print (tmp)
             info["三大法人"][threeKey] = tmp
             # 做存入的動作
-            saveCache (stockID, info)
+            saveCache (getCacheFilename(stockID), info)
         file.close()
 
         # 要補沒有資料的部分
@@ -137,13 +110,13 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上櫃":
                 continue
-            info = getFromCache (stockID)
+            info = getFromCache (getCacheFilename(stockID), {})
             if "三大法人" not in  info:
                 info["三大法人"] = {}
             if threeKey not in info["三大法人"]:
                 #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
                 info["三大法人"][threeKey] = tmp
-                saveCache (stockID, info)
+                saveCache (getCacheFilename(stockID), info)
 
     #---------------------
     # 處理上巿內容
@@ -166,7 +139,7 @@ for filename in filelist:
             if row[0] not in allstock:
                 continue
             # 載入暫存資料
-            info = getFromCache (row[0])
+            info = getFromCache (getCacheFilename(row[0]), {})
             if "三大法人" not in info:
                 info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
@@ -197,7 +170,7 @@ for filename in filelist:
             #print (tmp)
             info["三大法人"][threeKey] = tmp
             # 做存入的動作
-            saveCache (stockID, info)
+            saveCache (getCacheFilename(stockID), info)
         file.close()
 
         # 要補沒有資料的部分
@@ -226,13 +199,13 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            info = getFromCache (stockID)
+            info = getFromCache (getCacheFilename(stockID), {})
             if "三大法人" not in  info:
                 info["三大法人"] = {}
             if threeKey not in info["三大法人"]:
                 #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
                 info["三大法人"][threeKey] = tmp
-                saveCache (stockID, info)
+                saveCache (getCacheFilename(stockID), info)
 
 
 
