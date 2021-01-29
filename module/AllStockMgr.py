@@ -249,10 +249,15 @@ class cSingleStock :
         self._write (file, res, "[2020前三季EPS]")
         quarterlyList = ["2020Q3", "2020Q2", "2020Q1"]
         for quarterly in quarterlyList:
+            if self.getInfo ("QEPS", quarterly, "EPS") == None:
+                continue
             self._write (file, res, 
-                "%s EPS:%s, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
+                "%s EPS:%s, 季營收: %.2f 億, 平均月營收: %.2f 億, 平均月EPS: %.2f, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
                 quarterly,
                 self.getInfo ("QEPS", quarterly, "EPS"),
+                self.getInfo ("QEPS", quarterly, "季營收"),
+                self.getInfo ("QEPS", quarterly, "平均月營收"),
+                self.getInfo ("QEPS", quarterly, "MEPS"),
                 self.getInfo ("QEPS", quarterly, "毛利率"),
                 self.getInfo ("QEPS", quarterly, "營業利益率"),
                 self.getInfo ("QEPS", quarterly, "稅前淨利率"),

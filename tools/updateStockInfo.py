@@ -78,6 +78,27 @@ for stockID, stock in allstock.items():
             print (stock.name, "還未有配股配息")
 
     #------------------------------------------
+    # 計算 2020Q1、2020Q2、2020Q3 季營收
+    tmpMap = {
+        "2020Q1" : ["2020/01", "2020/02", "2020/03"],
+        "2020Q2" : ["2020/04", "2020/05", "2020/06"],
+        "2020Q3" : ["2020/07", "2020/08", "2020/09"],
+        "2020Q4" : ["2020/10", "2020/11", "2020/12"],
+    }
+    for key, valueList in tmpMap.items():
+        if key not in info["QEPS"]:
+            continue
+        #print ("計算 %s 季營收 : %s" % (stock.name, key))
+        total = 0
+        for value in valueList:
+            tmp = float (info["月營收"][value]["月營收"]) / 100000.0
+            #print ("[%s] %.2f" % (value, tmp))
+            total += tmp
+        #print ("total : %.2f" % (total,))
+        info["QEPS"][key]["MEPS"] = float(info["QEPS"][key]["EPS"])/3
+        info["QEPS"][key]["季營收"] = total
+        info["QEPS"][key]["平均月營收"] = total/3
+
     # 把資料存起來
     saveCache (getCacheFilename(stockID), info)
 
