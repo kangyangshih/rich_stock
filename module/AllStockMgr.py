@@ -161,10 +161,6 @@ class cSingleStock :
         # 結束
         self._write (file, res, "")
 
-        # 平均操作值
-        #out_total, in_total = self._getThreeArg (1, 5, isABS=True)
-        #self._write (file, res, "[近五日三大法人平均值] 外資: %.0f, 法人: %.0f\n", out_total, in_total)
-
         #------------------------
         # 最近五天3大法人動作
         #------------------------
