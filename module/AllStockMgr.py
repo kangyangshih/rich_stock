@@ -144,7 +144,11 @@ class cSingleStock :
         sd2021_money = eps2020 * self._getStockDividenRate() / 100
         self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
         now_sd_rate = sd2021_money / realtime["now_price"] * 100
-        self._write (file, res, "目前殖利率預估 : %.2f %%",  now_sd_rate)
+        self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["now_price"], now_sd_rate)
+        # 買入價的殖利率預估
+        if self.buyPrice > 0:
+            tmp = sd2021_money / self.buyPrice * 100
+            self._write (file, res, "[買入價 %s 的殖利率預估] : %.2f %%",  self.buyPrice, tmp)
         # 計算 6% 殖利率的價格
         if now_sd_rate < 6 and eps2020 > 0:
             target_price = sd2021_money / 0.06
@@ -153,7 +157,6 @@ class cSingleStock :
         if eps2020 > 0 and self.future.find ("定存") != -1:
             target_price = sd2021_money / 0.08
             self._write (file, res, "[8%% 的買入價] : %.2f",  target_price)
-
 
         # 結束
         self._write (file, res, "")
@@ -254,6 +257,16 @@ class cSingleStock :
                 self.getInfo ("QEPS", quarterly, "營業利益率"),
                 self.getInfo ("QEPS", quarterly, "稅前淨利率"),
             )
+        #------------------------
+        # 2020 Q1~Q3 EPS
+        if self.getInfo ("QEPS", "2020Q1", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q3", "EPS") != None:
+
+            Q1Q3EPS = self.getInfoFloat ("QEPS", "2020Q1", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS")
+            self._write (file, res, "2020 Q1~Q3 EPS : %.2f 元", Q1Q3EPS)
 
         #------------------------
         # 去年EPS
