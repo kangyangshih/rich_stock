@@ -29,7 +29,8 @@ def getCSVRowNumber (value):
 # 先取得 ../tmp 下的 csv 檔案
 filelist = get_dir_file_list ("../threeDaily")
 for filename in filelist:
-
+    if filename.find ("ignore") != -1:
+        continue
     #---------------------
     # 處理上櫃的內容
     if filename.find ("BIGD_") != -1:

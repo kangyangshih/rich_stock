@@ -29,6 +29,9 @@ for stockID, stock in allstock.items():
     tmp = "../info/%s.txt" % (stockID,)
     if tmp in dirFileList:
         dirFileList.remove (tmp)
+    tmp = "../info/daily_%s.txt" % (stockID,)
+    if tmp in dirFileList:
+        dirFileList.remove (tmp)
 
 print ("需要被移除的列表:", dirFileList)
 for removeFile in dirFileList:
