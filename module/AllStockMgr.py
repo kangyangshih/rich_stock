@@ -461,12 +461,12 @@ class cAllStockMgr:
             single.operationType = excel.getValue(row_index, 4)
             single.future = excel.getValue (row_index, 5)
             # 買入價
-            single.buyPrice = excel.getValue (row_index, 6, 0, int)
-            single.emptyPrice = excel.getValue (row_index, 7, 0, int)
+            single.buyPrice = excel.getValue (row_index, 6, 0, float)
+            single.emptyPrice = excel.getValue (row_index, 7, 0, float)
             # 持有價
             single.holdPrice = excel.getValue (row_index, 8, 0, float)
             # 停損價
-            single.sellPrice = excel.getValue (row_index, 9, 0, int)
+            single.sellPrice = excel.getValue (row_index, 9, 0, float)
             # 標籤
             single.tag = excel.getValue (row_index, 10).replace ("%", "%%")
             # 取得一點影響到大盤的點數
