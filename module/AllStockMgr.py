@@ -12,6 +12,9 @@ from NetStockInfo import NetStockInfo
 #-----------------------------------------------------
 # 單一股票
 class cSingleStock :
+    # 日期的排序
+    dayKeyList = []
+    # 做初使化的動作
     def __init__(self):
         # 股票編號
         self.id = ""
@@ -80,6 +83,36 @@ class cSingleStock :
         # 把字串存起來
         res.append (strtmp)
     
+    # 取得指定天的均線
+    def _getdayPriceAgv (self, dayKey, rangeNum):
+        # 取得當日
+        if dayKey == 0:
+            dayKey = cSingleStock.dayKeyList[0]
+        # 取得前一天
+        if dayKey == -1:
+            dayKey = cSingleStock.dayKeyList[1]
+        # 取得日期
+        dayList = []
+        for index in range (len(cSingleStock.dayKeyList)):
+            if dayKey == cSingleStock.dayKeyList[index]:
+                dayList = cSingleStock.dayKeyList[index:index+rangeNum]
+        #print (dayList)
+        # 數量不夠就不計算
+        if len(dayList) != rangeNum:
+            return None
+        # 計算資料
+        res = 0
+        for day in dayList:
+            res += self.netInfo["daily"][day]["end_price"]
+        res = res / rangeNum
+        return res
+    
+    # 取得指定的資訊
+
+    # 取得當天資訊
+    def getTodayPrice (self):
+        return self.netInfo["daily"][cSingleStock.dayKeyList[0]]
+    
     # 計算投本比、外本比
     def _getBuyRate (self, num):
         return (num / (self.getInfoFloat ("股本") * 10000))
@@ -100,10 +133,17 @@ class cSingleStock :
         
         #------------------------
         # 今天的漲跌幅
-        realtime = NetStockInfo.getYahooRealtime (self.id, False, 0)
-        #print (realtime)
+        realtime = self.getTodayPrice ()
         self._write (file, res, "[本日股價表現]")
-        self._write (file, res, "%s %.1f 量 : %s", realtime["now_price"], realtime["now_result"], realtime["now_vol"])
+        self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
+        # 移動平均線
+        for index in (5, 20):
+            tmp = self._getdayPriceAgv (0, index)
+            preTmp = self._getdayPriceAgv (-1, index)
+            trend = "↑"
+            if tmp < preTmp:
+                trend = "↓"
+            self._write (file, res, "MA%s : %.2f %s" % (index, tmp, trend))
         self._write (file, res, "")
 
         #------------------------
@@ -143,8 +183,8 @@ class cSingleStock :
         #print (self._getStockDividenRate())
         sd2021_money = eps2020 * self._getStockDividenRate() / 100
         self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
-        now_sd_rate = sd2021_money / realtime["now_price"] * 100
-        self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["now_price"], now_sd_rate)
+        now_sd_rate = sd2021_money / realtime["end_price"] * 100
+        self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["end_price"], now_sd_rate)
         # 買入價的殖利率預估
         if self.buyPrice > 0:
             tmp = sd2021_money / self.buyPrice * 100
@@ -431,6 +471,8 @@ class cAllStockMgr:
     def __init__(self):
         # 存放所有的股票列表
         self.stockMap = {}
+        # 載入每日資料
+        cSingleStock.dayKeyList = getFromCache ("../info/dailyList.txt", [])
         # 載入股票
         self.__loadAllStock ()
 
@@ -495,10 +537,12 @@ class cAllStockMgr:
             res = []
             for key in keyList:
                 res.append (single.netInfo["三大法人"][key])
-            single.netInfo["三大法人"] = res            
+            single.netInfo["三大法人"] = res
+            # 載入每日資料
+            single.netInfo["daily"] = getFromCache ("../info/daily_%s.txt" % (single.id,), {})
             # 記錄起來
             self.stockMap[single.id] = single
-
+    
     # 取得所有的股票列表
     def getAllStock (self, isNeedNetInfo=False):
         res = {}

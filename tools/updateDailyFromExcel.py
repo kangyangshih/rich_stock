@@ -31,6 +31,7 @@ def getCSVRowNumber (value):
         return value.replace (",", "")
     return value
 
+#------------------------------------
 # 先取得 ../tmp 下的 csv 檔案
 filelist = get_dir_file_list ("../daily")
 #print (filelist)
@@ -163,6 +164,7 @@ for filename in filelist:
         file.close()
 
         tmp = {
+            "date" : dailyKey,
             # 量能 (從股數->張數)
             "vol" : 0,
             # 開盤價
@@ -187,6 +189,19 @@ for filename in filelist:
             info = getFromCache (getCacheFilename(stockID), {})
             if dailyKey not in info:
                 print (stock.name, stock.id)
-                #info[dailyKey] = tmp
+                info[dailyKey] = tmp
                 # 做存入的動作
-                #saveCache (getCacheFilename(stockID), info)
+                saveCache (getCacheFilename(stockID), info)
+
+#------------------------------------
+# 取得有開盤的日期
+print ("=== [取得有開盤的日期] ===")
+# 拿台泥來看
+info = getFromCache (getCacheFilename ("1101"), {})
+dayKeyList = [value for value in info.keys()]
+dayKeyList.sort (reverse=True)
+file = open ("../info/dailyList.txt", "w", encoding="utf-8")
+file.writelines (json.dumps (dayKeyList))
+file.close()
+print (dayKeyList)
+
