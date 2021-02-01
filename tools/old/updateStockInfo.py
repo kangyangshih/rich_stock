@@ -13,24 +13,19 @@ import json
 def getCacheFilename (stockID):
     return "../info/%s.txt" % (stockID,)
 
-is_all = True
-
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
-miss_qeps = 0
-miss_turnover = 0
 
+# 季 EPS
 epsKey = "2020Q3"
+# 月營收
 turnOverKey = "2020/12"
+# 股利分配
 sdKey = "2019"
 
 for stockID, stock in allstock.items():
     # 載入暫存資料
     info = getFromCache (getCacheFilename(stockID), {})
-
-    # 為了寫資料方便, 暫時不抓沒資料的
-    if stock.operationType == "" and is_all == False:
-        continue
 
     #------------------------------------------
     # 基本資料
@@ -47,7 +42,6 @@ for stockID, stock in allstock.items():
             print ("1")
             continue
         if epsKey not in info["QEPS"]:
-            miss_qeps += 1
             print (stock.name, "還未有", epsKey, "EPS")
         else:
             print (epsKey, json.dumps(info["QEPS"][epsKey]))
@@ -61,7 +55,6 @@ for stockID, stock in allstock.items():
             print ("2")
             continue
         if turnOverKey not in info["月營收"]:
-            miss_turnover += 1
             print (stock.name, "還未有", turnOverKey, "月營收")
         else:
             print (turnOverKey, json.dumps(info["月營收"][turnOverKey]))

@@ -219,7 +219,7 @@ class cSingleStock :
             # 外本比
             self._write (file, res, "近 %s 日外資: %.0f, 外本比: %.4f %%", day, out_total, out_total_rate)
         self._write (file, res, "")
-            
+        
         # 投本比
         today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
         today_in_rate = self._getBuyRate (today_in)
