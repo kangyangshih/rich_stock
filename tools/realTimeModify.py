@@ -50,10 +50,6 @@ for stockID, stock in allstock.items():
         stockOrder["做多"][stockID] = stock
         continue
 
-# 肯定是要刪目錄的
-#del_dir ("cache")
-#check_dir ("cache")
-
 # 印出來結果
 def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     #------------------------------

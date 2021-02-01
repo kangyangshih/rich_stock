@@ -19,6 +19,7 @@ class cNetStockInfo:
     # 從 Yahoo 取得基本資料
     #--------------------------------------------
     def getYahooBasic (self, stockID):
+        WebViewMgr.start()
         #  如果有股本就暫不處理
         url_template = "https://tw.stock.yahoo.com/d/s/company_%s.html"
         url = url_template % (stockID,)
@@ -138,6 +139,7 @@ class cNetStockInfo:
         #------------------------------
         url_template = "https://histock.tw/stock/%s/每股盈餘"
         url = url_template % (stockID,)
+        WebViewMgr.start()
         WebViewMgr.loadURL (url)
         # 先找年份 w1 w70
         source_nodes = WebViewMgr.getNodes ('//*[@class="w1 w70"]')
@@ -218,6 +220,7 @@ class cNetStockInfo:
     def getHistockTurnOver (self, stockID):
         url_template = "https://histock.tw/stock/%s/財務報表"
         url = url_template % (stockID,)
+        WebViewMgr.start()
         WebViewMgr.loadURL (url)
         # 利用 xpath 找到東西
         source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock text-center tbBasic"]/tbody/tr/td')
@@ -250,6 +253,7 @@ class cNetStockInfo:
     def getHistockStockDivide (self, stockID):
         url_template = "https://histock.tw/stock/%s/除權除息"
         url = url_template % (stockID,)
+        WebViewMgr.start()
         WebViewMgr.loadURL (url)
         # 利用 xpath 找到東西
         xpath = '//*[@class="tb-stock text-center tbBasic"]/tbody/tr'
@@ -281,6 +285,7 @@ class cNetStockInfo:
     def getHistockThree (self, stockID):
         url_template = "https://histock.tw/stock/chips.aspx?no=%s"
         url = url_template % (stockID,)
+        WebViewMgr.start()
         WebViewMgr.loadURL (url)
         # 利用 xpath 找到東西
         xpath = '//*[@class="tb-stock tbChip w50p pr0"]/tbody/tr'
@@ -320,6 +325,7 @@ class cNetStockInfo:
     def getHistockLSRate (self, stockID):
         url_template = "https://histock.tw/stock/%s/流速動比率"
         url = url_template % (stockID,)
+        WebViewMgr.start()
         WebViewMgr.loadURL (url)
         # 利用 xpath 找到東西
         source_nodes = WebViewMgr.getNodes ('//*[@class="tb-stock tbBasic"]/tbody/tr/td')
