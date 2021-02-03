@@ -333,8 +333,6 @@ for filename in filelist:
             stockID = row[0]
             if row[0] not in allstock:
                 continue
-            # 載入暫存資料
-            #print (row[1], row[0])
             info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
             diff = float (getCSVRowNumber(row[10]))
             tmp = {
@@ -377,13 +375,12 @@ for filename in filelist:
             # 前天價
             "pre_price" : 0,
         }
-
-        tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
         # 要補沒有資料的部分
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
             info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
+            #print (dailyKey)
             if dailyKey not in info:
                 print (stock.name, stock.id)
                 info[dailyKey] = tmp
@@ -423,7 +420,7 @@ for filename in filelist:
                 # 收盤價
                 "end_price" : float (getCSVRowNumber(row[2])),
                 # 差價
-                "diff" : float (getCSVRowNumber(row[3])) if row[3].strip(" ") != "除權" and row[3].strip(" ") != "除息" else None,
+                "diff" : float (getCSVRowNumber(row[3])) if row[3].strip(" ") != "除權" and row[3].strip(" ") != "除息" and row[3].strip(" ") != "除權息" else None,
                 # 開盤價
                 "start_price" : float (getCSVRowNumber(row[4])),
                 # 最高價
@@ -460,8 +457,6 @@ for filename in filelist:
             # 前天價
             "pre_price" : 0,
         }
-
-        tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
         # 要補沒有資料的部分
         for stockID, stock in allstock.items():
             if stock.location != "上櫃":
@@ -485,6 +480,47 @@ file.writelines (json.dumps (dayKeyList))
 file.close()
 print (dayKeyList)
 
-# 把沒有成交的個股，End Price 改成前一天。
-
+#------------------------------------
+# 把沒有成交的個股，End Price 改成前次有價格
+print ("=== [修改] ===")
+for stockID, stock in allstock.items():
+    # 取得資料
+    info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
+    isDirty = False
+    # 每一天都來看
+    for index, dayKey in enumerate (dayKeyList):
+        # 如果有交易就算了
+        if info[dayKey]["end_price"] > 0:
+            continue
+        isDirty = True
+        # 往後找
+        next_index = index+1
+        while True:
+            if next_index >= len(dayKeyList):
+                break
+            tmpDayKey = dayKeyList[next_index]
+            # 如果沒有價格, 就往下一個找
+            if "end_price" not in info[tmpDayKey]:
+                print (stock.name, stock.id, dayKey, tmpDayKey, info[tmpDayKey])
+            if info[tmpDayKey]["end_price"] == 0:
+                next_index += 1
+                continue
+            # 把價格做記錄的動作
+            print ("%s[%s] %s 沒有交易資料, 拿 %s 補, 改為 %s" % (
+                stock.name, 
+                stock.id, 
+                dayKey, 
+                tmpDayKey, 
+                info[tmpDayKey]["end_price"])
+            )
+            info[dayKey]["start_price"] = info[tmpDayKey]["end_price"]
+            info[dayKey]["high_price"] = info[tmpDayKey]["end_price"]
+            info[dayKey]["low_price"] = info[tmpDayKey]["end_price"]
+            info[dayKey]["end_price"] = info[tmpDayKey]["end_price"]
+            info[dayKey]["pre_price"] = info[tmpDayKey]["end_price"]
+            break
+    # 儲存起來
+    if isDirty == True:
+        saveCache ("../info/daily_%s.txt" % (stockID,), info)
+            
 

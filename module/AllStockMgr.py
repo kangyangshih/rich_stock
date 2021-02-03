@@ -142,8 +142,8 @@ class cSingleStock :
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
-        # 移動平均線
-        for index in (5, 20):
+        # 移動平均線 (周線/月線/季線)
+        for index in (5, 20, 60):
             tmp = self.getdayPriceAvg (0, index)
             preTmp = self.getdayPriceAvg (-1, index)
             trend = "↑"
