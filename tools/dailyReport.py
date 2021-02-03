@@ -21,10 +21,10 @@ allstock = AllStockMgr.getAllStock ()
 #exit_program()
 priorityKey = [
     "持有",
+    "短期注意",
     "核心", 
     "衛星",
     "定存", 
-    "短期注意",
     "當沖空",
     "電腦選",
     "阮老師",

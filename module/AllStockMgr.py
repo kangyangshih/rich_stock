@@ -139,9 +139,25 @@ class cSingleStock :
         tmp = tmp / rangeNum
         # 開根號
         tmp = tmp ** 0.5
+        # 取得評價
+        msg = ""
+        info = self.getTodayPrice (0)
+        if info["end_price"] < MA:
+            msg += "股價處於弱勢\n"
+        else:
+            msg += "股價處理強勢\n"
+        infoPre = self.getTodayPrice (1)
+        MA20Pre = self.getdayPriceAvg (1, rangeNum)
+        # 黃金交叉
+        if infoPre["end_price"] < MA20Pre and info["end_price"] > MA:
+            msg += "價格由下向上，升穿下軌線，可伺機逢低買入"
+        # 死亡交叉
+        if infoPre["end_price"] > MA20Pre and info["end_price"] < MA:
+            msg += "價格由上向下，跌破中軌線，可伺機逢高賣出"
+        
         #------------------------
         # 取得 bband
-        return MA + tmp*rate, MA, MA - tmp*rate
+        return MA + tmp*rate, MA, MA - tmp*rate, msg
 
     # 取得平均量
     def getdayVolAvg (self, dayKey, rangeNum):
@@ -194,8 +210,8 @@ class cSingleStock :
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
         # 顯示布林通道
-        bband_up, bband, bband_down = self.getBBand ()
-        self._write (file, res, "布林通道: (%.1f, %.1f)", bband_up, bband_down)
+        bband_up, bband, bband_down, msg = self.getBBand ()
+        self._write (file, res, "布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
         # 移動平均線 (周線/月線/季線)
         for index in (5, 20, 60):
             # 當天均線
