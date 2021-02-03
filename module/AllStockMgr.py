@@ -84,7 +84,7 @@ class cSingleStock :
         res.append (strtmp)
     
     # 取得指定天的均線
-    def _getdayPriceAgv (self, dayKey, rangeNum):
+    def _getdayInfoAvg (self, infoKey, dayKey, rangeNum):
         # 取得當日
         if dayKey == 0:
             dayKey = cSingleStock.dayKeyList[0]
@@ -103,12 +103,16 @@ class cSingleStock :
         # 計算資料
         res = 0
         for day in dayList:
-            res += self.netInfo["daily"][day]["end_price"]
+            res += self.netInfo["daily"][day][infoKey]
         res = res / rangeNum
         return res
     
-    # 取得指定的資訊
-
+    def getdayPriceAvg (self, dayKey, rangeNum):
+        return self._getdayInfoAvg ("end_price", dayKey, rangeNum)
+    
+    def getdayVolAvg (self, dayKey, rangeNum):
+        return self._getdayInfoAvg ("vol", dayKey, rangeNum)
+    
     # 取得當天資訊
     def getTodayPrice (self):
         return self.netInfo["daily"][cSingleStock.dayKeyList[0]]
@@ -120,6 +124,9 @@ class cSingleStock :
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
+        realtime = self.getTodayPrice ()
+        if realtime["end_price"] == 0:
+            return res
         #------------------------
         # 寫入基本資料
         self._write (file, res, "#-------------------------------")
@@ -133,13 +140,12 @@ class cSingleStock :
         
         #------------------------
         # 今天的漲跌幅
-        realtime = self.getTodayPrice ()
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
         # 移動平均線
         for index in (5, 20):
-            tmp = self._getdayPriceAgv (0, index)
-            preTmp = self._getdayPriceAgv (-1, index)
+            tmp = self.getdayPriceAvg (0, index)
+            preTmp = self.getdayPriceAvg (-1, index)
             trend = "↑"
             if tmp < preTmp:
                 trend = "↓"

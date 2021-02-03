@@ -338,7 +338,8 @@ for filename in filelist:
             info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
             diff = float (getCSVRowNumber(row[10]))
             tmp = {
-                # 
+                # 每日資訊
+                "date" : dailyKey,
                 # 量能 (從股數->張數)
                 "vol" : int(getCSVRowNumber(row[2], True)),#int(int(getCSVRowNumber(row[2]))/1000),
                 # 開盤價
@@ -359,6 +360,8 @@ for filename in filelist:
         file.close()
 
         tmp = {
+            # 每日資訊
+            "date" : dailyKey,
             # 量能 (從股數->張數)
             "vol" : 0,
             # 開盤價
@@ -370,7 +373,7 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : 0,
+            "diff" : None,
             # 前天價
             "pre_price" : 0,
         }
@@ -415,6 +418,8 @@ for filename in filelist:
             #print (row[1], row[0])
             info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
             tmp = {
+                # 每日資訊
+                "date" : dailyKey,
                 # 收盤價
                 "end_price" : float (getCSVRowNumber(row[2])),
                 # 差價
@@ -438,6 +443,7 @@ for filename in filelist:
         file.close()
 
         tmp = {
+            # 每日資訊
             "date" : dailyKey,
             # 量能 (從股數->張數)
             "vol" : 0,
@@ -450,7 +456,7 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : 0,
+            "diff" : None,
             # 前天價
             "pre_price" : 0,
         }
@@ -478,4 +484,7 @@ file = open ("../info/dailyList.txt", "w", encoding="utf-8")
 file.writelines (json.dumps (dayKeyList))
 file.close()
 print (dayKeyList)
+
+# 把沒有成交的個股，End Price 改成前一天。
+
 
