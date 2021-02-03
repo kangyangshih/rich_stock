@@ -85,12 +85,7 @@ class cSingleStock :
     
     # 取得指定天的均線
     def _getdayInfoAvg (self, infoKey, dayKey, rangeNum):
-        # 取得當日
-        if dayKey == 0:
-            dayKey = cSingleStock.dayKeyList[0]
-        # 取得前一天
-        if dayKey == -1:
-            dayKey = cSingleStock.dayKeyList[1]
+        dayKey = cSingleStock.dayKeyList[dayKey]
         # 取得日期
         dayList = []
         for index in range (len(cSingleStock.dayKeyList)):
@@ -107,19 +102,75 @@ class cSingleStock :
         res = res / rangeNum
         return res
     
+    # 取得 MA
     def getdayPriceAvg (self, dayKey, rangeNum):
         return self._getdayInfoAvg ("end_price", dayKey, rangeNum)
     
+    # 取得乖離率 (Bias Rate(BIAS))
+    def getdayBIAS (self, rangeNum):
+        # 取得 MA5
+        MA = self.getdayPriceAvg (0, rangeNum)
+        # 取得今天的資料
+        info = self.getTodayPrice (0)
+        # N日乖離率＝（當日收盤價－N日移動平均價）÷N日移動平均價×100%
+        res = (info["end_price"]-MA)/MA * 100
+        # 正乖離過大
+        if res >= 15:
+            return res, "正乖離過大，要小心拉回"
+        # 負乖離過大
+        if res <= -15:
+            return res, "負乖離過大，可能有反彈"
+        return res, ""
+    
+    # 取得布林通道
+    def getBBand (self, rangeNum=20, rate=2):
+        #------------------------
+        # 取得MA
+        MA = self.getdayPriceAvg (0, rangeNum)
+        #------------------------
+        # 取得標準差
+        tmp = 0
+        # 取得差數平方數
+        for index in range (rangeNum):
+            info = self.getTodayPrice (index)
+            #MA = self.getdayPriceAvg (index, rangeNum)
+            tmp += (info["end_price"] - MA) ** 2
+        # 均值
+        tmp = tmp / rangeNum
+        # 開根號
+        tmp = tmp ** 0.5
+        #------------------------
+        # 取得 bband
+        return MA + tmp*rate, MA, MA - tmp*rate
+
+    # 取得平均量
     def getdayVolAvg (self, dayKey, rangeNum):
         return self._getdayInfoAvg ("vol", dayKey, rangeNum)
     
     # 取得當天資訊
-    def getTodayPrice (self):
-        return self.netInfo["daily"][cSingleStock.dayKeyList[0]]
+    def getTodayPrice (self, dayShift=0):
+        return self.netInfo["daily"][cSingleStock.dayKeyList[dayShift]]
     
     # 計算投本比、外本比
     def _getBuyRate (self, num):
         return (num / (self.getInfoFloat ("股本") * 10000))
+
+    # 取得一些常講的技術線型
+    def specialMA (self):
+        # 取得今天的 20/60 MA
+        MA20 = self.getdayPriceAvg (0, 20)
+        MA60 = self.getdayPriceAvg (0, 60)
+        # 取得昨天的 20/60 MA
+        MA20Pre = self.getdayPriceAvg (1, 20)
+        MA60Pre = self.getdayPriceAvg (1, 60)
+        # 黃金交叉
+        if MA20Pre < MA60Pre and MA20 > MA60:
+            return 1, "黃金交叉"
+        # 死亡交叉
+        if MA20Pre > MA60Pre and MA20 < MA60:
+            return 2, "死亡交叉"
+        # 什麼都沒有
+        return 0, ""
 
     # 寫入單股資料
     def dumpInfo (self, file=None):
@@ -142,14 +193,31 @@ class cSingleStock :
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
+        # 顯示布林通道
+        bband_up, bband, bband_down = self.getBBand ()
+        self._write (file, res, "布林通道: (%.1f, %.1f)", bband_up, bband_down)
         # 移動平均線 (周線/月線/季線)
         for index in (5, 20, 60):
+            # 當天均線
             tmp = self.getdayPriceAvg (0, index)
-            preTmp = self.getdayPriceAvg (-1, index)
+            # 前一天均線
+            preTmp = self.getdayPriceAvg (1, index)
+            # 趨勢
             trend = "↑"
             if tmp < preTmp:
                 trend = "↓"
-            self._write (file, res, "MA%s : %.2f %s" % (index, tmp, trend))
+            # BIAS
+            bias, msg = self.getdayBIAS (index)
+            if index <= 20:
+                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f %% %s", index, tmp, trend, bias, msg)
+            else:
+                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f", index, tmp, trend, bias)
+        # 是黃金交叉還是死亡交叉
+        specialMAType, tmp = self.specialMA ()
+        if specialMAType > 0:
+            self._write (file, res, tmp)
+
+        # 結束
         self._write (file, res, "")
 
         #------------------------
