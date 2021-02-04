@@ -150,10 +150,16 @@ class cSingleStock :
         MA20Pre = self.getdayPriceAvg (1, rangeNum)
         # 黃金交叉
         if infoPre["end_price"] < MA20Pre and info["end_price"] > MA:
-            msg += "價格由下向上，升穿下軌線，可伺機逢低買入"
+            msg += "價格由下向上，升穿下軌線，可伺機逢低買入\n"
         # 死亡交叉
         if infoPre["end_price"] > MA20Pre and info["end_price"] < MA:
-            msg += "價格由上向下，跌破中軌線，可伺機逢高賣出"
+            msg += "價格由上向下，跌破中軌線，可伺機逢高賣出\n"
+        
+        # 突破上下緣
+        if info["end_price"] > MA+tmp*rate:
+            msg += "超級強勢，要小心出場時間"
+        elif info["end_price"] < MA - tmp*rate:
+            msg += "超級弱勢，可以準備進場"
         
         #------------------------
         # 取得 bband
@@ -225,9 +231,9 @@ class cSingleStock :
             # BIAS
             bias, msg = self.getdayBIAS (index)
             if index <= 20:
-                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f %% %s", index, tmp, trend, bias, msg)
+                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f%% %s", index, tmp, trend, bias, msg)
             else:
-                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f", index, tmp, trend, bias)
+                self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f%%", index, tmp, trend, bias)
         # 是黃金交叉還是死亡交叉
         specialMAType, tmp = self.specialMA ()
         if specialMAType > 0:

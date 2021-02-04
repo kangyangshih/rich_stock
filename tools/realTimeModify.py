@@ -146,6 +146,8 @@ while True:
     for stockType, stockMap in stockOrder.items():
         print ("=======%s=======" % (stockType,))
         buyList = []
+        bup = []
+        bdown = []
         tmpDict = {}
         for stockID, stock in stockMap.items():
             # 取得及時資訊
@@ -157,9 +159,16 @@ while True:
                 continue
             if stockType == "做多" or stockType == "短期注意":
                 tmp = printRealtimeStock (stockType, stock, g_removeList, realtime, False)
+                if tmp == None:
+                    continue
+                bband_up, bband, bband_down, msg = stock.getBBand()
                 # 買入提示
                 if realtime["now_price"] <= stock.buyPrice:
                     buyList.append (tmp)
+                elif realtime["now_price"] >= bband_up:
+                    bup.append (tmp)
+                elif realtime["now_price"] <= bband_down:
+                    bdown.append (tmp)
                 # 做排序的功能
                 else:
                     if realtime["now_result_rate"] not in tmpDict:
@@ -175,14 +184,29 @@ while True:
             if len(buyList) > 0:
                 print ("=== 可買股 ===")
                 for info in buyList:
+                    if info == None:
+                        continue
+                    print (info)
+            if len(bup) > 0:
+                print ("=== 突破布林軌道上緣 ===")
+                for info in bup:
+                    if info == None:
+                        continue
+                    print (info)
+            if len(bdown) > 0:
+                print ("=== 跌破布林軌道上緣 ===")
+                for info in bdown:
+                    if info == None:
+                        continue
                     print (info)
             print ("=== 依跌幅排行 ===")
             tmpKeyList = [value for value in tmpDict.keys()]
             tmpKeyList.sort (reverse=False)
             for tmpKey in tmpKeyList:
                 for info in tmpDict[tmpKey]:
-                    if info != None:
-                        print (info)
+                    if info == None:
+                        continue
+                    print (info)
         print ("")
     # 更新一下列表
     for stockType, stockMap in stockOrder.items():
