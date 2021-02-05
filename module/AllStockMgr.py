@@ -351,6 +351,7 @@ class cSingleStock :
         # 近三個月的營收
         self._write (file, res, "[最近月營收]")
         monthList = [
+            "2021/01", 
             "2020/12", 
             "2020/11", 
             "2020/10", 
