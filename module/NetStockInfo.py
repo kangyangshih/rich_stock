@@ -28,7 +28,6 @@ class cNetStockInfo:
         info = {}
         #--------------------------------
         # 取得股本位置
-        #                             /html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]
         equity = WebViewMgr.getText ('/html/body/table[1]/tbody/tr[2]/td/table[1]/tbody/tr[8]/td[2]')
         # 如果載入失敗就等10秒再重載入
         if equity == None:
