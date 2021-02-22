@@ -225,7 +225,95 @@ for filename in filelist:
         threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
         if filename.find ("T86_ALL_2020") != -1:
             threeKey = "2020/%s/%s" % (purename[:2], purename[-2:])
-        print ("上巿檔案, 日期:", threeKey)
+        print ("上巿檔案 ALL, 日期:", threeKey)
+        file = open (filename, "r", encoding="utf-8")
+        rows = csv.reader(file, delimiter=',', quotechar='"')
+        for row in rows:
+            if len(row) == 0:
+                continue
+            stockID = row[0]
+            if row[0] not in allstock:
+                continue
+            # 載入暫存資料
+            info = getFromCache ("../info/%s.txt" % (stockID,), {})
+            if "三大法人" not in info:
+                info["三大法人"] = {}
+            #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
+            #print (row)
+            #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : getCSVRowNumber(row[2], True),
+                "out_sell" : getCSVRowNumber(row[3], True),
+                "out" : getCSVRowNumber(row[4], True),
+                # 投信
+                "in_buy" : getCSVRowNumber(row[8], True),
+                "in_sell" : getCSVRowNumber(row[9], True),
+                "in" : getCSVRowNumber(row[10], True),
+                # 自營商(自行買賣)
+                "self_0_buy" : getCSVRowNumber(row[12], True),
+                "self_0_sell" : getCSVRowNumber(row[13], True),
+                "self_0" : getCSVRowNumber(row[14], True),
+                # 自營商(避險)
+                "self_1_buy" : getCSVRowNumber(row[15], True),
+                "self_1_sell" : getCSVRowNumber(row[16], True),
+                "self_1" : getCSVRowNumber(row[17], True),
+                # 總計
+                "total" : getCSVRowNumber(row[18], True),
+            }
+            #print (tmp)
+            info["三大法人"][threeKey] = tmp
+            # 做存入的動作
+            saveCache ("../info/%s.txt" % (stockID,), info)
+        file.close()
+
+        # 要補沒有資料的部分
+        tmp = {
+            # 日期
+            "date" : threeKey,
+            # 外資
+            "out_buy" : "0",
+            "out_sell" : "0",
+            "out" : "0",
+            # 投信
+            "in_buy" : "0",
+            "in_sell" : "0",
+            "in" : "0",
+            # 自營商(自行買賣)
+            "self_0_buy" : "0",
+            "self_0_sell" : "0",
+            "self_0" : "0",
+            # 自營商(避險)
+            "self_1_buy" : "0",
+            "self_1_sell" : "0",
+            "self_1" : "0",
+            # 總計
+            "total" : "0",
+        }
+        for stockID, stock in allstock.items():
+            if stock.location != "上巿":
+                continue
+            info = getFromCache ("../info/%s.txt" % (stockID,), {})
+            if "三大法人" not in  info:
+                info["三大法人"] = {}
+            if threeKey not in info["三大法人"]:
+                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
+                info["三大法人"][threeKey] = tmp
+                saveCache ("../info/%s.txt" % (stockID,), info)
+    #---------------------
+    # 處理上巿內容
+    if filename.find ("T86_ALLBUT0999_") != -1:
+        # 取得 threeKey
+        print ("處理:", filename)
+        purename = getPureFilename (filename)
+        purename = purename[19:-4]
+        #print (purename)
+        threeKey = "2021/%s/%s" % (purename[:2], purename[-2:])
+        if filename.find ("T86_ALLBUT0999_2020") != -1:
+            threeKey = "2020/%s/%s" % (purename[:2], purename[-2:])
+        print ("上巿檔案 BUT0999, 日期:", threeKey)
         file = open (filename, "r", encoding="utf-8")
         rows = csv.reader(file, delimiter=',', quotechar='"')
         for row in rows:

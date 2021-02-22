@@ -98,8 +98,8 @@ for stockID, stock in allstock.items():
             # 就重覆寫沒關係
             #break
     # 如果沒在裏面就放在最後
-    if isOrder == False and stock.operationType != "":
-    #if isOrder == False:
+    #if isOrder == False and stock.operationType != "":
+    if isOrder == False:
         stockOrder["雜項"][stockID] = stock
 
 file = open ("../price.txt", "w", encoding="utf-8")
