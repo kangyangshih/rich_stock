@@ -11,8 +11,8 @@ import json
 import csv
 
 # 季 EPS
-#epsKey = "2020Q3"
-epsKey = "2020Q4"
+epsKey = "2020Q3"
+#epsKey = "2020Q4"
 # 月營收
 turnOverKey = "2021/01"
 #turnOverKey = "2020/12"
@@ -46,6 +46,23 @@ allstock = AllStockMgr.getAllStock ()
 
 #------------------------------------------------
 print ("=== [更新基本資料] ===")
+# 計算還有幾家沒有 QEPS、月營收
+leave = 0
+for stockID, stock in allstock.items():
+    # 載入暫存資料
+    info = getFromCache ("../info/%s.txt" % (stockID,), {})
+    if "QEPS" not in info or epsKey not in info["QEPS"]:
+        continue
+    leave += 1
+print ("[QEPS %s] 更新進度 %s/%s" % (epsKey, leave, len(allstock)))
+leave = 0
+for stockID, stock in allstock.items():
+    # 載入暫存資料
+    info = getFromCache ("../info/%s.txt" % (stockID,), {})
+    if "月營收" not in info or turnOverKey not in info["月營收"]:
+        continue
+    leave += 1
+print ("[月營收 %s] 更新進度 %s/%s" % (turnOverKey, leave, len(allstock)))
 # 更新基本資料
 for stockID, stock in allstock.items():
     # 載入暫存資料

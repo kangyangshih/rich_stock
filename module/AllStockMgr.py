@@ -41,6 +41,10 @@ class cSingleStock :
         # 其他描述
         self.desc = ""
         self.netInfo = {}
+        # 2020 公告的EPS
+        self.EPS2020 = None
+        # 2021 的配股息
+        self.SD2021 = None
     
     # 取得字串資訊
     def getInfo (self, *args):
@@ -193,6 +197,24 @@ class cSingleStock :
             return 2, "死亡交叉"
         # 什麼都沒有
         return 0, ""
+    
+    # 取得個股的描述
+    def getDesc (self):
+        sourceRes = self.desc
+        res = ""
+        # 去除掉一些不必要的資料
+        lineToken = sourceRes.split ("\n")
+        for line in lineToken:
+            if line.startswith ("[2020 EPS]") == True:
+                self.EPS2020 = float (line[11:])
+                res += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
+                continue
+            if line.startswith ("[2021 股息]") == True:
+                self.SD2021 = float (line[9:])
+                res += "[公告] 2021 配息 : %.2f\n" % (self.SD2021,)
+                continue
+            res += line + "\n"
+        return res
 
     # 寫入單股資料
     def dumpInfo (self, file=None):
@@ -212,13 +234,25 @@ class cSingleStock :
         self._write (file, res, "")
         
         #------------------------
+        # 持有價
+        if self.holdPrice > 0:
+            self._write (file, res, "[持有價] %s", self.holdPrice)
+        # 買入價或是空單價
+        if self.buyPrice > 0:
+            self._write (file, res, "[買入價] %s", self.buyPrice)
+        elif self.emptyPrice > 0:
+            self._write (file, res, "[空單價] %s", self.emptyPrice)
+        self._write (file, res, "")
+
+        #------------------------
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
         self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
         # 顯示布林通道
         bband_up, bband, bband_down, msg = self.getBBand ()
-        self._write (file, res, "布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
+        self._write (file, res, "\n布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
         # 移動平均線 (周線/月線/季線)
+        self._write (file, res, "")
         for index in (5, 20, 60):
             # 當天均線
             tmp = self.getdayPriceAvg (0, index)
@@ -234,23 +268,19 @@ class cSingleStock :
                 self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f%% %s", index, tmp, trend, bias, msg)
             else:
                 self._write (file, res, "MA%s : %.2f %s 乖離率:%.2f%%", index, tmp, trend, bias)
+            # 跌破X日線
+            if realtime["pre_price"] > tmp and realtime["end_price"] < tmp:
+                self._write (file, res, "<跌破 %s 日線>" % (index,))
+        self._write (file, res, "")
+
+        #------------------------
+        # 技術線型
+        self._write (file, res, "[技術線型]")
         # 是黃金交叉還是死亡交叉
         specialMAType, tmp = self.specialMA ()
         if specialMAType > 0:
             self._write (file, res, tmp)
-
         # 結束
-        self._write (file, res, "")
-
-        #------------------------
-        # 持有價
-        if self.holdPrice > 0:
-            self._write (file, res, "[持有價] %s", self.holdPrice)
-        # 買入價或是空單價
-        if self.buyPrice > 0:
-            self._write (file, res, "[買入價] %s", self.buyPrice)
-        elif self.emptyPrice > 0:
-            self._write (file, res, "[空單價] %s", self.emptyPrice)
         self._write (file, res, "")
 
         #------------------------
@@ -258,10 +288,9 @@ class cSingleStock :
         self._write (file, res, "[個股相關資訊] %s", self.future)
         # 分類類型
         self._write (file, res, self.operationType)
-
+        # 描述
         if self.desc != "":
-            self._write (file, res, self.desc)
-
+            self._write (file, res, self.getDesc())
         self._write (file, res, "")
 
         #------------------------
@@ -277,8 +306,12 @@ class cSingleStock :
 
         # 2021 預估配股配息和目前殖利率
         #print (self._getStockDividenRate())
-        sd2021_money = eps2020 * self._getStockDividenRate() / 100
-        self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
+        sd2021_money = self.SD2021
+        if sd2021_money == None:
+            sd2021_money = eps2020 * self._getStockDividenRate() / 100
+            self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
+        else:
+            self._write (file, res, "2021 公告配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
         now_sd_rate = sd2021_money / realtime["end_price"] * 100
         self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["end_price"], now_sd_rate)
         # 買入價的殖利率預估
@@ -466,6 +499,8 @@ class cSingleStock :
     # 取得2020 EPS 預估    
     #---------------------------------------
     def _get2020EPS (self):
+        if self.EPS2020 != None:
+            return self.EPS2020
         if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
             eps2020 = self.getInfoFloat ("QEPS", "2020Q3", "EPS") * 2 \
                     + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
@@ -625,6 +660,7 @@ class cAllStockMgr:
             # 轉三大法人的資料變成 list
             #---------
             # 沒有個人資訊也不做處理
+            #print (infoFilename)
             single.netInfo = getFromCache (infoFilename, {})
             # 要處理三大法人, 從 dict 變 list
             #print (single.id, single.name)
