@@ -302,12 +302,16 @@ class cSingleStock :
         # 可以加入自己的評價
         self._write (file, res, "[本日簡評]")
         # 2020 預估 EPS
-        eps2020 = self._get2020EPS ()
-        if eps2020 != None:
-            self._write (file, res, "2020 預估全年 EPS : %.2f", eps2020)
-        else:
+        tmp, eps2020 = self._get2020EPS ()
+        if tmp == 3:
             self._write (file, res, "無法預估2020 EPS")
             eps2020 = 0
+        elif tmp == 0:
+            self._write (file, res, "2020Q4 EPS (%.2f) 公告，全年EPS : %.2f", self.getInfoFloat ("QEPS", "2020Q4", "EPS"), eps2020)
+        elif tmp == 1:
+            self._write (file, res, "2020 新聞公告EPS : %.2f", eps2020)
+        else:
+            self._write (file, res, "2020 預估全年 EPS : %.2f", eps2020)
 
         # 2021 預估配股配息和目前殖利率
         #print (self._getStockDividenRate())
@@ -386,26 +390,12 @@ class cSingleStock :
         self._write (file, res, "")
 
         #------------------------
-        # 近三個月的營收
+        # 近幾個月的營收
         self._write (file, res, "[最近月營收]")
-        monthList = [
-            "2021/01", 
-            "2020/12", 
-            "2020/11", 
-            "2020/10", 
-            "2020/09", 
-            "2020/08",
-            "2020/07",
-            "2020/06",
-            "2020/05",
-            "2020/04",
-            "2020/03",
-            "2020/02",
-            "2020/01",
-        ]
-        for month in monthList:
-            if month not in self.netInfo["月營收"]:
-                continue
+        monthNum = 13
+        tmpList = changeDict2List (self.netInfo["月營收"])
+        for index in range (monthNum):
+            month = tmpList[index]["年度/月份"]
             self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
                 self.getInfo ("月營收", month, "年度/月份"),
                 self.getInfoInt ("月營收", month, "月營收")/100000.0,
@@ -413,15 +403,40 @@ class cSingleStock :
                 self.getInfo ("月營收", month, "年增"),
                 self.getInfo ("月營收", month, "累計年增"),
             )
+        # monthList = [
+        #     "2021/01", 
+        #     "2020/12", 
+        #     "2020/11", 
+        #     "2020/10", 
+        #     "2020/09", 
+        #     "2020/08",
+        #     "2020/07",
+        #     "2020/06",
+        #     "2020/05",
+        #     "2020/04",
+        #     "2020/03",
+        #     "2020/02",
+        #     "2020/01",
+        # ]
+        # for month in monthList:
+        #     if month not in self.netInfo["月營收"]:
+        #         continue
+        #     self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
+        #         self.getInfo ("月營收", month, "年度/月份"),
+        #         self.getInfoInt ("月營收", month, "月營收")/100000.0,
+        #         self.getInfo ("月營收", month, "月增"),
+        #         self.getInfo ("月營收", month, "年增"),
+        #         self.getInfo ("月營收", month, "累計年增"),
+        #     )
         self._write (file, res, "")
 
         #------------------------
         # 前三季 EPS
-        self._write (file, res, "[2020前三季EPS]")
-        quarterlyList = ["2020Q3", "2020Q2", "2020Q1"]
-        for quarterly in quarterlyList:
-            if self.getInfo ("QEPS", quarterly, "EPS") == None:
-                continue
+        self._write (file, res, "[前四季EPS]")
+        QEPSNum = 5
+        tmpList = changeDict2List (self.netInfo["QEPS"])
+        for index in range (QEPSNum):
+            quarterly = tmpList[index]["年度"]
             self._write (file, res, 
                 "%s EPS:%s, 季營收: %.2f 億, 平均月營收: %.2f 億, 平均月EPS: %.2f, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
                 quarterly,
@@ -433,12 +448,26 @@ class cSingleStock :
                 self.getInfo ("QEPS", quarterly, "營業利益率"),
                 self.getInfo ("QEPS", quarterly, "稅前淨利率"),
             )
+        # for quarterly in quarterlyList:
+        #     if self.getInfo ("QEPS", quarterly, "EPS") == None:
+        #         continue
+        #     self._write (file, res, 
+        #         "%s EPS:%s, 季營收: %.2f 億, 平均月營收: %.2f 億, 平均月EPS: %.2f, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
+        #         quarterly,
+        #         self.getInfo ("QEPS", quarterly, "EPS"),
+        #         self.getInfo ("QEPS", quarterly, "季營收"),
+        #         self.getInfo ("QEPS", quarterly, "平均月營收"),
+        #         self.getInfo ("QEPS", quarterly, "MEPS"),
+        #         self.getInfo ("QEPS", quarterly, "毛利率"),
+        #         self.getInfo ("QEPS", quarterly, "營業利益率"),
+        #         self.getInfo ("QEPS", quarterly, "稅前淨利率"),
+        #     )
+        
         #------------------------
         # 2020 Q1~Q3 EPS
         if self.getInfo ("QEPS", "2020Q1", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q3", "EPS") != None:
-
             Q1Q3EPS = self.getInfoFloat ("QEPS", "2020Q1", "EPS") \
                 + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
                 + self.getInfoFloat ("QEPS", "2020Q3", "EPS")
@@ -501,18 +530,27 @@ class cSingleStock :
         return sdRate / years
 
     #---------------------------------------
-    # 取得2020 EPS 預估    
+    # 取得2020 EPS 預估
+    # 0 : 手工記錄
+    # 1 : 2020Q4 公告了
+    # 2 : 預估的
     #---------------------------------------
     def _get2020EPS (self):
+        # case 0 : 如果有公告 2020Q4，就去抓取
+        if self.getInfo ("QEPS", "2020Q4", "EPS") != None:
+            return 0, self.getInfoFloat ("QEPS", "2020Q4", "EPS") + self.getInfoFloat ("QEPS", "2020Q3", "EPS") + self.getInfoFloat ("QEPS", "2020Q2", "EPS") + self.getInfoFloat ("QEPS", "2020Q1", "EPS")
+        # case 1 : 如果有公告就以公告為主
         if self.EPS2020 != None:
-            return self.EPS2020
+            return 1, self.EPS2020
+        # case 2 : 做預估 2020Q4
         if self.getInfo ("QEPS", "2020Q3", "EPS") != None and self.getInfo ("QEPS", "2020Q2", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
             eps2020 = self.getInfoFloat ("QEPS", "2020Q3", "EPS") * 2 \
                     + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
                     + self.getInfoFloat ("QEPS", "2020Q1", "EPS")
-            return eps2020
+            return 2, eps2020
+        # case 3 : 沒有辨法處理
         else:
-            return None
+            return 3, None
     
     #---------------------------------------
     # 取得近五年的外資買賣平均值
