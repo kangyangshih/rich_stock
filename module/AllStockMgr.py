@@ -433,10 +433,21 @@ class cSingleStock :
         #------------------------
         # 前三季 EPS
         self._write (file, res, "[前四季EPS]")
-        QEPSNum = 5
+        QEPSNum = 0
         tmpList = changeDict2List (self.netInfo["QEPS"])
-        for index in range (QEPSNum):
+        for index in range (100):
+            if index >= len(tmpList):
+                break
             quarterly = tmpList[index]["年度"]
+            #print (index, tmpList[index]["年度"])
+            if quarterly.find ("Q") == -1:
+                continue
+            QEPSNum += 1
+            if QEPSNum > 5:
+                break
+            if self.getInfo ("QEPS", quarterly, "季營收") == None:
+                break
+            print (index, tmpList[index]["年度"])
             self._write (file, res, 
                 "%s EPS:%s, 季營收: %.2f 億, 平均月營收: %.2f 億, 平均月EPS: %.2f, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
                 quarterly,
@@ -462,10 +473,20 @@ class cSingleStock :
         #         self.getInfo ("QEPS", quarterly, "營業利益率"),
         #         self.getInfo ("QEPS", quarterly, "稅前淨利率"),
         #     )
-        
+
         #------------------------
         # 2020 Q1~Q3 EPS
         if self.getInfo ("QEPS", "2020Q1", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q4", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q3", "EPS") != None:
+            Q1Q4EPS = self.getInfoFloat ("QEPS", "2020Q1", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS")
+            self._write (file, res, "2020 Q1~Q4 EPS : %.2f 元", Q1Q4EPS)
+
+        elif self.getInfo ("QEPS", "2020Q1", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q3", "EPS") != None:
             Q1Q3EPS = self.getInfoFloat ("QEPS", "2020Q1", "EPS") \

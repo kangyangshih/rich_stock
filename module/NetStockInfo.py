@@ -167,6 +167,7 @@ class cNetStockInfo:
                 key = "%s" % (year,)
             # 取得內容設定
             info[key] = {
+                "年度" : key,
                 "EPS" : node.text,
                 "毛利率" : None,
                 "營業利益率" : None,
