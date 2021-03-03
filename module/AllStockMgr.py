@@ -202,19 +202,24 @@ class cSingleStock :
     def getDesc (self):
         sourceRes = self.desc
         res = ""
+        tail = ""
         # 去除掉一些不必要的資料
         lineToken = sourceRes.split ("\n")
         for line in lineToken:
+            # 取得公告數值，加到最後
             if line.startswith ("[2020 EPS]") == True:
                 self.EPS2020 = float (line[11:])
-                res += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
+                tail += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
                 continue
+            # 取得公告數值，加到最後
             if line.startswith ("[2021 股息]") == True:
                 self.SD2021 = float (line[9:])
-                res += "[公告] 2021 配息 : %.2f\n" % (self.SD2021,)
+                tail += "[公告] 2021 配息 : %.2f\n" % (self.SD2021,)
                 continue
+            # 直接加入
             res += line + "\n"
-        return res
+        # 回傳頭+尾
+        return res + tail
 
     # 寫入單股資料
     def dumpInfo (self, file=None):
