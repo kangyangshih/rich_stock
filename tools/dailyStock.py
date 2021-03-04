@@ -46,7 +46,6 @@ file.close()
 
 #--------------------------------------------------
 # 觀注的個股
-
 priorityKey = [
     "持有",
     "短期注意",
@@ -179,4 +178,26 @@ for day in (5, 30):
     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
 file.close()
 
+#--------------------------------------------------
+# 2021 公告後有殖利率的排行榜
+tmp = {}
+for stockID, stock in allstock.items():
+    # 還沒有公告就不做處理
+    if stock.sd2021 == None:
+        continue
+    # 取得收盤價
+    realtime = stock.getTodayPrice ()
+    # 暫時借塞
+    stock.now_sd_rate = stock.sd2021 / realtime["end_price"] * 100
+    if stock.now_sd_rate not in tmp:
+        tmp[stock.now_sd_rate] = []
+    tmp[stock.now_sd_rate].append (stockID) 
 
+# 做印出的動作
+file = open ("../4.2021殖利率排行榜.txt", "w", encoding="utf-8")
+tmpList = changeDict2List (tmp)
+for stockID in tmpList:
+    stock = allstock[stockID]
+    write (file, "[現在殖利率] %.2f %%", stock.now_sd_rate)
+    stock.dumpInfo (file)
+file.close()
