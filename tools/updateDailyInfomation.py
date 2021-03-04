@@ -12,10 +12,10 @@ import csv
 
 # 季 EPS
 epsKey = "2020Q3"
-#epsKey = "2020Q4"
+epsKey = "2020Q4"
 # 月營收
 turnOverKey = "2021/01"
-#turnOverKey = "2020/12"
+turnOverKey = "2021/02"
 # 股利分配
 sdKey = "2019"
 
@@ -78,10 +78,14 @@ for stockID, stock in allstock.items():
     # 每季EPS
     #print (NetStockInfo.getHistockQEPS (stockID))
     if "QEPS" not in info or epsKey not in info["QEPS"]:
-        res, info["QEPS"] = NetStockInfo.getHistockQEPS (stockID)
+        if "QEPS" not in info:
+            info["QEPS"] = {}
+        res, tmp = NetStockInfo.getHistockQEPS (stockID)
         if res == False:
             print ("1")
             continue
+        # 做多出來的更新動作 (舊的不刪)
+        info["QEPS"].update (tmp)
         if epsKey not in info["QEPS"]:
             print (stock.name, "還未有", epsKey, "EPS")
         else:
@@ -91,10 +95,13 @@ for stockID, stock in allstock.items():
     # 每月營收
     #print (NetStockInfo.getHistockTurnOver (stockID))
     if "月營收" not in info or turnOverKey not in info["月營收"]:
-        res, info["月營收"] = NetStockInfo.getHistockTurnOver (stockID)
+        if "月營收" not in info:
+            info["月營收"] = {}
+        res, tmp = NetStockInfo.getHistockTurnOver (stockID)
         if res == False:
             print ("2")
             continue
+        info["月營收"].update (tmp)
         if turnOverKey not in info["月營收"]:
             print (stock.name, "還未有", turnOverKey, "月營收")
         else:
@@ -103,9 +110,12 @@ for stockID, stock in allstock.items():
     #------------------------------------------
     # 取得配股息進出 (每年一次，不會太頻繁)
     if "配股配息" not in info:
-        res, info["配股配息"] = NetStockInfo.getHistockStockDivide (stockID)
+        if "配股配息" not in info:
+            info["配股配息"] = {}
+        res, tmp = NetStockInfo.getHistockStockDivide (stockID)
         if res == False:
             continue
+        info["配股配息"].update (tmp)
         if len(info["配股配息"]) > 0:
             print ("配股配息", json.dumps(info["配股配息"][0]))
         else:

@@ -36,15 +36,13 @@ class cSingleStock :
         self.holdPrice = 0
         # 賣出價
         self.sellPrice = 0
-        # Tag
-        self.tag = ""
+        # 2021 配息
+        self.sd2021 = ""
         # 其他描述
         self.desc = ""
         self.netInfo = {}
         # 2020 公告的EPS
         self.EPS2020 = None
-        # 2021 的配股息
-        self.SD2021 = None
     
     # 取得字串資訊
     def getInfo (self, *args):
@@ -211,13 +209,10 @@ class cSingleStock :
                 self.EPS2020 = float (line[11:])
                 tail += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
                 continue
-            # 取得公告數值，加到最後
-            if line.startswith ("[2021 股息]") == True:
-                self.SD2021 = float (line[9:])
-                tail += "[公告] 2021 配息 : %.2f\n" % (self.SD2021,)
-                continue
             # 直接加入
             res += line + "\n"
+        if self.sd2021 != None:
+            tail += "[公告] 2021 配息 : %.2f\n" % (self.sd2021,)
         # 回傳頭+尾
         return res + tail
 
@@ -315,7 +310,7 @@ class cSingleStock :
 
         # 2021 預估配股配息和目前殖利率
         #print (self._getStockDividenRate())
-        sd2021_money = self.SD2021
+        sd2021_money = self.sd2021
         if sd2021_money == None:
             sd2021_money = eps2020 * self._getStockDividenRate() / 100
             self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
@@ -705,8 +700,8 @@ class cAllStockMgr:
             single.holdPrice = excel.getValue (row_index, 8, 0, float)
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, float)
-            # 標籤
-            single.tag = excel.getValue (row_index, 10).replace ("%", "%%")
+            # 2021 公告的配股配息
+            single.sd2021 = excel.getValue (row_index, 10, None, float)
             # 取得一點影響到大盤的點數
             single.pointToAll = excel.getValue (row_index, 11, 0, float)
             # 雜項
