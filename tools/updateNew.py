@@ -18,7 +18,7 @@ def getNewsFilename (stockID):
 allstock = AllStockMgr.getAllStock ()
 
 # 取得時間日期 (每天只更新一次新聞)
-updateTimeStr = get_day_str ()
+updateTimeStr = get_hour_str ()
 stockUpdateTimeMap = getFromCache ("../info/newsUpdateTime.txt", {})
 
 #------------------------------------------------
@@ -26,7 +26,7 @@ print ("=== [更新新聞] ===")
 for stockID, stock in allstock.items():
     # 每天只更新一次新聞
     if stockID in stockUpdateTimeMap and stockUpdateTimeMap[stockID] == updateTimeStr:
-        print ("%s 今日己更新，不再更新" % (stock.name,))
+        print ("%s 最多每小時更新一次。不再更新" % (stock.name,))
         continue
     # 載入暫存資料
     info = []
@@ -39,7 +39,7 @@ for stockID, stock in allstock.items():
     nodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td[2]/a')
     timeNodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td/font')
     for index, node in enumerate (nodes):
-        print (timeNodes[index].text, node.text)
+        #print (timeNodes[index].text, node.text)
         #print (node.get_attribute ("href"))
         info.append ({
             "title" : node.text,
@@ -47,26 +47,32 @@ for stockID, stock in allstock.items():
             "url" : node.get_attribute ("href"),
         })
     #----------------------------------------------
-    # 載入第二頁
-    # https://tw.stock.yahoo.com/q/h?s=1101&pg=2
-    # 載入第一頁
-    url = url+"&pg=2"
-    WebViewMgr.loadURL (url)
-    # 取得 xpath
-    nodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td[2]/a')
-    timeNodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td/font')
-    for index, node in enumerate (nodes):
-        print (timeNodes[index].text, node.text)
-        #print (node.get_attribute ("href"))
-        info.append ({
-            "title" : node.text,
-            "date" : timeNodes[index].text,
-            "url" : node.get_attribute ("href"),
-        })
-    
+    # 做資料差異更新
+    cacheInfo = getFromCache (getNewsFilename(stockID), [])
+    #print ("===== cache information =====")
+    #for cache in cacheInfo:
+    #    print (cache["title"])
+    newList = []
+    for index in range (len(info)):
+        found = False
+        for cacheIndex in range (len(cacheInfo)):
+            if info[index]["url"] == cacheInfo[cacheIndex]["url"]:
+                found = True
+                break
+        if found == True:
+            print ("found!, index=%s" % (index,))
+            newList = info[:index]
+            break
+    print ("新資料數量:%s" % (len(newList),))
+    for cache in newList:
+        print (cache["date"], cache["title"])
+    newList.extend (cacheInfo)
+    #print ("===== save cache =====")
+    #for cache in newList:
+    #    print (cache["title"])
     #----------------------------------------------
     # 把資料存起來
-    saveCache (getNewsFilename(stockID), info)
+    saveCache (getNewsFilename(stockID), newList)
     stockUpdateTimeMap[stockID] = updateTimeStr
     saveCache ("../info/newsUpdateTime.txt", stockUpdateTimeMap)
     #break
