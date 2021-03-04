@@ -510,8 +510,17 @@ class cSingleStock :
                 sdList[index]["現金股利"],
                 sdList[index]["配息率"],
             )
-        self._write (file, res, "")
 
+        self._write (file, res, "")
+        #------------------------
+        # 相關新聞 from yahoo
+        self._write (file, res, "[相關新聞]")
+        newsList = getFromCache ("../info/news_%s.txt" % (self.id,), [])
+        for news in newsList:
+            #self._write (file, res, "%s\n[%s]", news["title"], news["url"])
+            self._write (file, res, "%s %s", news["date"], news["title"])
+
+        self._write (file, res, "")
         #------------------------
         # 回傳結果
         return res

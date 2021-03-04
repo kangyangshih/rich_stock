@@ -8,6 +8,7 @@ sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
 import json
+import time
 
 #--------------------------------------------------
 # 使用的 API
@@ -33,19 +34,7 @@ def printTotalRate (file, title, header, tmpMap, num=15):
 allstock = AllStockMgr.getAllStock ()
 
 #--------------------------------------------------
-# 所有的股票
-file = open ("../9.所有股票.txt", "w", encoding="utf-8")
-# 依照重要性來做處理
-# 一隻一隻去抓資料處理
-for stockID, stock in allstock.items():
-    # 把資料 dump 下來
-    stock.dumpInfo (file)
-    # 暫時只先抓一隻
-    #break
-file.close()
-
-#--------------------------------------------------
-# 觀注的個股
+# 0. 觀注的個股
 priorityKey = [
     "持有",
     "短期注意",
@@ -88,7 +77,7 @@ for key in priorityKey:
 file.close()
 
 #--------------------------------------------------
-# 有設定觀注價格的股票
+# 1. 有設定觀注價格的股票
 modify_list = []
 for stockID, stock in allstock.items():
     if stock.holdPrice != 0:
@@ -108,7 +97,7 @@ file.close()
 
 
 #--------------------------------------------------
-# 外本比 / 投本比
+# 2. 外本比 / 投本比
 
 # 取得今天的外本比、投本比前 10 名
 def getInOutRate ():
@@ -144,7 +133,7 @@ printTotalRate (file, "外資+投信今日買超排行榜", "外資+投信買超
 file.close()
 
 #--------------------------------------------------
-# 區間外資、投信的買賣量排行榜
+# 3. 區間外資、投信的買賣量排行榜
 def getRangeTotalRate (day):
     out_total_map = {}
     in_total_map = {}
@@ -179,7 +168,7 @@ for day in (5, 30):
 file.close()
 
 #--------------------------------------------------
-# 2021 公告後有殖利率的排行榜
+# 4. 2021 公告後有殖利率的排行榜
 tmp = {}
 for stockID, stock in allstock.items():
     # 還沒有公告就不做處理
@@ -203,4 +192,33 @@ for stockID in tmpList:
 file.close()
 
 #--------------------------------------------------
+# 5. 過去五天的新聞
+file = open ("../5.新聞.txt", "w", encoding="utf-8")
+nowTimes = time.time()
+for index in range (5):
+    # 取得時間字串
+    tmpTime = time.gmtime(nowTimes - index * 86400)
+    timeStr = "%04d/%02d/%02d" % (tmpTime.tm_year, tmpTime.tm_mon, tmpTime.tm_mday)
+    write (file, "=====[%s]=====", timeStr)
+    # 每個股票都去找
+    for stockID, stock in allstock.items():
+        newsList = getFromCache ("../info/news_%s.txt" % (stockID,), [])
+        for news in newsList:
+            if news["date"].find (timeStr) == -1:
+                continue
+            write (file, "%s %s\n%s", news["date"], news["title"], news["url"])
+    write (file, "")
+file.close()
+
+#--------------------------------------------------
+# 9. 所有的股票
+file = open ("../9.所有股票.txt", "w", encoding="utf-8")
+# 依照重要性來做處理
+# 一隻一隻去抓資料處理
+for stockID, stock in allstock.items():
+    # 把資料 dump 下來
+    stock.dumpInfo (file)
+    # 暫時只先抓一隻
+    #break
+file.close()
 
