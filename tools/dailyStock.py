@@ -201,3 +201,6 @@ for stockID in tmpList:
     write (file, "[現在殖利率] %.2f %%", stock.now_sd_rate)
     stock.dumpInfo (file)
 file.close()
+
+#--------------------------------------------------
+
