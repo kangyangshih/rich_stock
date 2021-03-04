@@ -106,7 +106,7 @@ class cNetStockInfo:
             del_file (cache_filename)
             # 再來一次
             return self.getYahooRealtime (stockID, realtime, timeInterval)
-        
+        result["pre_date_price"] = float (result["pre_date_price"])
         # 正常做處理
         if (result["now_price"] == "-"):
             result["now_result"] = 0
@@ -116,9 +116,9 @@ class cNetStockInfo:
             result["now_price"] = result["pre_date_price"]
             result["start_price"] = result["pre_date_price"]
         else:
-            result["now_result"] = float(result["now_price"]) - float(result["pre_date_price"])
+            result["now_result"] = float(result["now_price"]) - result["pre_date_price"]
         # 計算今天的漲幅
-        result["now_result_rate"] = result["now_result"] * 100 / float(result["pre_date_price"])
+        result["now_result_rate"] = result["now_result"] * 100 / result["pre_date_price"]
         # 處理數量
         result["now_vol"] = int (result["now_num"].replace (",", ""))
         # 處理型別

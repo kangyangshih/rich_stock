@@ -56,7 +56,7 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     if stockType == "持有":
         #print (stock.holdPrice, type(stock.holdPrice))
         # 鈊象(3293) 770(750) -3.0 4,950 
-        command = "%s(%s) %s(%s) %.1f %.1f%% %s" % (
+        command = "%s(%s) %s(%s) %.1f %.1f%% 量:%s" % (
             stock.name, 
             stock.id, 
             realtime["now_price"], 
@@ -73,7 +73,7 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     if stockType == "權重股":
         # 計算影響到大盤多少
         pointToAll = realtime["now_result"] * stock.pointToAll
-        command = "%s(%s) %s %.1f(大盤:%.2f) %1.f%% %s" % (
+        command = "%s(%s) %s %.1f(大盤:%.2f) %1.f%% 量:%s" % (
             stock.name, 
             stock.id, 
             realtime["now_price"], 
@@ -89,7 +89,7 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     #------------------------------
     if stockType == "短期注意":
         if stock.buyPrice == 0:
-            command = "%s(%s) %s %.1f %.1f%% %s" % (
+            command = "%s(%s) %s %.1f %.1f%% 量:%s" % (
                 stock.name, 
                 stock.id, 
                 realtime["now_price"], 
@@ -100,7 +100,7 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
             if isPrint == True:
                 print (command)
         else:
-            command = "%s(%s) %s(%s) %.1f %.1f%% %s" % (
+            command = "%s(%s) %s(%s) %.1f %.1f%% 量:%s" % (
                 stock.name, 
                 stock.id, 
                 realtime["now_price"], 
@@ -145,9 +145,17 @@ while True:
     # 抓取想要更新的股票
     for stockType, stockMap in stockOrder.items():
         print ("=======%s=======" % (stockType,))
+        # 可買入清單
         buyList = []
+        # 在布林通道上緣
         bup = []
+        # 今天突破上緣
+        bupstart = []
+        # 在布林通道下緣
         bdown = []
+        # 今天跌破下緣
+        bdownstart = []
+        # 依照跌幅來做處理
         tmpDict = {}
         for stockID, stock in stockMap.items():
             # 取得及時資訊
@@ -157,28 +165,42 @@ while True:
                 realtime = NetStockInfo.getYahooRealtime (stock.id, realtime=True)
             except:
                 continue
+            # 要分區做顯示
             if stockType == "做多" or stockType == "短期注意":
+                # 如果差太多就不做處理
                 tmp = printRealtimeStock (stockType, stock, g_removeList, realtime, False)
                 if tmp == None:
                     continue
+                #--------------------
+                # 布林軌道
+                #--------------------
+                # 計算上下軌道
                 bband_up, bband, bband_down, msg = stock.getBBand()
                 # 買入提示
                 if realtime["now_price"] <= stock.buyPrice:
                     buyList.append (tmp)
-                elif realtime["now_price"] >= bband_up:
+                elif realtime["now_price"] >= bband_up*0.99 and realtime["pre_date_price"] <= bband_up*0.99:
+                    bupstart.append (tmp)
+                elif realtime["now_price"] >= bband_up*0.99:
                     bup.append (tmp)
-                elif realtime["now_price"] <= bband_down:
+                elif realtime["now_price"] <= bband_down*1.01 and realtime["pre_date_price"] >= bband_down*1.01:
+                    bdownstart.append (tmp)
+                elif realtime["now_price"] <= bband_down*1.01:
                     bdown.append (tmp)
-                # 做排序的功能
+                #--------------------
+                # 跌幅排序
+                #--------------------
                 else:
                     if realtime["now_result_rate"] not in tmpDict:
                         tmpDict[realtime["now_result_rate"]] = []
                     tmpDict[realtime["now_result_rate"]].append (tmp)
+            # 持有、權重都是直接印出來
             else:
                 # 做印出來的動作
                 printRealtimeStock (stockType, stock, g_removeList, realtime, True)
             # 做存起來的動作
             saveCache (removeCache, g_removeList)
+        
         # 排列做處理
         if stockType == "做多" or stockType == "短期注意":
             if len(buyList) > 0:
@@ -187,14 +209,26 @@ while True:
                     if info == None:
                         continue
                     print (info)
+            if len(bupstart) > 0:
+                print ("=== 本日突破<布林軌道上緣> ===")
+                for info in bupstart:
+                    if info == None:
+                        continue
+                    print (info)
             if len(bup) > 0:
-                print ("=== 突破布林軌道上緣 ===")
+                print ("=== 突破<布林軌道上緣> ===")
                 for info in bup:
                     if info == None:
                         continue
                     print (info)
+            if len(bdownstart) > 0:
+                print ("=== 今天跌破<布林軌道下緣> ===")
+                for info in bdownstart:
+                    if info == None:
+                        continue
+                    print (info)
             if len(bdown) > 0:
-                print ("=== 跌破布林軌道上緣 ===")
+                print ("=== 跌破<布林軌道下緣> ===")
                 for info in bdown:
                     if info == None:
                         continue
@@ -208,6 +242,7 @@ while True:
                         continue
                     print (info)
         print ("")
+    
     # 更新一下列表
     for stockType, stockMap in stockOrder.items():
         for removeStockID in g_removeList:
