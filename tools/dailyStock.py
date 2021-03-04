@@ -192,7 +192,7 @@ for stockID in tmpList:
 file.close()
 
 #--------------------------------------------------
-# 5. 過去五天的新聞
+# 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
 file = open ("../5.新聞.txt", "w", encoding="utf-8")
 nowTimes = time.time()
 for index in range (5):
@@ -206,7 +206,15 @@ for index in range (5):
         for news in newsList:
             if news["date"].find (timeStr) == -1:
                 continue
-            write (file, "%s %s\n%s", news["date"], news["title"], news["url"])
+            write (file, 
+                "* [%s(%s)](%s) %s [%s](%s)<br/>", 
+                stock.name, 
+                stockID,
+                'https://tw.stock.yahoo.com/q/ta?s='+stockID, 
+                news["date"],
+                news["title"], 
+                news["url"]
+            )
     write (file, "")
 file.close()
 

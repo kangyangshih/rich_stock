@@ -38,6 +38,7 @@ class cSingleStock :
         self.sellPrice = 0
         # 2021 配息
         self.sd2021 = ""
+        self.sd2021_stock = 0
         # 其他描述
         self.desc = ""
         self.netInfo = {}
@@ -710,7 +711,18 @@ class cAllStockMgr:
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, float)
             # 2021 公告的配股配息
-            single.sd2021 = excel.getValue (row_index, 10, None, float)
+            tmp = excel.getValue (row_index, 10, "")
+            if tmp == "":
+                single.sd2021 = None
+                single.sd2021_stock = 0
+            elif tmp.find ("+") == -1:
+                single.sd2021 = float (tmp)
+                single.sd2021_stock = 0
+            else:
+                tmpList = tmp.split ("+")
+                single.sd2021_stock = float (tmpList[0])
+                single.sd2021 = float (tmpList[1])
+            #single.sd2021 = excel.getValue (row_index, 10, None, float)
             # 取得一點影響到大盤的點數
             single.pointToAll = excel.getValue (row_index, 11, 0, float)
             # 雜項
