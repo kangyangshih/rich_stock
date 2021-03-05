@@ -399,31 +399,6 @@ class cSingleStock :
                 self.getInfo ("月營收", month, "年增"),
                 self.getInfo ("月營收", month, "累計年增"),
             )
-        # monthList = [
-        #     "2021/01", 
-        #     "2020/12", 
-        #     "2020/11", 
-        #     "2020/10", 
-        #     "2020/09", 
-        #     "2020/08",
-        #     "2020/07",
-        #     "2020/06",
-        #     "2020/05",
-        #     "2020/04",
-        #     "2020/03",
-        #     "2020/02",
-        #     "2020/01",
-        # ]
-        # for month in monthList:
-        #     if month not in self.netInfo["月營收"]:
-        #         continue
-        #     self._write (file, res, "%s 月營收:%.2f億, 月增: %s %%, 年增: %s %%, 累計年增: %s %%", 
-        #         self.getInfo ("月營收", month, "年度/月份"),
-        #         self.getInfoInt ("月營收", month, "月營收")/100000.0,
-        #         self.getInfo ("月營收", month, "月增"),
-        #         self.getInfo ("月營收", month, "年增"),
-        #         self.getInfo ("月營收", month, "累計年增"),
-        #     )
         self._write (file, res, "")
 
         #------------------------
@@ -455,20 +430,6 @@ class cSingleStock :
                 self.getInfo ("QEPS", quarterly, "營業利益率"),
                 self.getInfo ("QEPS", quarterly, "稅前淨利率"),
             )
-        # for quarterly in quarterlyList:
-        #     if self.getInfo ("QEPS", quarterly, "EPS") == None:
-        #         continue
-        #     self._write (file, res, 
-        #         "%s EPS:%s, 季營收: %.2f 億, 平均月營收: %.2f 億, 平均月EPS: %.2f, 毛利率 : %s %%, 營業利益率 : %s %%, 稅前淨利率:%s %%",
-        #         quarterly,
-        #         self.getInfo ("QEPS", quarterly, "EPS"),
-        #         self.getInfo ("QEPS", quarterly, "季營收"),
-        #         self.getInfo ("QEPS", quarterly, "平均月營收"),
-        #         self.getInfo ("QEPS", quarterly, "MEPS"),
-        #         self.getInfo ("QEPS", quarterly, "毛利率"),
-        #         self.getInfo ("QEPS", quarterly, "營業利益率"),
-        #         self.getInfo ("QEPS", quarterly, "稅前淨利率"),
-        #     )
 
         #------------------------
         # 2020 Q1~Q3 EPS
@@ -517,7 +478,9 @@ class cSingleStock :
         # 相關新聞 from yahoo
         self._write (file, res, "[相關新聞]")
         newsList = getFromCache ("../info/news_%s.txt" % (self.id,), [])
-        for news in newsList:
+        for index, news in enumerate (newsList):
+            if index >= 10:
+                break
             #self._write (file, res, "%s\n[%s]", news["title"], news["url"])
             self._write (file, res, "%s %s", news["date"], news["title"])
 

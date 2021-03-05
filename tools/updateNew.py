@@ -11,14 +11,33 @@ from WebViewMgr import WebViewMgr
 import json
 import csv
 
+# 取得時間日期 (每天只更新一次新聞)
+updateTimeStr = get_hour_str ()
+
+# 加入這次更新的新聞
+g_updateNews = getFromCache ("../cache_news_%s.txt" % (updateTimeStr,), [])
+def addUpdateNews (news):
+    # 加入
+    g_updateNews.append (news)
+    # 寫成檔案
+    tmpfile = open ("../update_%s.txt" % (updateTimeStr,), "w", encoding="utf-8")
+    for news in g_updateNews:
+        tmpfile.writelines ("* %s [%s](%s)<br/>\n" % (news["date"],
+                news["title"], 
+                news["url"]
+            )
+        )
+    tmpfile.close()
+    # 暫存起來
+    saveCache ("../cache_news_%s.txt" % (updateTimeStr,), g_updateNews)
+
+# 取得新聞的檔案名稱
 def getNewsFilename (stockID):
     return "../info/news_%s.txt" % (stockID,)
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 
-# 取得時間日期 (每天只更新一次新聞)
-updateTimeStr = get_hour_str ()
 stockUpdateTimeMap = getFromCache ("../info/newsUpdateTime.txt", {})
 
 #------------------------------------------------
@@ -66,6 +85,7 @@ for stockID, stock in allstock.items():
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
         print (cache["date"], cache["title"])
+        addUpdateNews (cache)
     newList.extend (cacheInfo)
     #print ("===== save cache =====")
     #for cache in newList:
