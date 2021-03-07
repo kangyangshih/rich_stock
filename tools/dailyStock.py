@@ -34,6 +34,32 @@ def printTotalRate (file, title, header, tmpMap, num=15):
 allstock = AllStockMgr.getAllStock ()
 
 #--------------------------------------------------
+# 6. 在布林通道上緣的股票
+list6 = []
+list7 = []
+for stockID, stock in allstock.items():
+    # 取得股價
+    realtime = stock.getTodayPrice ()
+    # 取得布林通道
+    bband_up, bband, bband_down, msg = stock.getBBand ()
+    # 如果在上緣就做記錄下來
+    if realtime["end_price"] > bband_up * 0.995:
+        list6.append (stockID)
+    if realtime["end_price"] < bband_down * 1.005:
+        list7.append (stockID)
+
+file = open ("../6.bbandUp.txt", "w", encoding="utf-8")
+for stockID in list6:
+    allstock[stockID].dumpInfo (file)
+file.close()
+
+# 7. 在布林通道下緣
+file = open ("../7.bbandDown.txt", "w", encoding="utf-8")
+for stockID in list7:
+    allstock[stockID].dumpInfo (file)
+file.close()
+
+#--------------------------------------------------
 # 0. 觀注的個股
 priorityKey = [
     "持有",
