@@ -29,7 +29,7 @@ for key in priorityKey:
     stockOrder[key] = {}
 
 # 取得移除的
-removeCache = "today_remove_%s.json" % (get_day_str(),)
+removeCache = "../today_remove_%s.json" % (get_day_str(),)
 g_removeList = getFromCache (removeCache, [])
 print (g_removeList)
 
