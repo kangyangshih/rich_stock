@@ -11,8 +11,8 @@ import json
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 for stockID, stock in allstock.items():
-    if stockID != "3293":
-        continue
+    #if stockID != "3293":
+    #    continue
     # 及時報價
     #print (NetStockInfo.getYahooRealtime (stockID, False))
     # 每季EPS
@@ -20,13 +20,14 @@ for stockID, stock in allstock.items():
     # 基本資料
     #print (NetStockInfo.getYahooBasic (stockID))
     # 每月營收
-    print (NetStockInfo.getHistockTurnOver (stockID))
+    #print (NetStockInfo.getHistockTurnOver (stockID))
     # 取得流動比 / 速動比
     #print (NetStockInfo.getHistockLSRate (stockID))
     # 取得30日三大法人
     #print (NetStockInfo.getHistockThree (stockID))
     # 取得配股配息
     #print (NetStockInfo.getHistockStockDivide (stockID))
+    # 取得
 
 
 
