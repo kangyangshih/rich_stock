@@ -347,6 +347,4 @@ class cNetStockInfo:
         # 回傳結果
         return True, info
 
-
-
 NetStockInfo = cNetStockInfo ()
