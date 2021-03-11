@@ -17,8 +17,10 @@ allstock = AllStockMgr.getAllStock ()
 
 # 更新資料
 updateFlag = {
-    # 更新基本資料
-    "basic":True,
+    # 更新基本資料 (己完成)
+    "basic":False,
+    # 更新 news
+    "news":True,
 }
 
 #------------------------------------
@@ -56,5 +58,36 @@ if updateFlag["basic"] == True:
 else:
     print ("【不更新】基本資料")
 
+#------------------------------------
+# 塞入基本資料
+if updateFlag["news"] == True:
+    newsDB = cSqlite ("../db/news.db")
+    for stockID, stock in allstock.items():
+        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
+        # 取得新聞內容
+        newsList = getFromCache ("../info/news_%s.txt" % (stock.id,), [])
+        newsList.reverse()
+        for index, news in enumerate (newsList):
+            date = news["date"].split (" ")[0][1:]
+            # 做更新的動作
+            newsDB.update ("news", 
+                # 資訊
+                {
+                    "stockID" : int(stockID),
+                    "date" : date,
+                    "dateStr" : news["date"],
+                    "url" : news["url"],
+                }, 
+                # KEY
+                {
+                    "title" : news["title"],
+                },
+            )
+        #break
+
+    # 整個更新進去
+    newsDB.commit()
+else:
+    print ("【不更新】新聞")
 
 

@@ -44,15 +44,17 @@ class cSqlite:
         return condition
     
     # 做檢查的動作
-    def __checkInfo (self, tableName, keyMap):
+    def __checkInfo (self, tableName, keyMap, isLog=True):
         # 串接出條件
         condition = self.__getMapCondition (keyMap)
         # 串起來資料
         command = "select * from %s where %s;" % (tableName, condition)
-        print ("[__checkInfo][command] " + command)
+        if isLog == True:
+            print ("[__checkInfo][command] " + command)
         # 做查詢的動作
         rows = self._cur.execute (command).fetchall()
-        print ("[__checkInfo][result] counter:" + str(len(rows)))
+        if isLog == True:
+            print ("[__checkInfo][result] counter:" + str(len(rows)))
         if len(rows) == 0:
             return False
         else:
@@ -99,15 +101,37 @@ class cSqlite:
         # 做更新的動作
         self.exceute (command)
 
+    #-------------------------------------------------------
+    # 給外部做使用的 API
+    #-------------------------------------------------------
+    #-------------------------------------------------------
     # 做更新資料
-    def update (self, talbeName, infoMap, keyMap):
+    def update (self, tableName, infoMap, keyMap):
         # 檢查不是有資料
-        res = self.__checkInfo (talbeName, keyMap)
+        res = self.__checkInfo (tableName, keyMap)
         # 有資料 -> 做 update
         if res == True:
             #print ("有資料 -> 做 update")
-            self.__update (talbeName, infoMap, keyMap)
+            self.__update (tableName, infoMap, keyMap)
         # 沒資料 -> 做 insert
         else:
             #print ("沒資料 -> 做 insert")
-            self.__insert (talbeName, infoMap, keyMap)
+            self.__insert (tableName, infoMap, keyMap)
+
+    #-------------------------------------------------------
+    # 做新增的動作
+    def insert (self, tableName, infoMap, keyMap):
+        # 檢查不是有資料
+        res = self.__checkInfo (tableName, keyMap, False)
+        # 有資料 -> 做 update
+        if res == False:
+            return
+        # 沒資料 -> 做 insert
+        else:
+            #print ("沒資料 -> 做 insert")
+            self.__insert (tableName, infoMap, keyMap)
+
+    #-------------------------------------------------------
+    # 做刪除的動作
+    def delInfo (self, tableName, keyMap):
+        pass
