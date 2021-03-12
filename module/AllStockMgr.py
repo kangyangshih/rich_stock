@@ -8,6 +8,7 @@ from excel_utility import *
 import json
 sys.path.append (r"..\module")
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 
 #-----------------------------------------------------
 # 單一股票
@@ -477,12 +478,11 @@ class cSingleStock :
         #------------------------
         # 相關新聞 from yahoo
         self._write (file, res, "[相關新聞]")
-        newsList = getFromCache ("../info/news_%s.txt" % (self.id,), [])
+        newsList = StockDBMgr.getNew (self.id)
         for index, news in enumerate (newsList):
             if index >= 10:
                 break
-            #self._write (file, res, "%s\n[%s]", news["title"], news["url"])
-            self._write (file, res, "%s %s", news["date"], news["title"])
+            self._write (file, res, "%s %s", news["dateStr"], news["title"])
 
         self._write (file, res, "")
         #------------------------
@@ -626,12 +626,8 @@ class cSingleStock :
 #-----------------------------------------------------
 # 股票管理器
 class cAllStockMgr:
-    def __loadJsonFromFile (self, filename):
-        file = open (filename, "r", encoding="utf-8")
-        tmp = file.read ()
-        file.close()
-        return json.loads (tmp)
 
+    # 建構子
     def __init__(self):
         # 存放所有的股票列表
         self.stockMap = {}

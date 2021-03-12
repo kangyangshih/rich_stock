@@ -6,15 +6,11 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 import json
 from lxml import etree
 import time
 from WebViewMgr import WebViewMgr
-
-# 取得新聞
-def getNews (stockID):
-    filename = "../info/news_%s.txt" % (stockID,)
-    return getFromCache (filename, [])
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
@@ -22,7 +18,7 @@ print ("===========")
 stockIDList = []
 for stockID, stock in allstock.items():
     # 抓取新聞
-    newsList = getNews (stockID)
+    newsList = StockDBMgr.getNews (stockID)
     #print ("%s news count:%s" % (stock.name, len(newsList)))
     # 檢查資料
     isFound = False

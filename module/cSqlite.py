@@ -23,10 +23,9 @@ class cSqlite:
         print ("[cSqlite] del")
         self._db.close()
     
-    # 做 run 的動作
-    def exceute (self, command):
-        self._cur.execute (command)
-
+    def close(self):
+        self._db.close()
+    
     # 做處理的動作
     def commit (self):
         self._db.commit()
@@ -43,6 +42,19 @@ class cSqlite:
         condition = condition[5:]
         return condition
     
+    def __getKeyMap (self, keyMap):
+        res = ""
+        for key, value in keyMap.items():
+            if isinstance (value, str) == True:
+                res += ", %s='%s'" % (key, value)
+            else:
+                res += ", %s=%s" % (key, value)
+        res = res[2:]
+        return res
+    
+    def __getFieldList (self, fieldList):
+        return ",".join (fieldList)
+
     # 做檢查的動作
     def __checkInfo (self, tableName, keyMap, isLog=True):
         # 串接出條件
@@ -81,42 +93,38 @@ class cSqlite:
         command = "insert into %s (%s) values (%s);" % (talbeName, fieldStr, valueStr)
         print ("[__insert][command] " + command)
         # 做新增的動作
-        self.exceute (command)
+        self._cur.execute (command)
     
     # 做更新資料的動作
     def __update (self, tableName, infoMap, keyMap):
         # 串接出條件
         condition = self.__getMapCondition (keyMap)
         # 把 infoMap 轉成更新
-        res = ""
-        for key, value in infoMap.items():
-            if isinstance (value, str) == True:
-                res += ", %s='%s'" % (key, value)
-            else:
-                res += ", %s=%s" % (key, value)
-        res = res[2:]
+        res = self.__getKeyMap (keyMap)
         # 串出字串
         command = "update %s set %s where %s;" % (tableName, res, condition)
         print ("[__update][command] " + command)
         # 做更新的動作
-        self.exceute (command)
+        self._cur.execute (command)
 
     #-------------------------------------------------------
     # 給外部做使用的 API
     #-------------------------------------------------------
     #-------------------------------------------------------
     # 做更新資料
-    def update (self, tableName, infoMap, keyMap):
+    def update (self, tableName, infoMap, keyMap, isUpdate=True):
         # 檢查不是有資料
         res = self.__checkInfo (tableName, keyMap)
-        # 有資料 -> 做 update
-        if res == True:
-            #print ("有資料 -> 做 update")
-            self.__update (tableName, infoMap, keyMap)
         # 沒資料 -> 做 insert
-        else:
+        if res == False:
             #print ("沒資料 -> 做 insert")
             self.__insert (tableName, infoMap, keyMap)
+        # 有資料 -> 做 update
+        elif isUpdate == True:
+            #print ("有資料 -> 做 update")
+            self.__update (tableName, infoMap, keyMap)
+        else:
+            pass
 
     #-------------------------------------------------------
     # 做新增的動作
@@ -130,6 +138,27 @@ class cSqlite:
         else:
             #print ("沒資料 -> 做 insert")
             self.__insert (tableName, infoMap, keyMap)
+
+    #-------------------------------------------------------
+    # 做取得的動作
+    def get (self, tableName, fieldList, keyMap, orderStr=""):
+        # 串出指令
+        command = "select %s from %s where %s" % (
+            self.__getFieldList(fieldList), 
+            tableName, 
+            self.__getKeyMap(keyMap)
+        )
+        if orderStr != "":
+            command = "%s order by %s" % (command, orderStr)
+        # 取得結果
+        res = []
+        rows = self._cur.execute (command).fetchall()
+        for row in rows:
+            tmp = {}
+            for index in range(len(fieldList)):
+                tmp[fieldList[index]] = row[index]
+            res.append (tmp)
+        return res
 
     #-------------------------------------------------------
     # 做刪除的動作

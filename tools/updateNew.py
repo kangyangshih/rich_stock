@@ -8,6 +8,7 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from WebViewMgr import WebViewMgr
+from StockDBMgr import StockDBMgr
 import json
 import csv
 
@@ -31,13 +32,9 @@ def addUpdateNews (news):
     # 暫存起來
     saveCache ("../cache_news_%s.txt" % (get_day_str(),), g_updateNews)
 
-# 取得新聞的檔案名稱
-def getNewsFilename (stockID):
-    return "../info/news_%s.txt" % (stockID,)
-
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
-
+# 
 stockUpdateTimeMap = getFromCache ("../info/newsUpdateTime.txt", {})
 
 #------------------------------------------------
@@ -62,12 +59,13 @@ for stockID, stock in allstock.items():
         #print (node.get_attribute ("href"))
         info.append ({
             "title" : node.text,
-            "date" : timeNodes[index].text,
+            "date" : timeNodes[index].text.split (" ")[0][1:],
+            "dateStr" : timeNodes[index].text,
             "url" : node.get_attribute ("href"),
         })
     #----------------------------------------------
     # 做資料差異更新
-    cacheInfo = getFromCache (getNewsFilename(stockID), [])
+    cacheInfo = StockDBMgr.getNews (stockID)
     #print ("===== cache information =====")
     #for cache in cacheInfo:
     #    print (cache["title"])
@@ -84,7 +82,7 @@ for stockID, stock in allstock.items():
             break
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
-        print (cache["date"], cache["title"])
+        print (cache["dateStr"], cache["title"])
         addUpdateNews (cache)
     newList.extend (cacheInfo)
     #print ("===== save cache =====")
@@ -92,7 +90,7 @@ for stockID, stock in allstock.items():
     #    print (cache["title"])
     #----------------------------------------------
     # 把資料存起來
-    saveCache (getNewsFilename(stockID), newList)
+    StockDBMgr.saveNews (stockID, newList)
     stockUpdateTimeMap[stockID] = updateTimeStr
     saveCache ("../info/newsUpdateTime.txt", stockUpdateTimeMap)
     #break

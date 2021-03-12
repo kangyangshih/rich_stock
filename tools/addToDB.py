@@ -1,4 +1,4 @@
-# DESC : 把資料存進去DB
+# DESC : 轉換文字 -> DB 的中介程式, 把資料存進去DB
 # DATE : 2021/3/11
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")

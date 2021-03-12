@@ -6,11 +6,16 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 import json
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 for stockID, stock in allstock.items():
+    newsList = StockDBMgr.getNews (stockID)
+    for news in newsList:
+        print (news["dateStr"], news["title"])
+    break
     #if stockID != "3293":
     #    continue
     # 及時報價

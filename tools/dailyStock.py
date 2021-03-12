@@ -7,6 +7,7 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 import json
 import time
 
@@ -202,7 +203,7 @@ for index in range (5):
     write (file, "=====[%s]=====", timeStr)
     # 每個股票都去找
     for stockID, stock in allstock.items():
-        newsList = getFromCache ("../info/news_%s.txt" % (stockID,), [])
+        newsList = StockDBMgr.getNews (stockID)
         for news in newsList:
             if news["date"].find (timeStr) == -1:
                 continue
@@ -211,7 +212,7 @@ for index in range (5):
                 stock.name, 
                 stockID,
                 'https://tw.stock.yahoo.com/q/ta?s='+stockID, 
-                news["date"],
+                news["dateStr"],
                 news["title"], 
                 news["url"]
             )
