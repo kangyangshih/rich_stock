@@ -13,18 +13,13 @@ CREATE TABLE "basic" (
 	PRIMARY KEY("id","name")
 );
 
-/*
- 【news.db3】
-*/
 /* create 表單 */
 CREATE TABLE "news" (
-	"id"	INTEGER,
 	"stockID"	INTEGER NOT NULL,
 	"date"	TEXT,
 	"dateStr"	TEXT,
 	"title"	TEXT,
-	"url"	TEXT,
-	PRIMARY KEY("id" AUTOINCREMENT)
+	"url"	TEXT
 );
 /* 個股取新聞時做使用 */
 CREATE INDEX "stockID_index" ON "news" (

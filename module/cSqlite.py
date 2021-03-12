@@ -62,11 +62,13 @@ class cSqlite:
         # 串起來資料
         command = "select * from %s where %s;" % (tableName, condition)
         if isLog == True:
-            print ("[__checkInfo][command] " + command)
+            #print ("[__checkInfo][command] " + command)
+            pass
         # 做查詢的動作
         rows = self._cur.execute (command).fetchall()
         if isLog == True:
-            print ("[__checkInfo][result] counter:" + str(len(rows)))
+            #print ("[__checkInfo][result] counter:" + str(len(rows)))
+            pass
         if len(rows) == 0:
             return False
         else:
@@ -91,7 +93,7 @@ class cSqlite:
         valueStr = valueStr[1:]
         # 串出字串
         command = "insert into %s (%s) values (%s);" % (talbeName, fieldStr, valueStr)
-        print ("[__insert][command] " + command)
+        #print ("[__insert][command] " + command)
         # 做新增的動作
         self._cur.execute (command)
     
@@ -100,10 +102,10 @@ class cSqlite:
         # 串接出條件
         condition = self.__getMapCondition (keyMap)
         # 把 infoMap 轉成更新
-        res = self.__getKeyMap (keyMap)
+        res = self.__getKeyMap (infoMap)
         # 串出字串
         command = "update %s set %s where %s;" % (tableName, res, condition)
-        print ("[__update][command] " + command)
+        #print ("[__update][command] " + command)
         # 做更新的動作
         self._cur.execute (command)
 

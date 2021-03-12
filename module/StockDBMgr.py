@@ -17,7 +17,7 @@ class cStockDBMgr:
     # 建構子
     def __init__(self):
         # 新聞
-        self.__DBMap["news"] = cSqlite ("../db/news.db3")
+        #self.__DBMap["news"] = cSqlite ("../db/news.db3")
         # 基本資料
         self.__DBMap["basic"] = cSqlite ("../db/basic.db3")
 
@@ -29,41 +29,40 @@ class cStockDBMgr:
     # 取得新聞
     def getNews (self, stockID):
         # 從資料庫取得新聞
-        res = self.__DBMap["news"].get (
+        rows = self.__DBMap["basic"].get (
             # 表單
             "news", 
             # 取得的欄位
-            ["id", "date", "dateStr", "title"],
+            ["updateTime", "newsList"],
             # KEY
             {
-                "stockID" : int(stockID)
+                "id" : int(stockID)
             },
-            # 排序
-            "id desc" 
         )
-        return res
+        # 串成想要的資料
+        updateTime = rows[0]["updateTime"]
+        newsList = json.loads (rows[0]["newList"])
+        return updateTimeStr, newsList
     
     # 做新聞的更新
-    def saveNews (self, stockID, newsList):
-        # 先把新舊資料轉一下
-        newsList.reverse()
-        # 一筆一筆塞
-        for news in newsList:
-            # 做更新的動作
-            self.__DBMap["news"].update ("news", 
-                # 資訊
-                {
-                    "stockID" : int(stockID),
-                    "dateStr" : news["date"],
-                    "url" : news["url"],
-                }, 
-                # KEY
-                {
-                    "title" : news["title"],
-                    "date" : date,
-                },
-                # 不做更新
-                False,
-            )
+    def saveNews (self, stockID, updateTime, newsList):
+        #print (json.dumps (newsList))
+        # 做更新的動作
+        self.__DBMap["basic"].update ("news",
+            # 資訊
+            {
+                "updateTime" : updateTime,
+                "newsList" : json.dumps (newsList),
+            },
+            # KEY
+            {
+                "id" : int(stockID),
+            },
+        )
+        # 做更新的動作
+        self.__DBMap["basic"].commit()
+        # 結束
+        return
+
             
 StockDBMgr = cStockDBMgr()

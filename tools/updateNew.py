@@ -40,37 +40,43 @@ stockUpdateTimeMap = getFromCache ("../info/newsUpdateTime.txt", {})
 #------------------------------------------------
 print ("=== [更新新聞] ===")
 for stockID, stock in allstock.items():
+    # 做資料差異更新
+    dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
     # 每天只更新一次新聞
-    if stockID in stockUpdateTimeMap and stockUpdateTimeMap[stockID] == updateTimeStr:
-        print ("%s 最多每小時更新一次。不再更新" % (stock.name,))
+    if dbUpdateTime == updateTimeStr:
+        print ("%s 己更新" % (stock.name,))
         continue
     # 載入暫存資料
-    info = []
+    newsList = []
     #----------------------------------------------
-    # 載入第一頁
-    url = "https://tw.stock.yahoo.com/q/h?s=" + stockID
-    WebViewMgr.loadURL (url)
+    # 新聞
+    newsURLTemplate = "https://tw.stock.yahoo.com/q/h?s=%s&pg=%s"
     print ("=== %s ===" % (stock.name,))
-    # 取得 xpath
-    nodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td[2]/a')
-    timeNodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td/font')
-    for index, node in enumerate (nodes):
-        #print (timeNodes[index].text, node.text)
-        #print (node.get_attribute ("href"))
-        info.append ({
-            "title" : node.text,
-            "date" : timeNodes[index].text.split (" ")[0][1:],
-            "dateStr" : timeNodes[index].text,
-            "url" : node.get_attribute ("href"),
-        })
+    # 只查詢第一頁
+    pageNum = 1
+    for pageIndex in range (pageNum):
+        # 取得新聞頁
+        url = newsURLTemplate % (stockID, pageIndex+1)
+        WebViewMgr.loadURL (url)
+        # 取得 xpath
+        nodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td[2]/a')
+        timeNodes = WebViewMgr.getNodes ('/html/body/center/table[1]/tbody/tr/td[1]/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/table/tbody/tr/td/font')
+        print ("[num] " + str(len(nodes)))
+        for index, node in enumerate (nodes):
+            #print (timeNodes[index].text, node.text)
+            #print (node.get_attribute ("href"))
+            newsList.append ({
+                "title" : node.text,
+                "date" : timeNodes[index].text.split (" ")[0][1:],
+                "dateStr" : timeNodes[index].text,
+                "url" : node.get_attribute ("href"),
+            })
     #----------------------------------------------
-    # 做資料差異更新
-    cacheInfo = StockDBMgr.getNews (stockID)
     #print ("===== cache information =====")
     #for cache in cacheInfo:
     #    print (cache["title"])
     newList = []
-    for index in range (len(info)):
+    for index in range (len(newsList)):
         found = False
         for cacheIndex in range (len(cacheInfo)):
             if info[index]["url"] == cacheInfo[cacheIndex]["url"]:
@@ -84,13 +90,13 @@ for stockID, stock in allstock.items():
     for cache in newList:
         print (cache["dateStr"], cache["title"])
         addUpdateNews (cache)
-    newList.extend (cacheInfo)
-    #print ("===== save cache =====")
-    #for cache in newList:
-    #    print (cache["title"])
-    #----------------------------------------------
-    # 把資料存起來
-    StockDBMgr.saveNews (stockID, newList)
-    stockUpdateTimeMap[stockID] = updateTimeStr
-    saveCache ("../info/newsUpdateTime.txt", stockUpdateTimeMap)
-    #break
+    if len(newList) > 0:
+        print ("更新到DB")
+        # 把資料存起來
+        newList.extend (cacheInfo)
+        #print ("===== save cache =====")
+        #for cache in newList:
+        #    print (cache["title"])
+        # 做儲存的動作
+        StockDBMgr.saveNews (stockID, updateTimeStr, newList)
+        break
