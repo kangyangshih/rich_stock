@@ -162,7 +162,3 @@ class cSqlite:
             res.append (tmp)
         return res
 
-    #-------------------------------------------------------
-    # 做刪除的動作
-    def delInfo (self, tableName, keyMap):
-        pass

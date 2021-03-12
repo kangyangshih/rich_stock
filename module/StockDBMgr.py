@@ -16,8 +16,8 @@ class cStockDBMgr:
 
     # 建構子
     def __init__(self):
-        # 新聞
-        #self.__DBMap["news"] = cSqlite ("../db/news.db3")
+        # 每日資訊
+        self.__DBMap["daily"] = cSqlite ("../db/daily.db3")
         # 基本資料
         self.__DBMap["basic"] = cSqlite ("../db/basic.db3")
 
@@ -26,6 +26,12 @@ class cStockDBMgr:
         for key, value in self.__DBMap.items():
             value.close()
 
+    def commit (self, dbName):
+        self.__DBMap[dbName].commit()
+            
+    #-----------------------------------------------
+    # 新聞相關
+    #-----------------------------------------------
     # 取得新聞
     def getNews (self, stockID):
         # 從資料庫取得新聞
@@ -61,8 +67,34 @@ class cStockDBMgr:
         )
         # 做更新的動作
         self.__DBMap["basic"].commit()
-        # 結束
-        return
 
-            
+    #-----------------------------------------------
+    # Daily
+    #-----------------------------------------------
+    def saveDaily (self, stockID, info):
+        if info["diff"] == None:
+            print (stockID, json.dumps(info))
+        # 做程式碼修正
+        if stockID == "8291" and info["diff"] == None:
+            info["diff"] = 0
+        if stockID == "8936" and info["diff"] == None:
+            #print ("~~~")
+            info["diff"] = 0.35
+            info["pre_price"] = info["end_price"] - info["diff"]
+            #print (stockID, json.dumps(info))
+        # 寫入資料庫
+        self.__DBMap["daily"].update ("daily",
+            # 資訊
+            info,
+            # KEY
+            {
+                "date" : info["date"],
+                "id" : int(stockID),
+            },
+            # 不做更新
+            False,
+        )
+        # 做更新的動作
+        self.__DBMap["daily"].commit()
+    
 StockDBMgr = cStockDBMgr()

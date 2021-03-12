@@ -15,17 +15,8 @@ CREATE TABLE "basic" (
 
 /* create 表單 */
 CREATE TABLE "news" (
-	"stockID"	INTEGER NOT NULL,
-	"date"	TEXT,
-	"dateStr"	TEXT,
-	"title"	TEXT,
-	"url"	TEXT
+	"id"	INTEGER NOT NULL,
+	"updateTime"	TEXT DEFAULT '',
+	"newsList"	BLOB,
+	PRIMARY KEY("id")
 );
-/* 個股取新聞時做使用 */
-CREATE INDEX "stockID_index" ON "news" (
-	"stockID"
-);
-/* 做新增新聞時使用 */
-CREATE INDEX "news_add_index" ON "news" (
-	"date", "title"
-)

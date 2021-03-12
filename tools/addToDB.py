@@ -8,6 +8,7 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 from cSqlite import cSqlite
 import json
 import csv
@@ -21,6 +22,8 @@ updateFlag = {
     "basic":False,
     # 更新 news (己完成)
     "news":False,
+    # 更新每日資料
+    "daily" : False,
 }
 
 #------------------------------------
@@ -90,4 +93,15 @@ if updateFlag["news"] == True:
 else:
     print ("【不更新】新聞")
 
+#------------------------------------
+# 更新每日資料
+if updateFlag["daily"] == True:
+    for stockID, stock in allstock.items():
+        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
+        dailyMap = getFromCache ("../info/daily_%s.txt" % (stockID,))
+        print ("[count] " + str(len(dailyMap)))
+        for dateKey, info in dailyMap.items():
+            StockDBMgr.saveDaily (stockID, info)
+else:
+    print ("【不更新】每日")
 
