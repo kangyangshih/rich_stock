@@ -79,24 +79,21 @@ for stockID, stock in allstock.items():
     for index in range (len(newsList)):
         found = False
         for cacheIndex in range (len(cacheInfo)):
-            if info[index]["url"] == cacheInfo[cacheIndex]["url"]:
+            if newsList[index]["url"] == cacheInfo[cacheIndex]["url"]:
                 found = True
                 break
         if found == True:
             print ("found!, index=%s" % (index,))
-            newList = info[:index]
+            newList = newsList[:index]
             break
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
         print (cache["dateStr"], cache["title"])
         addUpdateNews (cache)
-    if len(newList) > 0:
-        print ("更新到DB")
-        # 把資料存起來
-        newList.extend (cacheInfo)
-        #print ("===== save cache =====")
-        #for cache in newList:
-        #    print (cache["title"])
-        # 做儲存的動作
-        StockDBMgr.saveNews (stockID, updateTimeStr, newList)
-        break
+    # 把資料存起來
+    newList.extend (cacheInfo)
+    #print ("===== save cache =====")
+    #for cache in newList:
+    #    print (cache["title"])
+    # 做儲存的動作
+    StockDBMgr.saveNews (stockID, updateTimeStr, newList)

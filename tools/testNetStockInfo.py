@@ -12,7 +12,7 @@ import json
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 for stockID, stock in allstock.items():
-    newsList = StockDBMgr.getNews (stockID)
+    tmp, newsList = StockDBMgr.getNews (stockID)
     for news in newsList:
         print (news["dateStr"], news["title"])
     break

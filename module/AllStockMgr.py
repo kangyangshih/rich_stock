@@ -478,7 +478,7 @@ class cSingleStock :
         #------------------------
         # 相關新聞 from yahoo
         self._write (file, res, "[相關新聞]")
-        newsList = StockDBMgr.getNew (self.id)
+        tmp, newsList = StockDBMgr.getNews (self.id)
         for index, news in enumerate (newsList):
             if index >= 10:
                 break

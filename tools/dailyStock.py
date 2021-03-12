@@ -203,7 +203,7 @@ for index in range (5):
     write (file, "=====[%s]=====", timeStr)
     # 每個股票都去找
     for stockID, stock in allstock.items():
-        newsList = StockDBMgr.getNews (stockID)
+        tmp, newsList = StockDBMgr.getNews (stockID)
         for news in newsList:
             if news["date"].find (timeStr) == -1:
                 continue

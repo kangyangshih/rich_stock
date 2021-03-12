@@ -41,8 +41,8 @@ class cStockDBMgr:
         )
         # 串成想要的資料
         updateTime = rows[0]["updateTime"]
-        newsList = json.loads (rows[0]["newList"])
-        return updateTimeStr, newsList
+        newsList = json.loads (rows[0]["newsList"])
+        return updateTime, newsList
     
     # 做新聞的更新
     def saveNews (self, stockID, updateTime, newsList):
