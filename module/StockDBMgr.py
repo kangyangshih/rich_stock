@@ -72,8 +72,8 @@ class cStockDBMgr:
     # Daily
     #-----------------------------------------------
     def saveDaily (self, stockID, info, update=False):
-        if info["diff"] == None:
-            print (stockID, json.dumps(info))
+        #if info["diff"] == None:
+        #    print (stockID, json.dumps(info))
         # # 做程式碼修正
         # if stockID == "8291" and info["diff"] == None:
         #     info["diff"] = 0
@@ -129,7 +129,7 @@ class cStockDBMgr:
             "date",
             # KEY
             {
-                "id" : int(stockID),
+                "id" : 1101,
             },
             # order
             " date desc"

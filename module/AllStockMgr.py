@@ -88,21 +88,12 @@ class cSingleStock :
         res.append (strtmp)
     
     # 取得指定天的均線
-    def _getdayInfoAvg (self, infoKey, dayKey, rangeNum):
-        dayKey = cSingleStock.dayKeyList[dayKey]
-        # 取得日期
-        dayList = []
-        for index in range (len(cSingleStock.dayKeyList)):
-            if dayKey == cSingleStock.dayKeyList[index]:
-                dayList = cSingleStock.dayKeyList[index:index+rangeNum]
-        #print (dayList)
-        # 數量不夠就不計算
-        if len(dayList) != rangeNum:
+    def _getdayInfoAvg (self, infoKey, dayShift, rangeNum):
+        if dayShift + rangeNum >= len(self.netInfo["daily"]):
             return None
-        # 計算資料
         res = 0
-        for day in dayList:
-            res += self.netInfo["daily"][day][infoKey]
+        for index in range (dayShift, dayShift + rangeNum):
+            res += self.netInfo["daily"][index][infoKey]
         res = res / rangeNum
         return res
     
@@ -175,7 +166,7 @@ class cSingleStock :
     
     # 取得當天資訊
     def getTodayPrice (self, dayShift=0):
-        return self.netInfo["daily"][cSingleStock.dayKeyList[dayShift]]
+        return self.netInfo["daily"][dayShift]
     
     # 計算投本比、外本比
     def _getBuyRate (self, num):
@@ -632,7 +623,7 @@ class cAllStockMgr:
         # 存放所有的股票列表
         self.stockMap = {}
         # 載入每日資料
-        cSingleStock.dayKeyList = getFromCache ("../info/dailyList.txt", [])
+        cSingleStock.dayKeyList = StockDBMgr.getDayKey()
         # 載入股票
         self.__loadAllStock ()
 
@@ -711,7 +702,7 @@ class cAllStockMgr:
                 res.append (single.netInfo["三大法人"][key])
             single.netInfo["三大法人"] = res
             # 載入每日資料
-            single.netInfo["daily"] = getFromCache ("../info/daily_%s.txt" % (single.id,), {})
+            single.netInfo["daily"] = StockDBMgr.getDaily (single.id)
             # 記錄起來
             self.stockMap[single.id] = single
     

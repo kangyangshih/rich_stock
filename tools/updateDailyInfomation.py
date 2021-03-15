@@ -7,6 +7,7 @@ from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
 from NetStockInfo import NetStockInfo
+from StockDBMgr import StockDBMgr
 import json
 import csv
 
@@ -470,7 +471,7 @@ for filename in filelist:
             }
             tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
             # 存進去資料庫中
-            StockDBMgr.saveDaily (stockID, tmp)
+            StockDBMgr.saveDaily (stockID, tmp, True)
         file.close()
 
         tmp = {
@@ -584,9 +585,6 @@ for filename in filelist:
 print ("=== [取得有開盤的日期] ===")
 # 拿台泥來看
 dayKeyList = StockDBMgr.getDayKey()
-file = open ("../info/dailyList.txt", "w", encoding="utf-8")
-file.writelines (json.dumps (dayKeyList))
-file.close()
 print (dayKeyList)
 
 #------------------------------------
@@ -595,8 +593,8 @@ print ("=== [修改] ===")
 for stockID, stock in allstock.items():
     # 取得資料
     infoList = StockDBMgr.getDaily (stockID)
-    for index, info in enumerate (infoList):
-        if info["end_price"] > 0:
+    for index in range (len(infoList)):
+        if infoList[index]["end_price"] > 0:
             continue
         next_index = index+1
         while True:
@@ -607,17 +605,18 @@ for stockID, stock in allstock.items():
                 continue
             # 把價格做記錄的動作
             print ("%s[%s] %s 沒有交易資料, 拿 %s 補, 改為 %s" % (
-                stock.name, 
-                stock.id, 
-                dayKey, 
-                info[next_index]["date"]),
-                info[next_index]["end_price"]),
+                    stock.name, 
+                    stock.id, 
+                    infoList[index]["date"],
+                    infoList[next_index]["date"],
+                    infoList[next_index]["end_price"],
+                )
             )
-            info[index]["start_price"] = info[next_index]["end_price"]
-            info[index]["high_price"] = info[next_index]["end_price"]
-            info[index]["low_price"] = info[next_index]["end_price"]
-            info[index]["end_price"] = info[next_index]["end_price"]
-            info[index]["pre_price"] = info[next_index]["end_price"]
+            infoList[index]["start_price"] = infoList[next_index]["end_price"]
+            infoList[index]["high_price"] = infoList[next_index]["end_price"]
+            infoList[index]["low_price"] = infoList[next_index]["end_price"]
+            infoList[index]["end_price"] = infoList[next_index]["end_price"]
+            infoList[index]["pre_price"] = infoList[next_index]["end_price"]
             # 強制做更新的動作
-            StockDBMgr.saveDaily (stockID, info[index]["pre_price"], True)
+            StockDBMgr.saveDaily (stockID, infoList[index], True)
             break

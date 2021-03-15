@@ -164,13 +164,14 @@ class cSqlite:
     
     def getFieldList (self, tableName, fieldName, keyMap, orderStr):
         # select date from daily where id = 1101 group by date order by date desc
-        command = "select %s from %s where %s group by %s date order by %s" % (
+        command = "select %s from %s where %s group by %s order by %s" % (
             fieldName,
             tableName,
             self.__getKeyMap(keyMap),
             fieldName,
             orderStr,
         )
+        print ("[command]", command)
         res = []
         rows = self._cur.execute (command).fetchall()
         for row in rows:
