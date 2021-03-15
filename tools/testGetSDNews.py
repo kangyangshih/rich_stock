@@ -34,11 +34,16 @@ for stockID, stock in allstock.items():
         isFound = True
         break
 print ("[股利分派] 數量 : "+ str(len(stockIDList)))
+stockIDList.sort()
+
 # 一隻一隻去抓取資料
 for stockID in stockIDList:
     # 先檢查資料是不是存在
     if StockDBMgr.checkInfo ("basic", "stockDividen", {"id":int(stockID), "years":"2021"}) == True:
         print ("%s save, pass" % (stockID,))
+        continue
+    if StockDBMgr.checkInfo ("basic", "stockDividen", {"id":int(stockID), "years":"2020"}) == True:
+        print ("%s 暫時沒有2021，先 Pass" % (stockID,))
         continue
     # 開啟網頁
     url = "https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=" + str(stockID)
@@ -56,10 +61,10 @@ for stockID in stockIDList:
         if fieldNodes[0].text.isdigit () == False:
             #print ("[ignore][part]", rowNode.text)
             continue
-        # 沒有EPS就不做處理
+        # 沒有EPS就不做處理 (沒有2021 就不會有EPS)
         if fieldNodes[20].text == "-":
             #print ("[ignore][no eps]", rowNode.text)
-            break
+            continue
         #print (rowNode.text)
         # 股利發放年度
         info["years"] = fieldNodes[0].text
@@ -70,7 +75,7 @@ for stockID in stockIDList:
         info["sdAll"] = float (fieldNodes[7].text)
         info["eps"] = float(fieldNodes[20].text)
         # 塞進去DB
-        StockDBMgr.saveSD (stockID, info)
+        StockDBMgr.saveSD (stockID, info, True)
         #break
     #break
     time.sleep (1)
