@@ -18,7 +18,7 @@ print ("===========")
 stockIDList = []
 for stockID, stock in allstock.items():
     # 抓取新聞
-    newsList = StockDBMgr.getNews (stockID)
+    updateTime, newsList = StockDBMgr.getNews (stockID)
     #print ("%s news count:%s" % (stock.name, len(newsList)))
     # 檢查資料
     isFound = False
