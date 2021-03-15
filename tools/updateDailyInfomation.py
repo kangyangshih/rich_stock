@@ -451,7 +451,6 @@ for filename in filelist:
             stockID = row[0]
             if row[0] not in allstock:
                 continue
-            info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
             diff = float (getCSVRowNumber(row[10]))
             tmp = {
                 # 每日資訊
@@ -470,9 +469,8 @@ for filename in filelist:
                 "diff" : float (getCSVRowNumber(row[10])),
             }
             tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
-            info[dailyKey] = tmp
-            # 做存入的動作
-            saveCache ("../info/daily_%s.txt" % (stockID,), info)
+            # 存進去資料庫中
+            StockDBMgr.saveDaily (stockID, tmp)
         file.close()
 
         tmp = {
@@ -489,7 +487,7 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : None,
+            "diff" : 0,
             # 前天價
             "pre_price" : 0,
         }
@@ -497,13 +495,11 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
-            #print (dailyKey)
-            if dailyKey not in info:
+            info = StockDBMgr.getDaily (stockID)
+            if dailyKey != info[0]["date"]:
                 print (stock.name, stock.id)
-                info[dailyKey] = tmp
-                # 做存入的動作
-                saveCache ("../info/daily_%s.txt" % (stockID,), info)
+                # 存進去資料庫中
+                StockDBMgr.saveDaily (stockID, tmp)
 
     #---------------------
     # 處理上櫃的內容 RSTA3104_1100129
@@ -531,7 +527,6 @@ for filename in filelist:
                 continue
             # 載入暫存資料
             #print (row[1], row[0])
-            info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
             tmp = {
                 # 每日資訊
                 "date" : dailyKey,
@@ -552,9 +547,8 @@ for filename in filelist:
                 tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
             else:
                 tmp["pre_price"] = None
-            info[dailyKey] = tmp
-            # 做存入的動作
-            saveCache ("../info/daily_%s.txt" % (stockID,), info)
+            # 存進去資料庫中
+            StockDBMgr.saveDaily (stockID, tmp)
         file.close()
 
         tmp = {
@@ -571,7 +565,7 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : None,
+            "diff" : 0,
             # 前天價
             "pre_price" : 0,
         }
@@ -579,20 +573,17 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上櫃":
                 continue
-            info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
-            if dailyKey not in info:
+            info = StockDBMgr.getDaily (stockID)
+            if dailyKey != info[0]["date"]:
                 print (stock.name, stock.id)
-                info[dailyKey] = tmp
-                # 做存入的動作
-                saveCache ("../info/daily_%s.txt" % (stockID,), info)
+                # 存進去資料庫中
+                StockDBMgr.saveDaily (stockID, tmp)
 
 #------------------------------------
 # 取得有開盤的日期
 print ("=== [取得有開盤的日期] ===")
 # 拿台泥來看
-info = getFromCache ("../info/daily_1101.txt", {})
-dayKeyList = [value for value in info.keys()]
-dayKeyList.sort (reverse=True)
+dayKeyList = StockDBMgr.getDayKey()
 file = open ("../info/dailyList.txt", "w", encoding="utf-8")
 file.writelines (json.dumps (dayKeyList))
 file.close()
@@ -603,24 +594,15 @@ print (dayKeyList)
 print ("=== [修改] ===")
 for stockID, stock in allstock.items():
     # 取得資料
-    info = getFromCache ("../info/daily_%s.txt" % (stockID,), {})
-    isDirty = False
-    # 每一天都來看
-    for index, dayKey in enumerate (dayKeyList):
-        # 如果有交易就算了
-        if info[dayKey]["end_price"] > 0:
+    infoList = StockDBMgr.getDaily (stockID)
+    for index, info in enumerate (infoList):
+        if info["end_price"] > 0:
             continue
-        isDirty = True
-        # 往後找
         next_index = index+1
         while True:
-            if next_index >= len(dayKeyList):
+            if next_index >= len(infoList):
                 break
-            tmpDayKey = dayKeyList[next_index]
-            # 如果沒有價格, 就往下一個找
-            if "end_price" not in info[tmpDayKey]:
-                print (stock.name, stock.id, dayKey, tmpDayKey, info[tmpDayKey])
-            if info[tmpDayKey]["end_price"] == 0:
+            if infoList[next_index]["end_price"] == 0:
                 next_index += 1
                 continue
             # 把價格做記錄的動作
@@ -628,17 +610,14 @@ for stockID, stock in allstock.items():
                 stock.name, 
                 stock.id, 
                 dayKey, 
-                tmpDayKey, 
-                info[tmpDayKey]["end_price"])
+                info[next_index]["date"]),
+                info[next_index]["end_price"]),
             )
-            info[dayKey]["start_price"] = info[tmpDayKey]["end_price"]
-            info[dayKey]["high_price"] = info[tmpDayKey]["end_price"]
-            info[dayKey]["low_price"] = info[tmpDayKey]["end_price"]
-            info[dayKey]["end_price"] = info[tmpDayKey]["end_price"]
-            info[dayKey]["pre_price"] = info[tmpDayKey]["end_price"]
+            info[index]["start_price"] = info[next_index]["end_price"]
+            info[index]["high_price"] = info[next_index]["end_price"]
+            info[index]["low_price"] = info[next_index]["end_price"]
+            info[index]["end_price"] = info[next_index]["end_price"]
+            info[index]["pre_price"] = info[next_index]["end_price"]
+            # 強制做更新的動作
+            StockDBMgr.saveDaily (stockID, info[index]["pre_price"], True)
             break
-    # 儲存起來
-    if isDirty == True:
-        saveCache ("../info/daily_%s.txt" % (stockID,), info)
-            
-

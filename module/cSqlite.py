@@ -161,4 +161,19 @@ class cSqlite:
                 tmp[fieldList[index]] = row[index]
             res.append (tmp)
         return res
+    
+    def getFieldList (self, tableName, fieldName, keyMap, orderStr):
+        # select date from daily where id = 1101 group by date order by date desc
+        command = "select %s from %s where %s group by %s date order by %s" % (
+            fieldName,
+            tableName,
+            self.__getKeyMap(keyMap),
+            fieldName,
+            orderStr,
+        )
+        res = []
+        rows = self._cur.execute (command).fetchall()
+        for row in rows:
+            res.append (row[0])
+        return res
 
