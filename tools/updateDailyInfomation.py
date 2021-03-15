@@ -14,8 +14,8 @@ import csv
 epsKey = "2020Q3"
 #epsKey = "2020Q4"
 # 月營收
-turnOverKey = "2021/01"
 turnOverKey = "2021/02"
+#turnOverKey = "2021/03"
 # 股利分配
 sdKey = "2019"
 
