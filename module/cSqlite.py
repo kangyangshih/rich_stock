@@ -56,18 +56,18 @@ class cSqlite:
         return ",".join (fieldList)
 
     # 做檢查的動作
-    def __checkInfo (self, tableName, keyMap, isLog=True):
+    def checkInfo (self, tableName, keyMap, isLog=True):
         # 串接出條件
         condition = self.__getMapCondition (keyMap)
         # 串起來資料
         command = "select * from %s where %s;" % (tableName, condition)
         if isLog == True:
-            #print ("[__checkInfo][command] " + command)
+            #print ("[checkInfo][command] " + command)
             pass
         # 做查詢的動作
         rows = self._cur.execute (command).fetchall()
         if isLog == True:
-            #print ("[__checkInfo][result] counter:" + str(len(rows)))
+            #print ("[checkInfo][result] counter:" + str(len(rows)))
             pass
         if len(rows) == 0:
             return False
@@ -116,7 +116,7 @@ class cSqlite:
     # 做更新資料
     def update (self, tableName, infoMap, keyMap, isUpdate=True):
         # 檢查不是有資料
-        res = self.__checkInfo (tableName, keyMap)
+        res = self.checkInfo (tableName, keyMap)
         # 沒資料 -> 做 insert
         if res == False:
             #print ("沒資料 -> 做 insert")
@@ -132,7 +132,7 @@ class cSqlite:
     # 做新增的動作
     def insert (self, tableName, infoMap, keyMap):
         # 檢查不是有資料
-        res = self.__checkInfo (tableName, keyMap, False)
+        res = self.checkInfo (tableName, keyMap, False)
         # 有資料 -> 做 update
         if res == False:
             return

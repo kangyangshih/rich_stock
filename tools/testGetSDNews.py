@@ -34,80 +34,43 @@ for stockID, stock in allstock.items():
         isFound = True
         break
 print ("[股利分派] 數量 : "+ str(len(stockIDList)))
-#stockIDList = stockIDList[:1]
-cacheMap = getFromCache ("../cacheSD.txt", {})
-print ("[己抓取] 數量 : " + str(len(cacheMap)))
+# 一隻一隻去抓取資料
 for stockID in stockIDList:
-    stock = allstock[stockID]
-    if stockID in cacheMap:
+    # 先檢查資料是不是存在
+    if StockDBMgr.checkInfo ("basic", "stockDividen", {"id":int(stockID), "years":"2021"}) == True:
+        print ("%s save, pass" % (stockID,))
         continue
-    print ("[處理] %s(%s)" % (stock.name, stock.id))
-    #--------------------------------
-    # 更新【股利分配】
-    # https://tw.stock.yahoo.com/d/s/dividend_1236.html
-    url = 'https://tw.stock.yahoo.com/d/s/dividend_%s.html' % (stockID,)
+    # 開啟網頁
+    url = "https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=" + str(stockID)
     WebViewMgr.loadURL (url)
-    xpath = '/html/body/table[1]/tbody/tr/td/table[2]/tbody/tr'
+    # 取得內容
+    xpath = '//*[@id="divDetail"]/table/tbody/tr'
     rowNodes = WebViewMgr.getNodes (xpath)
-    rowNodes = rowNodes[1:]
-    res = []
+    print ("[count]", len(rowNodes))
+    if len(rowNodes) == 0:
+        break
+    info = {}
     for rowNode in rowNodes:
-        nodes = rowNode.find_elements_by_xpath ('.//td')
-        #for node in nodes:
-        #    print (node.text)
-        tmp = {}
-        tmp["獲利年度"] = str(int(nodes[0].text[:3]) + 1911) + nodes[0].text[3:]
-        tmp["現金股利發放日"] = nodes[1].text
-        tmp["現金股利"] = float(nodes[2].text)
-        tmp["盈餘配股"] = float(nodes[3].text)
-        tmp["公積配股"] = float(nodes[4].text)
-        tmp["股票股利"] = float(nodes[5].text)
-        tmp["合計"] = float(nodes[6].text)
-        res.append (tmp)
-    #print (json.dumps (res))
-    if res[0]["獲利年度"] == "2020年":
-        print ("==========")
-        print ("[有配息資料] %s %s %s" % (res[0]["獲利年度"], res[0]["現金股利"], res[0]["合計"]))
-        cacheMap[stockID] = res
-        saveCache ("../cacheSD.txt", cacheMap)
-
-    # 載入暫存資料
-    #info = getFromCache ("../info/%s.txt" % (stockID,), {})
-    #--------------------------------
-    # 更新【季 EPS】 
-    # 【季EPS】2020Q4 EPS:0.14
-    # tmpList = changeDict2List (stock.netInfo["QEPS"])
-    # for index in range (100):
-    #     quarterly = tmpList[index]["年度"]
-    #     if quarterly.find ("Q") == -1:
-    #         continue
-    #     print ("【季EPS】%s EPS:%s" % (
-    #             quarterly,
-    #             stock.getInfo ("QEPS", quarterly, "EPS"),
-    #         )
-    #     )
-    #     break
-
-    #--------------------------------
-    # 更新【股利分配】
-
-    # 【股利分配】 2019 0.15 0 0.3
-    # print ("【股利分配】", 
-    #     info["配股配息"][0]["所屬年度"], 
-    #     info["配股配息"][0]["EPS"], 
-    #     info["配股配息"][0]["股票股利"], 
-    #     info["配股配息"][0]["現金股利"],
-    # )
-
-    # 取得配息資料
-    # 更新資料 (試著更新一下)
-    # if info["配股配息"][0]["所屬年度"] == "2019":
-    #     res, tmp = NetStockInfo.getHistockStockDivide (stockID)
-    #     if res == False:
-    #         continue
-    #     info["配股配息"] = tmp
-    #     if len(info["配股配息"]) > 0:
-    #         print ("配股配息", json.dumps(info["配股配息"][0]))
-    #     if info["配股配息"][0]["所屬年度"] != "2019":
-    #         # 把資料存起來
-    #         saveCache ("../info/%s.txt" % (stockID,), info)
+        fieldNodes = rowNode.find_elements_by_xpath ('.//td')
+        # 只是上下半年的就不處理
+        if fieldNodes[0].text.isdigit () == False:
+            #print ("[ignore][part]", rowNode.text)
+            continue
+        # 沒有EPS就不做處理
+        if fieldNodes[20].text == "-":
+            #print ("[ignore][no eps]", rowNode.text)
+            break
+        #print (rowNode.text)
+        # 股利發放年度
+        info["years"] = fieldNodes[0].text
+        info["money"] = float (fieldNodes[1].text)
+        info["moneyHold"] = float(fieldNodes[2].text)
+        info["stock"] = float (fieldNodes[3].text)
+        info["stockHold"] = float(fieldNodes[4].text)
+        info["sdAll"] = float (fieldNodes[7].text)
+        info["eps"] = float(fieldNodes[20].text)
+        # 塞進去DB
+        StockDBMgr.saveSD (stockID, info)
+        #break
+    #break
+    time.sleep (1)

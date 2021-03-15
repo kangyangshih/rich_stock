@@ -105,3 +105,4 @@ if updateFlag["daily"] == True:
 else:
     print ("【不更新】每日")
 
+

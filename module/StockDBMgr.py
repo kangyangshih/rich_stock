@@ -28,6 +28,10 @@ class cStockDBMgr:
 
     def commit (self, dbName):
         self.__DBMap[dbName].commit()
+    
+    # 檢查資料是不是有存在
+    def checkInfo (self, dbName, tableName, keyMap):
+        return self.__DBMap[dbName].checkInfo (tableName, keyMap, False)
             
     #-----------------------------------------------
     # 新聞相關
@@ -66,6 +70,17 @@ class cStockDBMgr:
             },
         )
         # 做更新的動作
+        self.__DBMap["basic"].commit()
+    
+    # 記錄配股配息
+    def saveSD (self, stockID, info, update=False):
+        self.__DBMap["basic"].update ("stockDividen",
+            info,
+            {
+                "id" : int(stockID),
+                "years" : info["years"],
+            },
+        )
         self.__DBMap["basic"].commit()
 
     #-----------------------------------------------
