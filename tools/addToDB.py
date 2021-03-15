@@ -23,7 +23,7 @@ updateFlag = {
     # 更新 news (己完成)
     "news":False,
     # 更新每日資料
-    "daily" : False,
+    "daily" : True,
 }
 
 #------------------------------------
