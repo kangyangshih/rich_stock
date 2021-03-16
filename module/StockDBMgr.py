@@ -18,6 +18,8 @@ class cStockDBMgr:
     def __init__(self):
         # 每日資訊
         self.__DBMap["daily"] = cSqlite ("../db/daily.db3")
+        # 新聞
+        self.__DBMap["news"] = cSqlite ("../db/news.db3")
         # 基本資料
         self.__DBMap["basic"] = cSqlite ("../db/basic.db3")
 
@@ -32,14 +34,14 @@ class cStockDBMgr:
     # 檢查資料是不是有存在
     def checkInfo (self, dbName, tableName, keyMap):
         return self.__DBMap[dbName].checkInfo (tableName, keyMap, False)
-            
+        
     #-----------------------------------------------
     # 新聞相關
     #-----------------------------------------------
     # 取得新聞
     def getNews (self, stockID):
         # 從資料庫取得新聞
-        rows = self.__DBMap["basic"].get (
+        rows = self.__DBMap["news"].get (
             # 表單
             "news", 
             # 取得的欄位
@@ -58,7 +60,7 @@ class cStockDBMgr:
     def saveNews (self, stockID, updateTime, newsList):
         #print (json.dumps (newsList))
         # 做更新的動作
-        self.__DBMap["basic"].update ("news",
+        self.__DBMap["news"].update ("news",
             # 資訊
             {
                 "updateTime" : updateTime,
@@ -70,7 +72,7 @@ class cStockDBMgr:
             },
         )
         # 做更新的動作
-        self.__DBMap["basic"].commit()
+        self.__DBMap["news"].commit()
     
     #-----------------------------------------------
     # 配股配息

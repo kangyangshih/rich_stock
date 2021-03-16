@@ -26,6 +26,10 @@ updateFlag = {
     "daily" : False,
 }
 
+for stockID, stock in allstock.items():
+    updateTime, newsList = StockDBMgr.getNews(stockID)
+    StockDBMgr.saveNews (stockID, updateTime, newsList) 
+
 #------------------------------------
 # 塞入基本資料
 if updateFlag["basic"] == True:

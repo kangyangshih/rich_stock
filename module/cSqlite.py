@@ -1,5 +1,6 @@
 # DESC : 用來處理 Sqlite 處理
 # DATE : 2021/3/11
+# vacuum : sqlite reduce file size after delete
 
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
