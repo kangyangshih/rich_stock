@@ -18,24 +18,23 @@ print ("[updateTimeStr] "+ updateTimeStr)
 # 加入這次更新的新聞
 g_updateNews = getFromCache ("../cache_news_%s.txt" % (get_day_str(),), [])
 def addUpdateNews (news):
-    # 加入
-    g_updateNews.append (news)
-    # 寫成檔案
-    tmpfile = open ("../update_%s.txt" % (get_day_str(),), "w", encoding="utf-8")
-    for news in g_updateNews:
-        tmpfile.writelines ("* %s [%s](%s)<br/>\n" % (news["date"],
-                news["title"], 
-                news["url"]
-            )
-        )
-    tmpfile.close()
-    # 暫存起來
-    saveCache ("../cache_news_%s.txt" % (get_day_str(),), g_updateNews)
+    return
+    # # 加入
+    # g_updateNews.append (news)
+    # # 寫成檔案
+    # tmpfile = open ("../update_%s.txt" % (get_day_str(),), "w", encoding="utf-8")
+    # for news in g_updateNews:
+    #     tmpfile.writelines ("* %s [%s](%s)<br/>\n" % (news["date"],
+    #             news["title"], 
+    #             news["url"]
+    #         )
+    #     )
+    # tmpfile.close()
+    # # 暫存起來
+    # saveCache ("../cache_news_%s.txt" % (get_day_str(),), g_updateNews)
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
-# 
-stockUpdateTimeMap = getFromCache ("../info/newsUpdateTime.txt", {})
 
 #------------------------------------------------
 print ("=== [更新新聞] ===")
