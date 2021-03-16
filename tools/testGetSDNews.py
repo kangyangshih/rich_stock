@@ -39,10 +39,10 @@ stockIDList.sort()
 # 一隻一隻去抓取資料
 for stockID in stockIDList:
     # 先檢查資料是不是存在
-    if StockDBMgr.checkInfo ("basic", "stockDividen", {"id":int(stockID), "years":"2021"}) == True:
+    if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2021"}) == True:
         print ("%s save, pass" % (stockID,))
         continue
-    if StockDBMgr.checkInfo ("basic", "stockDividen", {"id":int(stockID), "years":"2020"}) == True:
+    if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2020"}) == True:
         print ("%s 暫時沒有2021，先 Pass" % (stockID,))
         continue
     # 開啟網頁
@@ -61,21 +61,42 @@ for stockID in stockIDList:
         if fieldNodes[0].text.isdigit () == False:
             #print ("[ignore][part]", rowNode.text)
             continue
-        # 沒有EPS就不做處理 (沒有2021 就不會有EPS)
-        if fieldNodes[20].text == "-":
-            #print ("[ignore][no eps]", rowNode.text)
+        # # 沒有EPS就不做處理 (沒有2021 就不會有EPS)
+        # if fieldNodes[20].text == "-":
+        #     #print ("[ignore][no eps]", rowNode.text)
+        #     if fieldNodes[0].text != "-":
+        #         print (rowNode.text)
+        #     continue
+        # 真的還沒有公告。
+        if fieldNodes[1].text == "-":
             continue
         #print (rowNode.text)
         # 股利發放年度
         info["years"] = fieldNodes[0].text
         info["money"] = float (fieldNodes[1].text)
         info["moneyHold"] = float(fieldNodes[2].text)
-        info["stock"] = float (fieldNodes[3].text)
-        info["stockHold"] = float(fieldNodes[4].text)
+        info["moneyAll"] = float (fieldNodes[3].text)
+        info["stock"] = float (fieldNodes[4].text)
+        info["stockHold"] = float(fieldNodes[5].text)
+        info["stockAll"] = float (fieldNodes[6].text)
         info["sdAll"] = float (fieldNodes[7].text)
-        info["eps"] = float(fieldNodes[20].text)
+        if fieldNodes[20].text == "-":
+            info["eps"] = None
+        else:
+            info["eps"] = float(fieldNodes[20].text)
         # 塞進去DB
         StockDBMgr.saveSD (stockID, info, True)
+        # 印出來看看
+        print ("[%s] %s eps:%s -> %s+%s=%s" % (stockID, 
+            info["years"],
+            info["eps"],
+            info["moneyAll"],
+            info["stockAll"],
+            info["sdAll"],
+        ))
         #break
     #break
-    time.sleep (1)
+    printCountDown (15)
+    # print ("[try sleep]")
+    # time.sleep (10)
+    # print ("[finish sleep]")

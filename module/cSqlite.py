@@ -35,6 +35,9 @@ class cSqlite:
         # 串接出條件
         condition = ""
         for key, value in keyMap.items():
+            # 如果是 Node 就不串接
+            if value == None:
+                continue
             if isinstance (value, str) == True:
                 condition += " and %s='%s'" % (key, value)
             else:
@@ -83,6 +86,8 @@ class cSqlite:
         fieldStr = ""
         valueStr = ""
         for key, value in tmp.items():
+            if value == None:
+                continue
             if isinstance (value, str) == True:
                 fieldStr += ", %s" % (key,)
                 valueStr += ", '%s'" % (value,)

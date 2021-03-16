@@ -74,7 +74,7 @@ class cStockDBMgr:
     
     # 記錄配股配息
     def saveSD (self, stockID, info, update=False):
-        self.__DBMap["basic"].update ("stockDividen",
+        self.__DBMap["basic"].update ("stockDiv",
             info,
             {
                 "id" : int(stockID),
