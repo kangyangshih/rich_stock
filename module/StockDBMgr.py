@@ -72,6 +72,9 @@ class cStockDBMgr:
         # 做更新的動作
         self.__DBMap["basic"].commit()
     
+    #-----------------------------------------------
+    # 配股配息
+    #-----------------------------------------------
     # 記錄配股配息
     def saveSD (self, stockID, info, update=False):
         self.__DBMap["basic"].update ("stockDiv",
@@ -82,21 +85,29 @@ class cStockDBMgr:
             },
         )
         self.__DBMap["basic"].commit()
+    
+    # 取得配股配息
+    def getSD (self, stockID):
+        return self.__DBMap["basic"].get ("stockDiv",
+            # 想要的欄位
+            [
+                "years", "moneyAll", "stockAll", "sdAll", "eps",
+            ],
+            # 條件
+            {
+                "id" : int(stockID),
+            },
+            # ORDER BY
+            "years desc"
+        )
+    
+    def get2021SDCount (self):
+        return int(self.__DBMap["basic"].selectCommand ("select count(*) from stockDiv where years='2021'")[0][0])
 
     #-----------------------------------------------
     # Daily
     #-----------------------------------------------
     def saveDaily (self, stockID, info, update=False):
-        #if info["diff"] == None:
-        #    print (stockID, json.dumps(info))
-        # # 做程式碼修正
-        # if stockID == "8291" and info["diff"] == None:
-        #     info["diff"] = 0
-        # if stockID == "8936" and info["diff"] == None:
-        #     #print ("~~~")
-        #     info["diff"] = 0.35
-        #     info["pre_price"] = info["end_price"] - info["diff"]
-        #     #print (stockID, json.dumps(info))
         # 寫入資料庫
         self.__DBMap["daily"].update ("daily",
             # 資訊

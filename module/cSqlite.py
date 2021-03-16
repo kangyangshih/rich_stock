@@ -48,6 +48,8 @@ class cSqlite:
     def __getKeyMap (self, keyMap):
         res = ""
         for key, value in keyMap.items():
+            if value == None:
+                continue
             if isinstance (value, str) == True:
                 res += ", %s='%s'" % (key, value)
             else:
@@ -166,6 +168,10 @@ class cSqlite:
                 tmp[fieldList[index]] = row[index]
             res.append (tmp)
         return res
+    
+    # 只拿到指令
+    def selectCommand (self, command):
+        return self._cur.execute (command).fetchall()
     
     def getFieldList (self, tableName, fieldName, keyMap, orderStr):
         # select date from daily where id = 1101 group by date order by date desc

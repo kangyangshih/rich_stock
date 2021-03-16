@@ -197,15 +197,15 @@ class cSingleStock :
         # 去除掉一些不必要的資料
         lineToken = sourceRes.split ("\n")
         for line in lineToken:
-            # 取得公告數值，加到最後
-            if line.startswith ("[2020 EPS]") == True:
-                self.EPS2020 = float (line[11:])
-                tail += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
-                continue
+            # # 取得公告數值，加到最後
+            # if line.startswith ("[2020 EPS]") == True:
+            #     self.EPS2020 = float (line[11:])
+            #     tail += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
+            #     continue
             # 直接加入
             res += line + "\n"
-        if self.sd2021 != None:
-            tail += "[公告] 2021 配息 : %.2f\n" % (self.sd2021,)
+        # if self.sd2021 != None:
+        #     tail += "[公告] 2021 配息 : %.2f\n" % (self.sd2021,)
         # 回傳頭+尾
         return res + tail
 
@@ -308,8 +308,8 @@ class cSingleStock :
             sd2021_money = eps2020 * self._getStockDividenRate() / 100
             self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
         else:
-            self._write (file, res, "2021 公告配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
-        now_sd_rate = sd2021_money / realtime["end_price"] * 100
+            self._write (file, res, "2021 公告配息 : %.2f 配股:%.2f 配息率 : %.2f %%", sd2021_money, self.sd2021_stock,  (sd2021_money+self.sd2021_stock)/eps2020*100 if eps2020 != 0 else 0)
+        now_sd_rate = sd2021_money / realtime["end_price"] * 100 + self.sd2021_stock * 10
         self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["end_price"], now_sd_rate)
         # 買入價的殖利率預估
         if self.buyPrice > 0:
@@ -661,18 +661,27 @@ class cAllStockMgr:
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, float)
             # 2021 公告的配股配息
-            tmp = excel.getValue (row_index, 10, "")
-            if tmp == "":
+            # tmp = excel.getValue (row_index, 10, "")
+            # if tmp == "":
+            #     single.sd2021 = None
+            #     single.sd2021_stock = 0
+            # elif tmp.find ("+") == -1:
+            #     single.sd2021 = float (tmp)
+            #     single.sd2021_stock = 0
+            # else:
+            #     tmpList = tmp.split ("+")
+            #     single.sd2021_stock = float (tmpList[0])
+            #     single.sd2021 = float (tmpList[1])
+            sdList = StockDBMgr.getSD (single.id)
+            if len(sdList) > 0 and sdList[0]["years"] == "2021":
+                single.sd2021 = sdList[0]["moneyAll"]
+                single.sd2021_stock = sdList[0]["stockAll"]
+                if sdList[0]["eps"] != None:
+                    single.EPS2020 = sdList[0]["eps"]
+            else:
                 single.sd2021 = None
                 single.sd2021_stock = 0
-            elif tmp.find ("+") == -1:
-                single.sd2021 = float (tmp)
-                single.sd2021_stock = 0
-            else:
-                tmpList = tmp.split ("+")
-                single.sd2021_stock = float (tmpList[0])
-                single.sd2021 = float (tmpList[1])
-            #single.sd2021 = excel.getValue (row_index, 10, None, float)
+            
             # 取得一點影響到大盤的點數
             single.pointToAll = excel.getValue (row_index, 11, 0, float)
             # 雜項

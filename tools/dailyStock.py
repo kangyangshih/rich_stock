@@ -178,7 +178,7 @@ for stockID, stock in allstock.items():
     # 取得收盤價
     realtime = stock.getTodayPrice ()
     # 暫時借塞
-    stock.now_sd_rate = stock.sd2021 / realtime["end_price"] * 100
+    stock.now_sd_rate = (stock.sd2021 / realtime["end_price"] * 100) + stock.sd2021_stock * 10
     if stock.now_sd_rate not in tmp:
         tmp[stock.now_sd_rate] = []
     tmp[stock.now_sd_rate].append (stockID) 

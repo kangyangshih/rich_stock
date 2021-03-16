@@ -27,20 +27,26 @@ for stockID, stock in allstock.items():
         if news["date"].find ("2020/") != -1:
             break
         # 不是【股利分派】的新聞，就繼續找
-        if news["title"].find ("股利分派") == -1:
-            continue
-        print ("找到股利分配 : " + stock.name)
-        stockIDList.append (stockID)
-        isFound = True
-        break
+        if news["title"].find ("股利分派") != -1:
+            #print ("找到股利分配 : " + stock.name)
+            stockIDList.append (stockID)
+            isFound = True
+            break
+        if news["title"].find ("擬配息") != -1:
+            #print ("找到股利分配 : " + stock.name)
+            stockIDList.append (stockID)
+            isFound = True
+            break
+
 print ("[股利分派] 數量 : "+ str(len(stockIDList)))
 stockIDList.sort()
+print ("[己有2021配股配息] : " + str(StockDBMgr.get2021SDCount()))
 
 # 一隻一隻去抓取資料
 for stockID in stockIDList:
     # 先檢查資料是不是存在
     if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2021"}) == True:
-        print ("%s save, pass" % (stockID,))
+        #print ("%s save, pass" % (stockID,))
         continue
     if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2020"}) == True:
         print ("%s 暫時沒有2021，先 Pass" % (stockID,))
@@ -80,6 +86,7 @@ for stockID in stockIDList:
         info["stockHold"] = float(fieldNodes[5].text)
         info["stockAll"] = float (fieldNodes[6].text)
         info["sdAll"] = float (fieldNodes[7].text)
+        # 如果是 None 就不會寫進去DB。
         if fieldNodes[20].text == "-":
             info["eps"] = None
         else:
