@@ -12,7 +12,7 @@ import json
 import csv
 
 # 季 EPS
-epsKey = "2020Q3"
+#epsKey = "2020Q3"
 #epsKey = "2020Q4"
 # 月營收
 turnOverKey = "2021/02"
