@@ -12,7 +12,7 @@ import json
 import csv
 
 # 季 EPS
-#epsKey = "2020Q3"
+epsKey = "2020Q3"
 #epsKey = "2020Q4"
 # 月營收
 turnOverKey = "2021/02"
@@ -91,7 +91,7 @@ for stockID, stock in allstock.items():
             print (stock.name, "還未有", epsKey, "EPS")
         else:
             print (epsKey, json.dumps(info["QEPS"][epsKey]))
-
+    
     #------------------------------------------
     # 每月營收
     #print (NetStockInfo.getHistockTurnOver (stockID))

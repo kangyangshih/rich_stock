@@ -15,23 +15,6 @@ import csv
 # 取得時間日期 (每天只更新一次新聞)
 updateTimeStr = get_hour_str (3)
 print ("[updateTimeStr] "+ updateTimeStr)
-# 加入這次更新的新聞
-g_updateNews = getFromCache ("../cache_news_%s.txt" % (get_day_str(),), [])
-def addUpdateNews (news):
-    return
-    # # 加入
-    # g_updateNews.append (news)
-    # # 寫成檔案
-    # tmpfile = open ("../update_%s.txt" % (get_day_str(),), "w", encoding="utf-8")
-    # for news in g_updateNews:
-    #     tmpfile.writelines ("* %s [%s](%s)<br/>\n" % (news["date"],
-    #             news["title"], 
-    #             news["url"]
-    #         )
-    #     )
-    # tmpfile.close()
-    # # 暫存起來
-    # saveCache ("../cache_news_%s.txt" % (get_day_str(),), g_updateNews)
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
@@ -88,7 +71,6 @@ for stockID, stock in allstock.items():
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
         print (cache["dateStr"], cache["title"])
-        addUpdateNews (cache)
     # 把資料存起來
     newList.extend (cacheInfo)
     #print ("===== save cache =====")
