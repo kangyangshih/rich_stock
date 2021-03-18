@@ -11,6 +11,7 @@ import json
 from lxml import etree
 import time
 from WebViewMgr import WebViewMgr
+import random
 
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
@@ -104,7 +105,7 @@ for stockID, stock in allstock.items():
         ))
         #break
     #break
-    printCountDown (15)
+    printCountDown (random.randint(15,25))
     # print ("[try sleep]")
     # time.sleep (10)
     # print ("[finish sleep]")
