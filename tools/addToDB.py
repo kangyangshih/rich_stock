@@ -3,7 +3,7 @@
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
 from utility import *
-#WebViewMgr.debugMode ()
+from WebViewMgr import WebViewMgr
 # 載入這個專案共用模組
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
@@ -24,11 +24,19 @@ updateFlag = {
     "news":False,
     # 更新每日資料 (己完成)
     "daily" : False,
+    # 更新股利
+    "div" : False,
 }
+
+url = "https://tw.stock.yahoo.com/quote/3293/dividend"
+print ()
+WebViewMgr.loadURL ()
+printCountDown (10)
 
 #------------------------------------
 # 塞入基本資料
 if updateFlag["basic"] == True:
+    print ("【更新】個股基本資料")
     basicDB = cSqlite ("../db/basic.db3")
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
@@ -64,6 +72,7 @@ else:
 #------------------------------------
 # 塞入基本資料
 if updateFlag["news"] == True:
+    print ("【更新】新聞")
     newsDB = cSqlite ("../db/news.db3")
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
@@ -96,6 +105,7 @@ else:
 #------------------------------------
 # 更新每日資料
 if updateFlag["daily"] == True:
+    print ("【更新】每日資料")
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
         dailyMap = getFromCache ("../info/daily_%s.txt" % (stockID,))
@@ -104,5 +114,26 @@ if updateFlag["daily"] == True:
             StockDBMgr.saveDaily (stockID, info)
 else:
     print ("【不更新】每日")
+
+#------------------------------------
+# 更新股利分配
+if updateFlag["div"] == True:
+    print ("【更新】股利分配")
+    for stockID, stock in allstock.items():
+        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
+        # 載入網址
+        url = "https://tw.stock.yahoo.com/quote/%s/dividend" % (stockID,)
+        print (url)
+        WebViewMgr.loadURL (url)
+        # 路徑
+        # //*[@id="main-2-QuoteDividend-Proxy"]/div/section[2]/div[2]/div/div/div[2]/ul/li[1]
+        xpath = '//*[@id="main-2-QuoteDividend-Proxy"]/div/section[2]/div[2]/div/div/div[2]/ul/li'
+        nodes = WebViewMgr.getWaitNodes (xpath)
+        for node in nodes:
+            print (node.text)
+        break
+else:
+    print ("【不更新】股利分配")
+
 
 
