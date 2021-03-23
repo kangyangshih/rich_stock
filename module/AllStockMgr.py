@@ -702,7 +702,6 @@ class cAllStockMgr:
             #print (infoFilename)
             single.netInfo = getFromCache (infoFilename, {})
             # 要處理三大法人, 從 dict 變 list
-            #print (single.id, single.name)
             keyList = [value for value in single.netInfo["三大法人"].keys()]
             keyList.sort (reverse=True)
             #print (keyList)

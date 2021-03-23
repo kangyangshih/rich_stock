@@ -24,8 +24,8 @@ updateFlag = {
     "news":False,
     # 更新每日資料 (己完成)
     "daily" : False,
-    # 更新股利
-    "div" : False,
+    # 三大法人
+    "three" : True,
 }
 
 url = "https://tw.stock.yahoo.com/quote/3293/dividend"
@@ -116,24 +116,17 @@ else:
     print ("【不更新】每日")
 
 #------------------------------------
-# 更新股利分配
-if updateFlag["div"] == True:
-    print ("【更新】股利分配")
+# 三大法人
+if updateFlag["three"] == True:
+    print ("【更新】三大法人")
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
-        # 載入網址
-        url = "https://tw.stock.yahoo.com/quote/%s/dividend" % (stockID,)
-        print (url)
-        WebViewMgr.loadURL (url)
-        # 路徑
-        # //*[@id="main-2-QuoteDividend-Proxy"]/div/section[2]/div[2]/div/div/div[2]/ul/li[1]
-        xpath = '//*[@id="main-2-QuoteDividend-Proxy"]/div/section[2]/div[2]/div/div/div[2]/ul/li'
-        nodes = WebViewMgr.getWaitNodes (xpath)
-        for node in nodes:
-            print (node.text)
-        break
+        # single.netInfo["三大法人"]
+        for info in single.netInfo["三大法人"]:
+            StockDBMgr.saveThree (stockID, info)
+        
 else:
-    print ("【不更新】股利分配")
+    print ("【不更新】三大法人")
 
 
 
