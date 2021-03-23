@@ -1,4 +1,4 @@
-# DESC : 用來挑選股票的功能
+# DESC : 獨立選股程式
 # Date : 2020/12/4
 
 import sys
@@ -68,8 +68,12 @@ for stockID, stock in allstock.items():
     # 營收相關要求
     #---------------------------
     # 缺營收資料就暫不處理
-    if stock.getInfo ("QEPS", "2020Q3", "EPS") == None or stock.getInfo ("QEPS", "2020Q2", "EPS") == None or stock.getInfo ("QEPS", "2020Q1", "EPS") == None:
+    if stock.getInfo ("QEPS", "2020Q4", "EPS") == None or \
+        stock.getInfo ("QEPS", "2020Q3", "EPS") == None or \
+        stock.getInfo ("QEPS", "2020Q2", "EPS") == None or \
+        stock.getInfo ("QEPS", "2020Q1", "EPS") == None:
         write ("[失敗] 無法取得 2020 Q1, Q2, Q3 的EPS")
+        write (stock.getInfo ("QEPS", "2020Q4", "EPS"))
         write (stock.getInfo ("QEPS", "2020Q3", "EPS"))
         write (stock.getInfo ("QEPS", "2020Q2", "EPS"))
         write (stock.getInfo ("QEPS", "2020Q1", "EPS"))

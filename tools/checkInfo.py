@@ -1,7 +1,4 @@
-# 做一些 info 的資料更新
-# TODO
-# 把三大法人拔出來
-# 每日資料拔出來
+# DESC : allstock.xlxs 裏沒有的股票，把暫存檔刪除。
 
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")

@@ -212,17 +212,19 @@ if controlMap[4] == True:
 #--------------------------------------------------
 # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
 if controlMap[5] == True:
-    def writeNews (file, stock, news):
+    def writeNews (file, news):
         # 把內容寫下來
         write (file, 
             "* [%s(%s)](%s) %s [%s](%s)<br/>", 
-            stock.name, 
-            stock.id,
+            news["name"], 
+            news["id"],
             'https://tw.stock.yahoo.com/q/ta?s='+stock.id, 
             news["dateStr"],
             news["title"], 
             news["url"]
         )
+    # 以日期來做
+    newsMap = {}
 
     nowTimes = time.time()
     for index in range (2):
@@ -234,19 +236,30 @@ if controlMap[5] == True:
         for stockID, stock in allstock.items():
             tmp, newsList = StockDBMgr.getNews (stockID)
             for news in newsList:
+                news["id"] = stock.id
+                news["name"] = stock.name
                 # 日期不對不做處理
                 if news["date"].find (timeStr) == -1:
                     continue
                 # 沒有指定字不做處理
                 if news["title"].find ("列注意股") != -1:
-                    writeNews (file, stock, news)
+                    if news["date"] not in newsMap:
+                        newsMap[news["date"]] = []
+                    newsMap[news["date"]].append (news)
                     continue
                 if news["title"].find ("稅前每股") != -1:
-                    writeNews (file, stock, news)
+                    if news["date"] not in newsMap:
+                        newsMap[news["date"]] = []
+                    newsMap[news["date"]].append (news)
                     continue
                 if news["title"].find ("稅前EPS") != -1:
-                    writeNews (file, stock, news)
+                    if news["date"] not in newsMap:
+                        newsMap[news["date"]] = []
+                    newsMap[news["date"]].append (news)
                     continue
+        tmpList = changeDict2List (newsMap)
+        for news in tmpList:
+            writeNews (file, news)
         write (file, "")
         file.close()
 
