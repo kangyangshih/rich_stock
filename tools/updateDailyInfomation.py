@@ -201,36 +201,36 @@ for filename in filelist:
                 "total" : getCSVRowNumber(row[23], True),
             }
             # 做存入的動作
-            StockDBMgr.saveThree (stockID, info)
+            StockDBMgr.saveThree (stockID, tmp)
         file.close()
 
-        # 要補沒有資料的部分
-        tmp = {
-            # 日期
-            "date" : threeKey,
-            # 外資
-            "out_buy" : "0",
-            "out_sell" : "0",
-            "out" : "0",
-            # 投信
-            "credit_buy" : "0",
-            "credit_sell" : "0",
-            "credit" : "0",
-            # 自營商(自行買賣)
-            "self_0_buy" : "0",
-            "self_0_sell" : "0",
-            "self_0" : "0",
-            # 自營商(避險)
-            "self_1_buy" : "0",
-            "self_1_sell" : "0",
-            "self_1" : "0",
-            # 總計
-            "total" : "0",
-        }
         for stockID, stock in allstock.items():
             if stock.location != "上櫃":
                 continue
-            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+            # 要補沒有資料的部分
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : "0",
+                "out_sell" : "0",
+                "out" : "0",
+                # 投信
+                "credit_buy" : "0",
+                "credit_sell" : "0",
+                "credit" : "0",
+                # 自營商(自行買賣)
+                "self_0_buy" : "0",
+                "self_0_sell" : "0",
+                "self_0" : "0",
+                # 自營商(避險)
+                "self_1_buy" : "0",
+                "self_1_sell" : "0",
+                "self_1" : "0",
+                # 總計
+                "total" : "0",
+            }
+            if StockDBMgr.checkInfo ("three", "three", {"id": int(stockID), "date" : threeKey}) == False:
                 StockDBMgr.saveThree (stockID, tmp)
 
     #---------------------
@@ -279,36 +279,36 @@ for filename in filelist:
                 "total" : getCSVRowNumber(row[18], True),
             }
             # 做存入的動作
-            StockDBMgr.saveThree (stockID, info)
+            StockDBMgr.saveThree (stockID, tmp)
         file.close()
 
-        # 要補沒有資料的部分
-        tmp = {
-            # 日期
-            "date" : threeKey,
-            # 外資
-            "out_buy" : "0",
-            "out_sell" : "0",
-            "out" : "0",
-            # 投信
-            "credit_buy" : "0",
-            "credit_sell" : "0",
-            "credit" : "0",
-            # 自營商(自行買賣)
-            "self_0_buy" : "0",
-            "self_0_sell" : "0",
-            "self_0" : "0",
-            # 自營商(避險)
-            "self_1_buy" : "0",
-            "self_1_sell" : "0",
-            "self_1" : "0",
-            # 總計
-            "total" : "0",
-        }
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+            # 要補沒有資料的部分
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : "0",
+                "out_sell" : "0",
+                "out" : "0",
+                # 投信
+                "credit_buy" : "0",
+                "credit_sell" : "0",
+                "credit" : "0",
+                # 自營商(自行買賣)
+                "self_0_buy" : "0",
+                "self_0_sell" : "0",
+                "self_0" : "0",
+                # 自營商(避險)
+                "self_1_buy" : "0",
+                "self_1_sell" : "0",
+                "self_1" : "0",
+                # 總計
+                "total" : "0",
+            }
+            if StockDBMgr.checkInfo ("three", "three", {"id": int(stockID), "date" : threeKey}) == False:
                 StockDBMgr.saveThree (stockID, tmp)
 
     #---------------------
@@ -356,39 +356,37 @@ for filename in filelist:
                 # 總計
                 "total" : getCSVRowNumber(row[18], True),
             }
-            #print (tmp)
-            info["三大法人"][threeKey] = tmp
             # 做存入的動作
-            saveCache ("../info/%s.txt" % (stockID,), info)
+            StockDBMgr.saveThree (stockID, tmp)
         file.close()
 
-        # 要補沒有資料的部分
-        tmp = {
-            # 日期
-            "date" : threeKey,
-            # 外資
-            "out_buy" : "0",
-            "out_sell" : "0",
-            "out" : "0",
-            # 投信
-            "credit_buy" : "0",
-            "credit_sell" : "0",
-            "credit" : "0",
-            # 自營商(自行買賣)
-            "self_0_buy" : "0",
-            "self_0_sell" : "0",
-            "self_0" : "0",
-            # 自營商(避險)
-            "self_1_buy" : "0",
-            "self_1_sell" : "0",
-            "self_1" : "0",
-            # 總計
-            "total" : "0",
-        }
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+            # 要補沒有資料的部分
+            tmp = {
+                # 日期
+                "date" : threeKey,
+                # 外資
+                "out_buy" : "0",
+                "out_sell" : "0",
+                "out" : "0",
+                # 投信
+                "credit_buy" : "0",
+                "credit_sell" : "0",
+                "credit" : "0",
+                # 自營商(自行買賣)
+                "self_0_buy" : "0",
+                "self_0_sell" : "0",
+                "self_0" : "0",
+                # 自營商(避險)
+                "self_1_buy" : "0",
+                "self_1_sell" : "0",
+                "self_1" : "0",
+                # 總計
+                "total" : "0",
+            }
+            if StockDBMgr.checkInfo ("three", "three", {"id": int(stockID), "date" : threeKey}) == False:
                 StockDBMgr.saveThree (stockID, tmp)
 
 #------------------------------------------------

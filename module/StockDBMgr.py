@@ -46,6 +46,7 @@ class cStockDBMgr:
     #-----------------------------------------------
     # 儲存三大法人
     def saveThree (self, stockID, info):
+        #print ("[saveThree] " + json.dumps(info))
         # 取出日期
         date = info.pop ("date")
         # 轉換型別
@@ -54,7 +55,7 @@ class cStockDBMgr:
         # 更新投信用詞
         keyList = ["in", "in_buy", "in_sell"]
         for key in keyList:
-            if key not in keyList:
+            if key not in info:
                 continue
             newKey = key.replace ("in", "credit")
             info[newKey] = info.pop (key)
