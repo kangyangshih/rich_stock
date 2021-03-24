@@ -332,7 +332,7 @@ class cSingleStock :
         #------------------------
         self._write (file, res, "[近日三大法人動向]")
         # 外本比
-        today_out = float(self.getInfo ("三大法人")[0]["out"].replace(",", ""))
+        today_out = self.getInfo ("三大法人")[0]["out"]
         today_out_rate = self._getBuyRate (today_out)
         self._write (file, res, "本日外資 : %.0f, 外本比:%.4f %%", today_out, today_out_rate)
         for day in (5, 10, 15, 30):
@@ -347,7 +347,7 @@ class cSingleStock :
         self._write (file, res, "")
         
         # 投本比
-        today_in = float(self.getInfo ("三大法人")[0]["in"].replace(",", ""))
+        today_in = self.getInfo ("三大法人")[0]["credit"]
         today_in_rate = self._getBuyRate (today_in)
         self._write (file, res, "本日投信 : %.0f, 投本比:%.4f %%", today_in, today_in_rate)
         for day in (5, 10, 15, 30):
@@ -369,9 +369,9 @@ class cSingleStock :
                 self.getInfo ("三大法人")[index]["out"],
                 self.getInfo ("三大法人")[index]["out_buy"],
                 self.getInfo ("三大法人")[index]["out_sell"],
-                self.getInfo ("三大法人")[index]["in"],
-                self.getInfo ("三大法人")[index]["in_buy"],
-                self.getInfo ("三大法人")[index]["in_sell"],
+                self.getInfo ("三大法人")[index]["credit"],
+                self.getInfo ("三大法人")[index]["credit_buy"],
+                self.getInfo ("三大法人")[index]["credit_sell"],
                 self.getInfo ("三大法人")[index]["self_0"],
                 self.getInfo ("三大法人")[index]["self_1"],
             )
@@ -543,11 +543,11 @@ class cSingleStock :
         # 統計5日結果
         for index in range (offset, counter+offset):
             if isABS == False:
-                out_total += float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
-                in_total += float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+                out_total += self.getInfo ("三大法人")[index]["out"]
+                in_total += self.getInfo ("三大法人")[index]["credit"]
             else:
-                out_total += abs(float (self.getInfo ("三大法人")[index]["out"].replace (",", "")))
-                in_total += abs(float (self.getInfo ("三大法人")[index]["in"].replace (",", "")))
+                out_total += abs(self.getInfo ("三大法人")[index]["out"])
+                in_total += abs(self.getInfo ("三大法人")[index]["credit"])
             #print (out_total, in_total)
         # 回傳平均結果
         return out_total/counter, in_total/counter
@@ -562,8 +562,8 @@ class cSingleStock :
         in_total = 0
         # 統計指定區間的結果
         for index in range (0, offset):
-            out_total += float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
-            in_total += float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+            out_total += self.getInfo ("三大法人")[index]["out"]
+            in_total += self.getInfo ("三大法人")[index]["credit"]
         
         # 回傳平均結果
         return out_total, in_total
@@ -576,7 +576,7 @@ class cSingleStock :
         out_list = [0, 0, 0]
         for index in range (5):
             # 處理外資的部分
-            out_tmp = float (self.getInfo ("三大法人")[index]["out"].replace (",", ""))
+            out_tmp = self.getInfo ("三大法人")[index]["out"]
             # 0 放買
             if out_tmp > 0:
                 out_list[0] += 1
@@ -599,7 +599,7 @@ class cSingleStock :
         in_list = [0, 0, 0]
         for index in range (5):
             # 處理投信的部分
-            in_tmp = float (self.getInfo ("三大法人")[index]["in"].replace (",", ""))
+            in_tmp = self.getInfo ("三大法人")[index]["credit"]
             # 0 放買
             if in_tmp > 0:
                 in_list[0] += 1
@@ -702,13 +702,7 @@ class cAllStockMgr:
             #print (infoFilename)
             single.netInfo = getFromCache (infoFilename, {})
             # 要處理三大法人, 從 dict 變 list
-            keyList = [value for value in single.netInfo["三大法人"].keys()]
-            keyList.sort (reverse=True)
-            #print (keyList)
-            res = []
-            for key in keyList:
-                res.append (single.netInfo["三大法人"][key])
-            single.netInfo["三大法人"] = res
+            single.netInfo["三大法人"] = StockDBMgr.getThree (single.id)
             # 載入每日資料
             single.netInfo["daily"] = StockDBMgr.getDaily (single.id)
             # 記錄起來

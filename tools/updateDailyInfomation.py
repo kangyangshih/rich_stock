@@ -175,10 +175,6 @@ for filename in filelist:
             stockID = row[0]
             if row[0] not in allstock:
                 continue
-            # 載入暫存資料
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in info:
-                info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
             #print (row)
             #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
@@ -190,9 +186,9 @@ for filename in filelist:
                 "out_sell" : getCSVRowNumber(row[9], True),
                 "out" : getCSVRowNumber(row[10], True),
                 # 投信
-                "in_buy" : getCSVRowNumber(row[11], True),
-                "in_sell" : getCSVRowNumber(row[12], True),
-                "in" : getCSVRowNumber(row[13], True),
+                "credit_buy" : getCSVRowNumber(row[11], True),
+                "credit_sell" : getCSVRowNumber(row[12], True),
+                "credit" : getCSVRowNumber(row[13], True),
                 # 自營商(自行買賣)
                 "self_0_buy" : getCSVRowNumber(row[14], True),
                 "self_0_sell" : getCSVRowNumber(row[15], True),
@@ -204,10 +200,8 @@ for filename in filelist:
                 # 總計
                 "total" : getCSVRowNumber(row[23], True),
             }
-            #print (tmp)
-            info["三大法人"][threeKey] = tmp
             # 做存入的動作
-            saveCache ("../info/%s.txt" % (stockID,), info)
+            StockDBMgr.saveThree (stockID, info)
         file.close()
 
         # 要補沒有資料的部分
@@ -219,9 +213,9 @@ for filename in filelist:
             "out_sell" : "0",
             "out" : "0",
             # 投信
-            "in_buy" : "0",
-            "in_sell" : "0",
-            "in" : "0",
+            "credit_buy" : "0",
+            "credit_sell" : "0",
+            "credit" : "0",
             # 自營商(自行買賣)
             "self_0_buy" : "0",
             "self_0_sell" : "0",
@@ -236,13 +230,8 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上櫃":
                 continue
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in  info:
-                info["三大法人"] = {}
-            if threeKey not in info["三大法人"]:
-                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
-                info["三大法人"][threeKey] = tmp
-                saveCache ("../info/%s.txt" % (stockID,), info)
+            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+                StockDBMgr.saveThree (stockID, tmp)
 
     #---------------------
     # 處理上巿內容
@@ -264,10 +253,6 @@ for filename in filelist:
             stockID = row[0]
             if row[0] not in allstock:
                 continue
-            # 載入暫存資料
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in info:
-                info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
             #print (row)
             #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
@@ -279,9 +264,9 @@ for filename in filelist:
                 "out_sell" : getCSVRowNumber(row[3], True),
                 "out" : getCSVRowNumber(row[4], True),
                 # 投信
-                "in_buy" : getCSVRowNumber(row[8], True),
-                "in_sell" : getCSVRowNumber(row[9], True),
-                "in" : getCSVRowNumber(row[10], True),
+                "credit_buy" : getCSVRowNumber(row[8], True),
+                "credit_sell" : getCSVRowNumber(row[9], True),
+                "credit" : getCSVRowNumber(row[10], True),
                 # 自營商(自行買賣)
                 "self_0_buy" : getCSVRowNumber(row[12], True),
                 "self_0_sell" : getCSVRowNumber(row[13], True),
@@ -293,10 +278,8 @@ for filename in filelist:
                 # 總計
                 "total" : getCSVRowNumber(row[18], True),
             }
-            #print (tmp)
-            info["三大法人"][threeKey] = tmp
             # 做存入的動作
-            saveCache ("../info/%s.txt" % (stockID,), info)
+            StockDBMgr.saveThree (stockID, info)
         file.close()
 
         # 要補沒有資料的部分
@@ -308,9 +291,9 @@ for filename in filelist:
             "out_sell" : "0",
             "out" : "0",
             # 投信
-            "in_buy" : "0",
-            "in_sell" : "0",
-            "in" : "0",
+            "credit_buy" : "0",
+            "credit_sell" : "0",
+            "credit" : "0",
             # 自營商(自行買賣)
             "self_0_buy" : "0",
             "self_0_sell" : "0",
@@ -325,13 +308,9 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in  info:
-                info["三大法人"] = {}
-            if threeKey not in info["三大法人"]:
-                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
-                info["三大法人"][threeKey] = tmp
-                saveCache ("../info/%s.txt" % (stockID,), info)
+            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+                StockDBMgr.saveThree (stockID, tmp)
+
     #---------------------
     # 處理上巿內容
     if filename.find ("T86_ALLBUT0999_") != -1:
@@ -352,10 +331,6 @@ for filename in filelist:
             stockID = row[0]
             if row[0] not in allstock:
                 continue
-            # 載入暫存資料
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in info:
-                info["三大法人"] = {}
             #print ("~~ %s (%s) ~~~" % (allstock[stockID].name, stockID))
             #print (row)
             #print (row[10][:-4], row[13][:-4], row[16][:-4], row[19][:-4], row[23][:-4])
@@ -367,9 +342,9 @@ for filename in filelist:
                 "out_sell" : getCSVRowNumber(row[3], True),
                 "out" : getCSVRowNumber(row[4], True),
                 # 投信
-                "in_buy" : getCSVRowNumber(row[8], True),
-                "in_sell" : getCSVRowNumber(row[9], True),
-                "in" : getCSVRowNumber(row[10], True),
+                "credit_buy" : getCSVRowNumber(row[8], True),
+                "credit_sell" : getCSVRowNumber(row[9], True),
+                "credit" : getCSVRowNumber(row[10], True),
                 # 自營商(自行買賣)
                 "self_0_buy" : getCSVRowNumber(row[12], True),
                 "self_0_sell" : getCSVRowNumber(row[13], True),
@@ -396,9 +371,9 @@ for filename in filelist:
             "out_sell" : "0",
             "out" : "0",
             # 投信
-            "in_buy" : "0",
-            "in_sell" : "0",
-            "in" : "0",
+            "credit_buy" : "0",
+            "credit_sell" : "0",
+            "credit" : "0",
             # 自營商(自行買賣)
             "self_0_buy" : "0",
             "self_0_sell" : "0",
@@ -413,13 +388,8 @@ for filename in filelist:
         for stockID, stock in allstock.items():
             if stock.location != "上巿":
                 continue
-            info = getFromCache ("../info/%s.txt" % (stockID,), {})
-            if "三大法人" not in  info:
-                info["三大法人"] = {}
-            if threeKey not in info["三大法人"]:
-                #print ("%s 在 %s 沒有三大法人資料，補空的進去" % (stock.name, threeKey))
-                info["三大法人"][threeKey] = tmp
-                saveCache ("../info/%s.txt" % (stockID,), info)
+            if StockDBMgr.checkInfo ("three", "three", {"id", int(stockID), "date" : threeKey}) == False:
+                StockDBMgr.saveThree (stockID, tmp)
 
 #------------------------------------------------
 # 更新每日股價

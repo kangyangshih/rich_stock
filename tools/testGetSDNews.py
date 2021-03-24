@@ -50,9 +50,9 @@ for stockID in stockIDList:
     if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2021"}) == True:
         #print ("%s save, pass" % (stockID,))
         continue
-    #if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2020"}) == True:
-    #    print ("%s 暫時沒有2021，先 Pass" % (stockID,))
-    #    continue
+    if StockDBMgr.checkInfo ("basic", "stockDiv", {"id":int(stockID), "years":"2020"}) == True:
+        print ("%s 暫時沒有2021，先 Pass" % (stockID,))
+        continue
     # 開啟網頁
     url = "https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=" + str(stockID)
     WebViewMgr.loadURL (url)

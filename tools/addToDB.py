@@ -28,11 +28,6 @@ updateFlag = {
     "three" : True,
 }
 
-url = "https://tw.stock.yahoo.com/quote/3293/dividend"
-print ()
-WebViewMgr.loadURL ()
-printCountDown (10)
-
 #------------------------------------
 # 塞入基本資料
 if updateFlag["basic"] == True:
@@ -122,7 +117,7 @@ if updateFlag["three"] == True:
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
         # single.netInfo["三大法人"]
-        for info in single.netInfo["三大法人"]:
+        for info in stock.netInfo["三大法人"]:
             StockDBMgr.saveThree (stockID, info)
         
 else:

@@ -17,32 +17,28 @@ class cStockDBMgr:
 
     # 建構子
     def __init__(self):
-        # 每日資訊
-        #self.__DBMap["daily"] = cSqlite ("../db/daily.db3")
-        # 新聞
-        #self.__DBMap["news"] = cSqlite ("../db/news.db3")
-        # 基本資料
-        #self.__DBMap["basic"] = cSqlite ("../db/basic.db3")
         pass
     
+    # 動態取得 / 開啟
     def getDB (self, key):
         # 如果有載入就做處理
         if key not in self.__DBMap:
+            print ("[open db] " + key)
             self.__DBMap[key] = cSqlite ("../db/%s.db3" % (key,))
         return self.__DBMap[key]
 
     # 解構子    
     def __del__ (self):
         for key, value in self.__DBMap.items():
-            print ("%s closed " % (key,))
+            print ("[closed db] %s " % (key,))
             value.close()
 
+    # 把更新寫進去 db file
     def commit (self, dbName):
         self.getDB(dbName).commit()
     
     # 檢查資料是不是有存在
     def checkInfo (self, dbName, tableName, keyMap):
-        #return self.__DBMap[dbName].checkInfo (tableName, keyMap, False)
         return self.getDB(dbName).checkInfo (tableName, keyMap, False)
         
     #-----------------------------------------------
@@ -50,11 +46,50 @@ class cStockDBMgr:
     #-----------------------------------------------
     # 儲存三大法人
     def saveThree (self, stockID, info):
-        pass
+        # 取出日期
+        date = info.pop ("date")
+        # 轉換型別
+        for key in info.keys():
+            info[key] = int (info[key].replace (",", ""))
+        # 更新投信用詞
+        keyList = ["in", "in_buy", "in_sell"]
+        for key in keyList:
+            if key not in keyList:
+                continue
+            newKey = key.replace ("in", "credit")
+            info[newKey] = info.pop (key)
+        # 更新到DB
+        self.getDB ("three").update (
+            "three",
+            # 更新資料
+            info,
+            # KEY
+            {
+                "id" : int(stockID),
+                "date" : date,
+            },
+        )
+        self.getDB("three").commit()
 
     # 取得三大法人
-    def getThree (self, stockID):
-        pass
+    def getThree (self, stockID, limit=30):
+        rows = self.getDB ("three").get (
+            "three",
+            [
+                "date", 
+                "out_buy", "out_sell", "out", 
+                "credit_buy", "credit_sell", "credit", 
+                "self_0_buy", "self_0_sell", "self_0", 
+                "self_1_buy", "self_1_sell", "self_1", 
+                "total",
+            ],
+            {
+                "id" : int(stockID),
+            },
+            # 條件 : 日期由大到小，限30筆
+            "date desc limit "+str(limit),
+        )
+        return rows
     
     #-----------------------------------------------
     # 新聞相關
@@ -69,7 +104,7 @@ class cStockDBMgr:
             ["updateTime", "newsList"],
             # KEY
             {
-                "id" : int(stockID)
+                "id" : int(stockID),
             },
         )
         # 串成想要的資料
@@ -132,7 +167,8 @@ class cStockDBMgr:
     #-----------------------------------------------
     def saveDaily (self, stockID, info, update=False):
         # 寫入資料庫
-        self.getDB("daily").update ("daily",
+        self.getDB("daily").update (
+            "daily",
             # 資訊
             info,
             # KEY
@@ -167,7 +203,7 @@ class cStockDBMgr:
                 "id" : int(stockID),
             },
             # order
-            " date desc"
+            " date desc",
         )
         return rows
     
