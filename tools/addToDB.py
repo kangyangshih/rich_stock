@@ -24,8 +24,8 @@ updateFlag = {
     "news":False,
     # 更新每日資料 (己完成)
     "daily" : False,
-    # 三大法人
-    "three" : True,
+    # 三大法人 (己完成)
+    "three" : False,
 }
 
 #------------------------------------
@@ -117,8 +117,14 @@ if updateFlag["three"] == True:
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
         # single.netInfo["三大法人"]
-        for info in stock.netInfo["三大法人"]:
-            StockDBMgr.saveThree (stockID, info)
+        #for info in stock.netInfo["三大法人"]:
+        #    StockDBMgr.saveThree (stockID, info)
+        # 取得資訊 (刪除 basic 的內容)
+        infoFilename = "../info/%s.txt" % (stock.id,)
+        info = getFromCache (infoFilename, {})
+        if "三大法人" in info : 
+            info.pop ("三大法人")
+            saveCache (infoFilename, info)
         
 else:
     print ("【不更新】三大法人")
