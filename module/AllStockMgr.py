@@ -517,7 +517,7 @@ class cSingleStock :
     #---------------------------------------
     def _get2020EPS (self):
         # case 0 : 如果有公告 2020Q4，就去抓取
-        if self.getInfo ("QEPS", "2020Q4", "EPS") != None:
+        if self.getInfo ("QEPS", "2020Q4", "EPS") != None and self.getInfo ("QEPS", "2020Q1", "EPS") != None:
             return 0, self.getInfoFloat ("QEPS", "2020Q4", "EPS") + self.getInfoFloat ("QEPS", "2020Q3", "EPS") + self.getInfoFloat ("QEPS", "2020Q2", "EPS") + self.getInfoFloat ("QEPS", "2020Q1", "EPS")
         # case 1 : 如果有公告就以公告為主
         if self.EPS2020 != None:

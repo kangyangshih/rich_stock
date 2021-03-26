@@ -166,7 +166,7 @@ class cStockDBMgr:
     #-----------------------------------------------
     # Daily
     #-----------------------------------------------
-    def saveDaily (self, stockID, info, update=False):
+    def saveDaily (self, stockID, info, update=True):
         # 寫入資料庫
         self.getDB("daily").update (
             "daily",
@@ -220,5 +220,9 @@ class cStockDBMgr:
             # order
             " date desc"
         )
+    
+    #---------------------------------------------------------
+    
+    #---------------------------------------------------------
     
 StockDBMgr = cStockDBMgr()
