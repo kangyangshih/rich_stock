@@ -73,7 +73,7 @@ class cStockDBMgr:
         self.getDB("three").commit()
 
     # 取得三大法人
-    def getThree (self, stockID, limit=30):
+    def getThree (self, stockID, limit=65):
         rows = self.getDB ("three").get (
             "three",
             [

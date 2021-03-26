@@ -335,7 +335,7 @@ class cSingleStock :
         today_out = self.getInfo ("三大法人")[0]["out"]
         today_out_rate = self._getBuyRate (today_out)
         self._write (file, res, "本日外資 : %.0f, 外本比:%.4f %%", today_out, today_out_rate)
-        for day in (5, 10, 15, 30):
+        for day in (5, 20, 60):
             # 最近 15 天，三大法人買賣超數量
             out_total, in_total = self._getThreeTotal (day)
             out_total_rate = self._getBuyRate (out_total)
@@ -350,7 +350,7 @@ class cSingleStock :
         today_in = self.getInfo ("三大法人")[0]["credit"]
         today_in_rate = self._getBuyRate (today_in)
         self._write (file, res, "本日投信 : %.0f, 投本比:%.4f %%", today_in, today_in_rate)
-        for day in (5, 10, 15, 30):
+        for day in (5, 20, 60):
             # 最近 15 天，三大法人買賣超數量
             out_total, in_total = self._getThreeTotal (day)
             in_total_rate = self._getBuyRate (in_total)
