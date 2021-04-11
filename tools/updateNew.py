@@ -68,6 +68,9 @@ for stockID, stock in allstock.items():
             print ("found!, index=%s" % (index,))
             newList = newsList[:index]
             break
+    if len(newsList) == len(newList):
+        print ("[need more news]")
+        exit_program ()
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
         print (cache["dateStr"], cache["title"])
