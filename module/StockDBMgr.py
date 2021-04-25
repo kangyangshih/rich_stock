@@ -183,7 +183,7 @@ class cStockDBMgr:
         # 做更新的動作
         self.getDB("daily").commit()
     
-    def getDaily (self, stockID):
+    def getDaily (self, stockID, limit=70):
         # 從資料庫取得新聞
         rows = self.getDB("daily").get (
             # 表單
@@ -192,21 +192,28 @@ class cStockDBMgr:
             [
                 "date", 
                 "end_price", 
-                "diff", 
+                #"diff", 
                 "start_price", 
                 "high_price", 
                 "low_price", 
                 "vol", 
-                "pre_price",
+                #"pre_price",
             ],
             # KEY
             {
                 "id" : int(stockID),
             },
             # order
-            " date desc",
+            " date desc limit " + str(limit+1),
         )
-        return rows
+        # 對資料做一下處理
+        for index, row in enumerate (rows):
+            if index == len(rows) -1:
+                break
+            row["pre_price"] = rows[index+1]["end_price"]
+            row["diff"] = row["pre_price"] - row["end_price"]
+        # 最後一筆我不要, 因為沒有 diff 和 pre_price
+        return rows[:-1]
     
     # 回傳日期列表
     def getDayKey (self):
