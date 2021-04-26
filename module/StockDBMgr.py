@@ -211,7 +211,7 @@ class cStockDBMgr:
             if index == len(rows) -1:
                 break
             row["pre_price"] = rows[index+1]["end_price"]
-            row["diff"] = row["pre_price"] - row["end_price"]
+            row["diff"] = row["end_price"] - row["pre_price"]
         # 最後一筆我不要, 因為沒有 diff 和 pre_price
         return rows[:-1]
     
