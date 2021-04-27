@@ -190,12 +190,6 @@ if controlMap[3] == True:
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
     file.close()
 
-    file = open ("../3.60外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    for day in (60,):
-        out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-        printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    file.close()
-
 #--------------------------------------------------
 # 4. 2021 公告後有殖利率的排行榜
 if controlMap[4] == True:
