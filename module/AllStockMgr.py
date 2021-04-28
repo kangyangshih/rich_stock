@@ -554,12 +554,15 @@ class cSingleStock :
     
     #---------------------------------------
     # 取得指定時間的買賣超
+    # 2021/4/28 加入買入價格
     #---------------------------------------
     def _getThreeTotal (self, offset):
         # 外資買賣超總額
         out_total = 0
+        out_price = 0
         # 投信買賣超總額
         in_total = 0
+        in_price = 0
         # 統計指定區間的結果
         for index in range (0, offset):
             out_total += self.getInfo ("三大法人")[index]["out"]
@@ -661,17 +664,6 @@ class cAllStockMgr:
             # 停損價
             single.sellPrice = excel.getValue (row_index, 9, 0, float)
             # 2021 公告的配股配息
-            # tmp = excel.getValue (row_index, 10, "")
-            # if tmp == "":
-            #     single.sd2021 = None
-            #     single.sd2021_stock = 0
-            # elif tmp.find ("+") == -1:
-            #     single.sd2021 = float (tmp)
-            #     single.sd2021_stock = 0
-            # else:
-            #     tmpList = tmp.split ("+")
-            #     single.sd2021_stock = float (tmpList[0])
-            #     single.sd2021 = float (tmpList[1])
             sdList = StockDBMgr.getSD (single.id)
             if len(sdList) > 0 and sdList[0]["years"] == "2021":
                 single.sd2021 = sdList[0]["moneyAll"]
@@ -683,9 +675,9 @@ class cAllStockMgr:
                 single.sd2021_stock = 0
             
             # 取得一點影響到大盤的點數
-            single.pointToAll = excel.getValue (row_index, 11, 0, float)
+            single.pointToAll = excel.getValue (row_index, 10, 0, float)
             # 雜項
-            single.desc = excel.getValue (row_index, 12).replace ("%", "%%")
+            single.desc = excel.getValue (row_index, 11).replace ("%", "%%")
             # 不取得DR
             if single.name.endswith ("-DR") == True:
                 print (single.name, "DR股不列入")

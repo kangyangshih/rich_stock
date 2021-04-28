@@ -50,10 +50,16 @@ controlMap = {
 # 0. 觀注的個股
 if controlMap[0] == True:
     priorityKey = [
+        # 持有的股票
         "持有",
+        # 從核心、衛星選出來做操作的股票
         "短期注意",
+        # 比較有愛, 比較熟的股票
         "核心", 
+        # 比較不熟, 或是偏牛的股票
         "衛星",
+        # 股性比較牛
+        "定存",
     ]
 
     stockOrder = {}
@@ -74,9 +80,9 @@ if controlMap[0] == True:
                 value[stockID] = stock
                 break
 
-    file = open("../0.觀注個股.txt", "w", encoding="utf-8")
     # 依照重要性來做處理
     for key in priorityKey:
+        file = open("../0.觀注個股_%s.txt"%(key,), "w", encoding="utf-8")
         write (file, "#-------------------------------")
         write (file, "# %s", key)
         write (file, "#-------------------------------")
@@ -88,7 +94,7 @@ if controlMap[0] == True:
             #break
         # 暫時只抓持有的
         #break
-    file.close()
+        file.close()
 
 #--------------------------------------------------
 # 1. 有設定觀注價格的股票
