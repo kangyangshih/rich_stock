@@ -239,6 +239,12 @@ if controlMap[5] == True:
     newsMap = {}
 
     nowTimes = time.time()
+    keywordList = [
+        "列注意股", 
+        "稅前每股", 
+        "稅前EPS", 
+        "發債",
+    ]
     for index in range (2):
         # 取得時間字串
         tmpTime = time.gmtime(nowTimes)
@@ -253,22 +259,28 @@ if controlMap[5] == True:
                 # 日期不對不做處理
                 if news["date"].find (timeStr) == -1:
                     continue
-                # 沒有指定字不做處理
-                if news["title"].find ("列注意股") != -1:
-                    if news["date"] not in newsMap:
-                        newsMap[news["date"]] = []
-                    newsMap[news["date"]].append (news)
-                    continue
-                if news["title"].find ("稅前每股") != -1:
-                    if news["date"] not in newsMap:
-                        newsMap[news["date"]] = []
-                    newsMap[news["date"]].append (news)
-                    continue
-                if news["title"].find ("稅前EPS") != -1:
-                    if news["date"] not in newsMap:
-                        newsMap[news["date"]] = []
-                    newsMap[news["date"]].append (news)
-                    continue
+                for keyword in keywordList:
+                    # 沒有指定字不做處理
+                    if news["title"].find (keyword) != -1:
+                        if news["date"] not in newsMap:
+                            newsMap[news["date"]] = []
+                        newsMap[news["date"]].append (news)
+                # # 沒有指定字不做處理
+                # if news["title"].find ("列注意股") != -1:
+                #     if news["date"] not in newsMap:
+                #         newsMap[news["date"]] = []
+                #     newsMap[news["date"]].append (news)
+                #     continue
+                # if news["title"].find ("稅前每股") != -1:
+                #     if news["date"] not in newsMap:
+                #         newsMap[news["date"]] = []
+                #     newsMap[news["date"]].append (news)
+                #     continue
+                # if news["title"].find ("稅前EPS") != -1:
+                #     if news["date"] not in newsMap:
+                #         newsMap[news["date"]] = []
+                #     newsMap[news["date"]].append (news)
+                #     continue
         tmpList = changeDict2List (newsMap)
         for news in tmpList:
             writeNews (file, news)
