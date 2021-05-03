@@ -167,6 +167,15 @@ class cSingleStock :
     # 取得當天資訊
     def getTodayPrice (self, dayShift=0):
         return self.netInfo["daily"][dayShift]
+
+    # 取得均線是否排列好
+    def isMASorted (self):
+        tmp5 = self.getdayPriceAvg (0, 5)
+        tmp20 = self.getdayPriceAvg (0, 20)
+        tmp60 = self.getdayPriceAvg (0, 60)
+        if tmp5 > tmp20 and tmp20 > tmp60:
+            return True
+        return False
     
     # 計算投本比、外本比
     def _getBuyRate (self, num):
@@ -240,7 +249,7 @@ class cSingleStock :
         #------------------------
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
-        self._write (file, res, "%s %.1f 量 : %s", realtime["end_price"], realtime["diff"], realtime["vol"])
+        self._write (file, res, "%s %.1f 量 : %s (5日均量:%.1f)", realtime["end_price"], realtime["diff"], realtime["vol"], self.getdayVolAvg(0, 5))
         # 顯示布林通道
         bband_up, bband, bband_down, msg = self.getBBand ()
         self._write (file, res, "\n布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
@@ -269,6 +278,7 @@ class cSingleStock :
         #------------------------
         # 技術線型
         self._write (file, res, "[技術線型]")
+        self._write (file ,res, "技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid%s.html" % (self.id,))
         # 是黃金交叉還是死亡交叉
         specialMAType, tmp = self.specialMA ()
         if specialMAType > 0:
@@ -396,6 +406,12 @@ class cSingleStock :
         #------------------------
         # 前三季 EPS
         self._write (file, res, "[前四季EPS]")
+        # 先計算2021Q1 的平均營收
+        total = 0
+        for monthIndex in ["2021/01", "2021/02", "2021/03"]:
+            total += self.getInfoInt ("月營收", monthIndex, "月營收")/100000.0
+        self._write (file, res, "2021Q1 月營收: %.2f億, 平均: %.2f億" %(total, total/3))
+        # 顯示近4季EPS
         QEPSNum = 0
         tmpList = changeDict2List (self.netInfo["QEPS"])
         for index in range (100):

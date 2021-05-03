@@ -35,15 +35,24 @@ def printTotalRate (file, title, header, tmpMap, num=15):
 allstock = AllStockMgr.getAllStock ()
 # 輸出控制
 controlMap = {
+    # 0. 觀注的個股
     0:True,
+    # 1. 有設定觀注價格的股票
     1:True,
+    # 2. 外本比 / 投本比
     2:True,
+    # 3. 區間外資、投信的買賣量排行榜
     3:True,
+    # 4. 2021 公告後有殖利率的排行榜
     4:True,
+    # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
     5:True,
+    # 6. 在布林通道上緣的股票
     6:True,
+    # 7. 帶量突破5日線
     7:True,
     8:True,
+    # 9. 全部股票
     9:True,
 }
 #--------------------------------------------------
@@ -303,16 +312,70 @@ if controlMap[6] == True:
         if realtime["end_price"] < bband_down * 1.005:
             list7.append (stockID)
 
-    file = open ("../6.bbandUp.txt", "w", encoding="utf-8")
+    file = open ("../6.1.bbandUp.txt", "w", encoding="utf-8")
     for stockID in list6:
         allstock[stockID].dumpInfo (file)
     file.close()
 
     # 7. 在布林通道下緣
-    file = open ("../7.bbandDown.txt", "w", encoding="utf-8")
+    file = open ("../6.2.bbandDown.txt", "w", encoding="utf-8")
     for stockID in list7:
         allstock[stockID].dumpInfo (file)
     file.close()
+
+#--------------------------------------------------
+# 7. 帶量突破5日線, 且均線排好
+if controlMap[7] == True:
+    # 7.1 帶量突破5日線
+    counter = 0
+    file = open ("../7.1 帶量突破5日線.txt", "w", encoding="utf-8")
+    for stockID, stock in allstock.items():
+        # 線型要排好 5 > 20 > 60
+        if stock.isMASorted () == False:
+            continue
+        # 取得5日線
+        tmp5 = stock.getdayPriceAvg (0, 5)
+        # 取得股價
+        realtime = stock.getTodayPrice ()
+        # 量能要夠, 至少要比5日量大
+        vol5 = stock.getdayVolAvg (0, 5)
+        vol20 = stock.getdayPriceAvg (0, 20)
+        if realtime["vol"] < vol5 * 1.5:
+            continue
+        if realtime["vol"] < vol20 * 1.2:
+            continue
+        # 由上往下穿
+        if realtime["pre_price"] <= tmp5 and realtime["end_price"] >= tmp5:
+            counter += 1
+            stock.dumpInfo(file)
+    file.close()
+    print ("[7.1 帶量突破5日線] ", counter)
+    # 7.2 突破後帶量上攻
+    counter = 0
+    file = open ("../7.2 突破後帶量上攻.txt", "w", encoding="utf-8")
+    for stockID, stock in allstock.items():
+        # 線型要排好 5 > 20 > 60
+        if stock.isMASorted () == False:
+            continue
+        # 取得5日線
+        tmp5 = stock.getdayPriceAvg (0, 5)
+        pretmp5 = stock.getdayPriceAvg (1, 5)
+        # 取得股價
+        realtime = stock.getTodayPrice ()
+        pretime = stock.getTodayPrice (1)
+        # 量能要夠, 至少要比5日量大
+        vol5 = stock.getdayVolAvg (0, 5)
+        if realtime["vol"] < pretime["vol"]:
+            continue
+        # 如果小於5日線型, 就不做處理
+        if realtime["pre_price"] <= tmp5 or realtime["end_price"] <= tmp5:
+            continue
+        # 希望是昨天突破5日線，今天補量
+        if pretime["pre_price"] <= pretmp5 and pretime["end_price"] >= pretmp5:
+            counter += 1
+            stock.dumpInfo(file)
+    file.close()
+    print ("[7.2 突破後帶量上攻] ", counter)
 
 #--------------------------------------------------
 # 9. 所有的股票
