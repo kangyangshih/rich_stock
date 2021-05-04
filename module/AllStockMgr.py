@@ -255,6 +255,7 @@ class cSingleStock :
         self._write (file, res, "\n布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
         # 移動平均線 (周線/月線/季線)
         self._write (file, res, "")
+        self._write (file, res, "[均線是否排好] %s", self.isMASorted())
         for index in (5, 20, 60):
             # 當天均線
             tmp = self.getdayPriceAvg (0, index)
