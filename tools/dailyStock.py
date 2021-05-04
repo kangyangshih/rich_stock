@@ -239,7 +239,7 @@ if controlMap[5] == True:
             "* [%s(%s)](%s) %s [%s](%s)<br/>", 
             news["name"], 
             news["id"],
-            'https://tw.stock.yahoo.com/q/ta?s='+stock.id, 
+            'https://tw.stock.yahoo.com/q/ta?s='+news["id"], 
             news["dateStr"],
             news["title"], 
             news["url"]
@@ -253,6 +253,7 @@ if controlMap[5] == True:
         "稅前每股", 
         "稅前EPS", 
         "發債",
+        "Q1每股",
     ]
     for index in range (2):
         # 取得時間字串

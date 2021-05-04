@@ -21,21 +21,13 @@ allstock = AllStockMgr.getAllStock ()
 
 #------------------------------------------------
 print ("=== [更新新聞] ===")
-for stockID, stock in allstock.items():
-    # 做資料差異更新
-    dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
-    # 每天只更新一次新聞
-    if dbUpdateTime == updateTimeStr:
-        print ("%s 己更新" % (stock.name,))
-        continue
+# 取得新聞
+def getNewsFromYahoo (stockID, pageNum=1):
     # 載入暫存資料
     newsList = []
     #----------------------------------------------
     # 新聞
     newsURLTemplate = "https://tw.stock.yahoo.com/q/h?s=%s&pg=%s"
-    print ("=== %s ===" % (stock.name,))
-    # 只查詢第一頁
-    pageNum = 1
     for pageIndex in range (pageNum):
         # 取得新聞頁
         url = newsURLTemplate % (stockID, pageIndex+1)
@@ -53,6 +45,18 @@ for stockID, stock in allstock.items():
                 "dateStr" : timeNodes[index].text,
                 "url" : node.get_attribute ("href"),
             })
+    return newsList
+
+for stockID, stock in allstock.items():
+    # 做資料差異更新
+    dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
+    # 每天只更新一次新聞
+    if dbUpdateTime == updateTimeStr:
+        print ("%s 己更新" % (stock.name,))
+        continue
+    print ("=== %s ===" % (stock.name,))
+    # 載入暫存資料
+    newsList = getNewsFromYahoo (stockID)
     #----------------------------------------------
     #print ("===== cache information =====")
     #for cache in cacheInfo:
