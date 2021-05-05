@@ -167,6 +167,10 @@ class cStockDBMgr:
     # Daily
     #-----------------------------------------------
     def saveDaily (self, stockID, info, update=True):
+        if "diff" in info:
+            info.pop ("diff")
+        if "pre_price" in info:
+            info.pop ("pre_price")
         # 寫入資料庫
         self.getDB("daily").update (
             "daily",

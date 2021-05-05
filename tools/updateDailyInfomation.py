@@ -434,9 +434,9 @@ for filename in filelist:
                 # 收盤價
                 "end_price" : float (getCSVRowNumber(row[8])),
                 # 差價
-                "diff" : float (getCSVRowNumber(row[10])),
+                #"diff" : float (getCSVRowNumber(row[10])),
             }
-            tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
+            #tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
             # 存進去資料庫中
             StockDBMgr.saveDaily (stockID, tmp, True)
         file.close()
@@ -455,9 +455,9 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : 0,
+            #"diff" : 0,
             # 前天價
-            "pre_price" : 0,
+            #"pre_price" : 0,
         }
         # 要補沒有資料的部分
         for stockID, stock in allstock.items():
@@ -501,7 +501,7 @@ for filename in filelist:
                 # 收盤價
                 "end_price" : float (getCSVRowNumber(row[2])),
                 # 差價
-                "diff" : float (getCSVRowNumber(row[3])) if row[3].strip(" ") != "除權" and row[3].strip(" ") != "除息" and row[3].strip(" ") != "除權息" else None,
+                #"diff" : float (getCSVRowNumber(row[3])) if row[3].strip(" ") != "除權" and row[3].strip(" ") != "除息" and row[3].strip(" ") != "除權息" else None,
                 # 開盤價
                 "start_price" : float (getCSVRowNumber(row[4])),
                 # 最高價
@@ -511,10 +511,10 @@ for filename in filelist:
                 # 量能 (從股數->張數)
                 "vol" : int(getCSVRowNumber(row[8], True)),#int(int(getCSVRowNumber(row[8]))/1000),
             }
-            if tmp["diff"] != None:
-                tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
-            else:
-                tmp["pre_price"] = None
+            #if tmp["diff"] != None:
+            #    tmp["pre_price"] = tmp["end_price"] - tmp["diff"]
+            #else:
+            #    tmp["pre_price"] = None
             # 存進去資料庫中
             StockDBMgr.saveDaily (stockID, tmp)
         file.close()
@@ -533,9 +533,9 @@ for filename in filelist:
             # 收盤價
             "end_price" : 0,
             # 差價
-            "diff" : 0,
+            #"diff" : 0,
             # 前天價
-            "pre_price" : 0,
+            #"pre_price" : 0,
         }
         # 要補沒有資料的部分
         for stockID, stock in allstock.items():
@@ -583,7 +583,7 @@ for stockID, stock in allstock.items():
             infoList[index]["high_price"] = infoList[next_index]["end_price"]
             infoList[index]["low_price"] = infoList[next_index]["end_price"]
             infoList[index]["end_price"] = infoList[next_index]["end_price"]
-            infoList[index]["pre_price"] = infoList[next_index]["end_price"]
+            #infoList[index]["pre_price"] = infoList[next_index]["end_price"]
             # 強制做更新的動作
             StockDBMgr.saveDaily (stockID, infoList[index], True)
             break
