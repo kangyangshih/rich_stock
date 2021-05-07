@@ -91,7 +91,7 @@ if controlMap[0] == True:
 
     # 依照重要性來做處理
     for key in priorityKey:
-        file = open("../0.觀注個股_%s.txt"%(key,), "w", encoding="utf-8")
+        file = open("../data/0.觀注個股_%s.txt"%(key,), "w", encoding="utf-8")
         write (file, "#-------------------------------")
         write (file, "# %s", key)
         write (file, "#-------------------------------")
@@ -120,7 +120,7 @@ if controlMap[1] == True:
             modify_list.append (stockID)
             continue
 
-    file = open ("../1.有標價格股票.txt", "w", encoding="utf-8")
+    file = open ("../data/1.有標價格股票.txt", "w", encoding="utf-8")
     for stockID in modify_list:
         allstock[stockID].dumpInfo (file)
     file.close()
@@ -156,7 +156,7 @@ def getInOutRate ():
 if controlMap[2] == True:
     # 數量
     num = 10
-    file = open ("../2.外本比、投本比.txt", "w", encoding="utf-8")
+    file = open ("../data/2.外本比、投本比.txt", "w", encoding="utf-8")
     out_map, in_map, all_map = getInOutRate ()
     printTotalRate (file, "投信今日買超排行榜", "投信買超", in_map, num)
     printTotalRate (file, "外資今日買超排行榜", "外資買超", out_map, num)
@@ -193,13 +193,13 @@ def getRangeTotalRate (day):
     return out_total_map, in_total_map, total_total_map
 
 if controlMap[3] == True:
-    file = open ("../3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
+    file = open ("../data/3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
     for day in (5,):
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
     file.close()
 
-    file = open ("../3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
+    file = open ("../data/3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
     for day in (20,):
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
@@ -222,7 +222,7 @@ if controlMap[4] == True:
         tmp[stock.now_sd_rate].append (stockID) 
 
     # 做印出的動作
-    file = open ("../4.2021殖利率排行榜.txt", "w", encoding="utf-8")
+    file = open ("../data/4.2021殖利率排行榜.txt", "w", encoding="utf-8")
     tmpList = changeDict2List (tmp)
     for stockID in tmpList:
         stock = allstock[stockID]
@@ -259,7 +259,7 @@ if controlMap[5] == True:
         # 取得時間字串
         tmpTime = time.gmtime(nowTimes)
         timeStr = "%04d/%02d" % (tmpTime.tm_year, tmpTime.tm_mon - index)
-        file = open ("../5.新聞_%s.txt" % (timeStr.replace("/", "_"),), "w", encoding="utf-8")
+        file = open ("../data/5.新聞_%s.txt" % (timeStr.replace("/", "_"),), "w", encoding="utf-8")
         # 每個股票都去找
         for stockID, stock in allstock.items():
             tmp, newsList = StockDBMgr.getNews (stockID)
@@ -313,13 +313,13 @@ if controlMap[6] == True:
         if realtime["end_price"] < bband_down * 1.005:
             list7.append (stockID)
 
-    file = open ("../6.1.bbandUp.txt", "w", encoding="utf-8")
+    file = open ("../data/6.1.bbandUp.txt", "w", encoding="utf-8")
     for stockID in list6:
         allstock[stockID].dumpInfo (file)
     file.close()
 
     # 7. 在布林通道下緣
-    file = open ("../6.2.bbandDown.txt", "w", encoding="utf-8")
+    file = open ("../data/6.2.bbandDown.txt", "w", encoding="utf-8")
     for stockID in list7:
         allstock[stockID].dumpInfo (file)
     file.close()
@@ -329,7 +329,7 @@ if controlMap[6] == True:
 if controlMap[7] == True:
     # 7.1 帶量突破5日線
     counter = 0
-    file = open ("../7.1 帶量突破5日線.txt", "w", encoding="utf-8")
+    file = open ("../data/7.1 帶量突破5日線.txt", "w", encoding="utf-8")
     for stockID, stock in allstock.items():
         # 線型要排好 5 > 20 > 60
         if stock.isMASorted () == False:
@@ -353,7 +353,7 @@ if controlMap[7] == True:
     print ("[7.1 帶量突破5日線] ", counter)
     # 7.2 突破後帶量上攻
     counter = 0
-    file = open ("../7.2 突破後帶量上攻.txt", "w", encoding="utf-8")
+    file = open ("../data/7.2 突破後帶量上攻.txt", "w", encoding="utf-8")
     for stockID, stock in allstock.items():
         # 線型要排好 5 > 20 > 60
         if stock.isMASorted () == False:
@@ -381,7 +381,7 @@ if controlMap[7] == True:
 #--------------------------------------------------
 # 9. 所有的股票
 if controlMap[9] == True:
-    file = open ("../9.所有股票.txt", "w", encoding="utf-8")
+    file = open ("../data/9.所有股票.txt", "w", encoding="utf-8")
     # 依照重要性來做處理
     # 一隻一隻去抓資料處理
     for stockID, stock in allstock.items():
