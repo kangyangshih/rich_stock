@@ -39,7 +39,7 @@ controlMap = {
     0:True,
     # 1. 有設定觀注價格的股票
     1:True,
-    # 2. 外本比 / 投本比
+    # 2. 當日外本比 / 投本比
     2:True,
     # 3. 區間外資、投信的買賣量排行榜
     3:True,
@@ -381,7 +381,7 @@ if controlMap[7] == True:
 #--------------------------------------------------
 # 9. 所有的股票
 if controlMap[9] == True:
-    file = open ("../data/9.所有股票.txt", "w", encoding="utf-8")
+    file = open ("../9.所有股票.txt", "w", encoding="utf-8")
     # 依照重要性來做處理
     # 一隻一隻去抓資料處理
     for stockID, stock in allstock.items():
