@@ -177,7 +177,7 @@ class cSingleStock :
             return True
         return False
     
-    # 計算投本比、外本比
+    # 轉換張數 -> 股本比，用來計算投本比、外本比
     def _getBuyRate (self, num):
         return (num / (self.getInfoFloat ("股本") * 10000))
 
@@ -249,7 +249,15 @@ class cSingleStock :
         #------------------------
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
-        self._write (file, res, "%s %.1f 量 : %s (5日均量:%.1f)", realtime["end_price"], realtime["diff"], realtime["vol"], self.getdayVolAvg(0, 5))
+        self._write (file, res, 
+            "%s(%s~%s) %.1f 量 : %s (5日均量:%.1f)", 
+            realtime["end_price"], 
+            realtime["low_price"],
+            realtime["high_price"],
+            realtime["diff"], 
+            realtime["vol"], 
+            self.getdayVolAvg(0, 5)
+        )
         # 顯示布林通道
         bband_up, bband, bband_down, msg = self.getBBand ()
         self._write (file, res, "\n布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
@@ -582,7 +590,11 @@ class cSingleStock :
         in_price = 0
         # 統計指定區間的結果
         for index in range (0, offset):
+            realtime = self.getTodayPrice (index)
+            # 計算外資
             out_total += self.getInfo ("三大法人")[index]["out"]
+            #out_price = 
+            # 計算投信
             in_total += self.getInfo ("三大法人")[index]["credit"]
         
         # 回傳平均結果
