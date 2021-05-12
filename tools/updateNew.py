@@ -11,6 +11,7 @@ from WebViewMgr import WebViewMgr
 from StockDBMgr import StockDBMgr
 import json
 import csv
+import random
 
 # 取得時間日期 (每天只更新一次新聞)
 updateTimeStr = get_hour_str (3)
@@ -46,8 +47,11 @@ def getNewsFromYahoo (stockID, pageNum=1):
                 "url" : node.get_attribute ("href"),
             })
     return newsList
-
-for stockID, stock in allstock.items():
+stockIDList = [stockID for stockID in allstock.keys()]
+random.shuffle (stockIDList)
+#for stockID, stock in allstock.items():
+for stockID in stockIDList:
+    stock = allstock[stockID]
     # 做資料差異更新
     dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
     # 每天只更新一次新聞
