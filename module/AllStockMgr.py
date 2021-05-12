@@ -241,9 +241,9 @@ class cSingleStock :
             self._write (file, res, "[持有價] %s", self.holdPrice)
         # 買入價或是空單價
         if self.buyPrice > 0:
-            self._write (file, res, "[買入價] %s", self.buyPrice)
+            self._write (file, res, "[手動設定買入價] %s", self.buyPrice)
         elif self.emptyPrice > 0:
-            self._write (file, res, "[空單價] %s", self.emptyPrice)
+            self._write (file, res, "[手動設定空單價] %s", self.emptyPrice)
         self._write (file, res, "")
 
         #------------------------
@@ -258,9 +258,49 @@ class cSingleStock :
             realtime["vol"], 
             self.getdayVolAvg(0, 5)
         )
+
+        self._write (file, res, "")
+        #------------------------
+        self._write (file, res, "[EPS/殖利率表現]")
+        # 2020 預估 EPS
+        tmp, eps2020 = self._get2020EPS ()
+        if tmp == 3:
+            self._write (file, res, "無法預估2020 EPS")
+            eps2020 = 0
+        elif tmp == 0:
+            self._write (file, res, "2020Q4 EPS (%.2f) 公告，全年EPS : %.2f", self.getInfoFloat ("QEPS", "2020Q4", "EPS"), eps2020)
+        elif tmp == 1:
+            self._write (file, res, "2020 新聞公告EPS : %.2f", eps2020)
+        else:
+            self._write (file, res, "2020 預估全年 EPS : %.2f", eps2020)
+        if eps2020 != None:
+            # 2021 預估配股配息和目前殖利率
+            sd2021_money = self.sd2021
+            if sd2021_money == None:
+                sd2021_money = eps2020 * self._getStockDividenRate() / 100
+                self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
+            else:
+                self._write (file, res, "2021 公告配息 : %.2f 配股:%.2f 配息率 : %.2f %%", sd2021_money, self.sd2021_stock,  (sd2021_money+self.sd2021_stock)/eps2020*100 if eps2020 != 0 else 0)
+            now_sd_rate = sd2021_money / realtime["end_price"] * 100 + self.sd2021_stock * 10
+            self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["end_price"], now_sd_rate)
+            # 計算 6% 殖利率的價格
+            if sd2021_money > 0 or self.sd2021_stock > 0:
+                target_price = sd2021_money / (0.06-(self.sd2021_stock+0.00001)/10)
+                self._write (file, res, "[6%% 的買入價] : %.2f",  target_price)
+                # 定存型股票多顯示8%買入價
+                target_price = sd2021_money / (0.08-(self.sd2021_stock+0.00001)/10)
+                self._write (file, res, "[8%% 的買入價] : %.2f",  target_price)
+            else:
+                self._write (file, res, "[警告] 無法評估買入價")
+        else:
+            self._write (file, res, "[警告] 無法評估買入價")
+
+        self._write (file, res, "")
+        #------------------------
+        self._write (file, res, "[技術分析數據]")
         # 顯示布林通道
         bband_up, bband, bband_down, msg = self.getBBand ()
-        self._write (file, res, "\n布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
+        self._write (file, res, "布林通道: (%.1f, %.1f, %.1f)\n%s", bband_up, bband, bband_down, msg)
         # 移動平均線 (周線/月線/季線)
         self._write (file, res, "")
         self._write (file, res, "[均線是否排好] %s", self.isMASorted())
@@ -308,40 +348,6 @@ class cSingleStock :
         #------------------------
         # 可以加入自己的評價
         self._write (file, res, "[本日簡評]")
-        # 2020 預估 EPS
-        tmp, eps2020 = self._get2020EPS ()
-        if tmp == 3:
-            self._write (file, res, "無法預估2020 EPS")
-            eps2020 = 0
-        elif tmp == 0:
-            self._write (file, res, "2020Q4 EPS (%.2f) 公告，全年EPS : %.2f", self.getInfoFloat ("QEPS", "2020Q4", "EPS"), eps2020)
-        elif tmp == 1:
-            self._write (file, res, "2020 新聞公告EPS : %.2f", eps2020)
-        else:
-            self._write (file, res, "2020 預估全年 EPS : %.2f", eps2020)
-
-        # 2021 預估配股配息和目前殖利率
-        #print (self._getStockDividenRate())
-        sd2021_money = self.sd2021
-        if sd2021_money == None:
-            sd2021_money = eps2020 * self._getStockDividenRate() / 100
-            self._write (file, res, "2021 預估配息 : %.2f 配息率 : %.2f %%", sd2021_money, self._getStockDividenRate())
-        else:
-            self._write (file, res, "2021 公告配息 : %.2f 配股:%.2f 配息率 : %.2f %%", sd2021_money, self.sd2021_stock,  (sd2021_money+self.sd2021_stock)/eps2020*100 if eps2020 != 0 else 0)
-        now_sd_rate = sd2021_money / realtime["end_price"] * 100 + self.sd2021_stock * 10
-        self._write (file, res, "目前 %.2f 殖利率預估 : %.2f %%",  realtime["end_price"], now_sd_rate)
-        # 買入價的殖利率預估
-        if self.buyPrice > 0:
-            tmp = sd2021_money / self.buyPrice * 100
-            self._write (file, res, "[買入價 %s 的殖利率預估] : %.2f %%",  self.buyPrice, tmp)
-        # 計算 6% 殖利率的價格
-        if now_sd_rate < 6 and eps2020 > 0:
-            target_price = sd2021_money / 0.06
-            self._write (file, res, "[6%% 的買入價] : %.2f",  target_price)
-        # 定存型股票多顯示8%買入價
-        if eps2020 > 0 and self.future.find ("定存") != -1:
-            target_price = sd2021_money / 0.08
-            self._write (file, res, "[8%% 的買入價] : %.2f",  target_price)
 
         # 結束
         self._write (file, res, "")

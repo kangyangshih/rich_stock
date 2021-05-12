@@ -51,7 +51,7 @@ stockIDList = [stockID for stockID in allstock.keys()]
 random.shuffle (stockIDList)
 #for stockID, stock in allstock.items():
 for stockID in stockIDList:
-    stock = allstock[stockID]
+    stock = allstock[stockID？
     # 做資料差異更新
     dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
     # 每天只更新一次新聞
