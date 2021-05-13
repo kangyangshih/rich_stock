@@ -132,7 +132,7 @@ class cNetStockInfo:
     #--------------------------------------------
     # 從 Histock 取得每季的EPS資訊
     #--------------------------------------------
-    def getHistockQEPS (self, stockID):
+    def getHistockQEPS (self, stockID, checkKey=None):
         #------------------------------
         # 取得每股盈餘
         #------------------------------
@@ -174,6 +174,9 @@ class cNetStockInfo:
                 "稅前淨利率" : None,
                 "稅後淨利率" : None,
             }
+        # 如果沒有該季EPS就不用往下抓了。
+        if checkKey != None and checkKey not in info:
+            return
         
         #------------------------------
         # 取得 EPS 的其他資訊

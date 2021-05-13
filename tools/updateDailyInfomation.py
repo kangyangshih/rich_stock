@@ -13,7 +13,7 @@ import csv
 
 # 季 EPS
 epsKey = "2020Q4"
-#epsKey = "2021Q1"
+epsKey = "2021Q1"
 # 月營收
 turnOverKey = "2021/03"
 turnOverKey = "2021/04"
@@ -81,7 +81,7 @@ for stockID, stock in allstock.items():
     if "QEPS" not in info or epsKey not in info["QEPS"]:
         if "QEPS" not in info:
             info["QEPS"] = {}
-        res, tmp = NetStockInfo.getHistockQEPS (stockID)
+        res, tmp = NetStockInfo.getHistockQEPS (stockID, epsKey)
         if res == False:
             print ("1")
             continue
@@ -130,6 +130,7 @@ for stockID, stock in allstock.items():
         "2020Q2" : ["2020/04", "2020/05", "2020/06"],
         "2020Q3" : ["2020/07", "2020/08", "2020/09"],
         "2020Q4" : ["2020/10", "2020/11", "2020/12"],
+        "2021Q1" : ["2021/01", "2021/02", "2021/03"],
     }
     for key, valueList in tmpMap.items():
         if key not in info["QEPS"]:
