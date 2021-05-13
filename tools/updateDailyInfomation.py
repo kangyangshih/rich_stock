@@ -81,7 +81,7 @@ for stockID, stock in allstock.items():
     if "QEPS" not in info or epsKey not in info["QEPS"]:
         if "QEPS" not in info:
             info["QEPS"] = {}
-        res, tmp = NetStockInfo.getHistockQEPS (stockID, epsKey)
+        res, tmp = NetStockInfo.getHistockQEPS (stockID)
         if res == False:
             print ("1")
             continue
