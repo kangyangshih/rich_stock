@@ -23,8 +23,6 @@ class cSingleStock :
         self.name = ""
         # 上巿/上櫃
         self.location = ""
-        # 股票類型 : 股票 / ETF / 特別股
-        self.type = ""
         # 操作類型
         self.operationType = ""
         # 最高參考價, 用來計算買點
@@ -35,8 +33,6 @@ class cSingleStock :
         self.emptyPrice = 0
         # hold price
         self.holdPrice = 0
-        # 賣出價
-        self.sellPrice = 0
         # 2021 配息
         self.sd2021 = ""
         self.sd2021_stock = 0
@@ -206,15 +202,8 @@ class cSingleStock :
         # 去除掉一些不必要的資料
         lineToken = sourceRes.split ("\n")
         for line in lineToken:
-            # # 取得公告數值，加到最後
-            # if line.startswith ("[2020 EPS]") == True:
-            #     self.EPS2020 = float (line[11:])
-            #     tail += "[公告] 2020 EPS : %.2f\n" % (self.EPS2020,)
-            #     continue
             # 直接加入
             res += line + "\n"
-        # if self.sd2021 != None:
-        #     tail += "[公告] 2021 配息 : %.2f\n" % (self.sd2021,)
         # 回傳頭+尾
         return res + tail
 
@@ -673,31 +662,36 @@ class cAllStockMgr:
             if excel.getValue (row_index, 0, None) == None:
                 print ("\n結束嚕, 共有 " + str(len(self.stockMap)))
                 break
-            #print (row_index)
+            columnList = [
+                # 代碼
+                ["id", "", str],
+                # 名稱
+                ["name", "", str],
+                # 上巿 / 上櫃
+                ["location", "", str],
+                # 產業類型
+                ["operationType", "", str],
+                # 狀態 : 核心、衛星、短期注意
+                ["future", "", str],
+                # 手動買入價
+                ["buyPrice", 0, float],
+                # 手動賣出價
+                ["sellPrice", 0, float],
+                # 持有價
+                ["holdPrice", 0, float],
+                # 取得一點影響到大盤的點數
+                ["pointToAll", 0, float],
+                # 雜項
+                ["desc", "", str],
+            ]
             # 取得相關資料
             single = cSingleStock()
-            # 代碼
-            single.id =  excel.getValue (row_index, 0, "", str)
-            # 名稱
-            single.name = excel.getValue(row_index, 1)
-            # 上巿/上櫃
-            single.location = excel.getValue(row_index, 2)
-            # ETF / 股票 / 特別股
-            single.type = excel.getValue(row_index, 3)
-            # [看法]
-            # 核心
-            # 觀察
-            # 看戲
-            # 定存
-            single.operationType = excel.getValue(row_index, 4)
-            single.future = excel.getValue (row_index, 5)
-            # 買入價
-            single.buyPrice = excel.getValue (row_index, 6, 0, float)
-            single.emptyPrice = excel.getValue (row_index, 7, 0, float)
-            # 持有價
-            single.holdPrice = excel.getValue (row_index, 8, 0, float)
-            # 停損價
-            single.sellPrice = excel.getValue (row_index, 9, 0, float)
+            for index, [keyword, defaultValue, columnType] in enumerate (columnList):
+                tmp = excel.getValue (row_index, index, defaultValue, columnType)
+                if columnType == str:
+                    tmp = tmp.replace ("%", "%%")
+                #single[keyword] = tmp
+                setattr (single, keyword, tmp)
             # 2021 公告的配股配息
             sdList = StockDBMgr.getSD (single.id)
             if len(sdList) > 0 and sdList[0]["years"] == "2021":
@@ -708,18 +702,6 @@ class cAllStockMgr:
             else:
                 single.sd2021 = None
                 single.sd2021_stock = 0
-            
-            # 取得一點影響到大盤的點數
-            single.pointToAll = excel.getValue (row_index, 10, 0, float)
-            # 雜項
-            single.desc = excel.getValue (row_index, 11).replace ("%", "%%")
-            # 不取得DR
-            if single.name.endswith ("-DR") == True:
-                print (single.name, "DR股不列入")
-                continue
-            if single.name.find ("*") != -1:
-                print (single.name, "票面價值不等於10塊的不列入(不知道怎麼操作)")
-                continue
             # 取得資訊
             infoFilename = "../info/%s.txt" % (single.id,)
             #---------
@@ -739,10 +721,6 @@ class cAllStockMgr:
     def getAllStock (self, isNeedNetInfo=False):
         res = {}
         for key, value in self.stockMap.items():
-            # 不是股票不回傳
-            if value.type != "股票":
-                #print ("[ignore][不是股票] "+value.name)
-                continue
             # 沒有網路資訊不做回傳
             if isNeedNetInfo == True and len(value.netInfo) == 0:
                 #print ("[ignore][isNeedNetInfo] "+value.name)

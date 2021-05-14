@@ -253,7 +253,8 @@ if controlMap[5] == True:
         "稅前每股", 
         "稅前EPS", 
         "發債",
-        "Q1每股",
+        "庫藏股",
+        #"Q1每股",
     ]
     for index in range (2):
         # 取得時間字串
