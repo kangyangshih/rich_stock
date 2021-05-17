@@ -47,7 +47,7 @@ controlMap = {
     4:True,
     # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
     5:True,
-    # 6. 在布林通道上緣的股票
+    # 
     6:True,
     # 7. 帶量突破5日線
     7:True,
@@ -287,33 +287,6 @@ if controlMap[5] == True:
             allstock[news["id"]].dumpInfo(file)
         write (file, "")
         file.close()
-
-#--------------------------------------------------
-# 6. 在布林通道上緣的股票
-if controlMap[6] == True:
-    list6 = []
-    list7 = []
-    for stockID, stock in allstock.items():
-        # 取得股價
-        realtime = stock.getTodayPrice ()
-        # 取得布林通道
-        bband_up, bband, bband_down, msg = stock.getBBand ()
-        # 如果在上緣就做記錄下來
-        if realtime["end_price"] > bband_up * 0.995:
-            list6.append (stockID)
-        if realtime["end_price"] < bband_down * 1.005:
-            list7.append (stockID)
-
-    file = open ("../data/6.1.bbandUp.txt", "w", encoding="utf-8")
-    for stockID in list6:
-        allstock[stockID].dumpInfo (file)
-    file.close()
-
-    # 7. 在布林通道下緣
-    file = open ("../data/6.2.bbandDown.txt", "w", encoding="utf-8")
-    for stockID in list7:
-        allstock[stockID].dumpInfo (file)
-    file.close()
 
 #--------------------------------------------------
 # 7. 帶量突破5日線, 且均線排好

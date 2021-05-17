@@ -14,7 +14,7 @@ import csv
 import random
 
 # 取得時間日期 (每天只更新一次新聞)
-updateTimeStr = get_hour_str (3)
+updateTimeStr = get_hour_str (6)
 print ("[updateTimeStr] "+ updateTimeStr)
 
 # 取得所有的股票清單
