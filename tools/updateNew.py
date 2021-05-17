@@ -49,16 +49,14 @@ def getNewsFromYahoo (stockID, pageNum=1):
     return newsList
 stockIDList = [stockID for stockID in allstock.keys()]
 random.shuffle (stockIDList)
-#for stockID, stock in allstock.items():
-for stockID in stockIDList:
-    stock = allstock[stockID]
+for stockID, stock in allstock.items():
     # 做資料差異更新
     dbUpdateTime, cacheInfo = StockDBMgr.getNews (stockID)
     # 每天只更新一次新聞
     if dbUpdateTime == updateTimeStr:
         print ("%s 己更新" % (stock.name,))
         continue
-    print ("=== %s ===" % (stock.name,))
+    print ("=== %s (%s) ===" % (stock.name, stock.location))
     # 載入暫存資料
     newsList = getNewsFromYahoo (stockID)
     #----------------------------------------------

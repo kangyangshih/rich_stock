@@ -18,57 +18,15 @@ allstock = AllStockMgr.getAllStock ()
 
 # 更新資料
 updateFlag = {
-    # 更新基本資料 (己完成)
-    "basic":False,
-    # 更新 news (己完成)
-    "news":False,
-    # 更新每日資料 (己完成)
-    "daily" : False,
-    # 三大法人 (己完成)
-    "three" : False,
+    # 更新 news
+    "news":True,
 }
-
-#------------------------------------
-# 塞入基本資料
-if updateFlag["basic"] == True:
-    print ("【更新】個股基本資料")
-    basicDB = cSqlite ("../db/basic.db3")
-    for stockID, stock in allstock.items():
-        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
-        # 做更新的動作
-        basicDB.update ("basic", 
-            # 資訊
-            {
-                # 上巿 / 上櫃
-                "location" : stock.location,
-                # 股本
-                "equity" : stock.getInfoFloat ("股本"),
-                # 淨值
-                "assetValue" : stock.getInfoFloat ("淨值"),
-                # 產業類別
-                "business" : stock.getInfo ("產業類別"),
-                # 營業比重
-                "businessRate" : stock.getInfo ("營業比重"),
-            }, 
-            # KEY
-            {
-                # 編號
-                "id":int(stockID),
-                # 名稱
-                "name":stock.name,
-            },
-        )
-
-    # 整個更新進去
-    basicDB.commit()
-else:
-    print ("【不更新】基本資料")
 
 #------------------------------------
 # 塞入基本資料
 if updateFlag["news"] == True:
     print ("【更新】新聞")
-    newsDB = cSqlite ("../db/news.db3")
+    oldDB = cSqlite ("../db/news.db3")
     for stockID, stock in allstock.items():
         print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
         # 取得新聞內容
@@ -77,7 +35,7 @@ if updateFlag["news"] == True:
         for index, news in enumerate (newsList):
             date = news["date"].split (" ")[0][1:]
             # 做更新的動作
-            newsDB.update ("news", 
+            oldDB.update ("news", 
                 # 資訊
                 {
                     "stockID" : int(stockID),
@@ -93,41 +51,7 @@ if updateFlag["news"] == True:
         #break
 
     # 整個更新進去
-    newsDB.commit()
+    oldDB.commit()
 else:
     print ("【不更新】新聞")
-
-#------------------------------------
-# 更新每日資料
-if updateFlag["daily"] == True:
-    print ("【更新】每日資料")
-    for stockID, stock in allstock.items():
-        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
-        dailyMap = getFromCache ("../info/daily_%s.txt" % (stockID,))
-        print ("[count] " + str(len(dailyMap)))
-        for dateKey, info in dailyMap.items():
-            StockDBMgr.saveDaily (stockID, info)
-else:
-    print ("【不更新】每日")
-
-#------------------------------------
-# 三大法人
-if updateFlag["three"] == True:
-    print ("【更新】三大法人")
-    for stockID, stock in allstock.items():
-        print ("=== 處理 %s(%s) ===" % (stock.name, stock.id))
-        # single.netInfo["三大法人"]
-        #for info in stock.netInfo["三大法人"]:
-        #    StockDBMgr.saveThree (stockID, info)
-        # 取得資訊 (刪除 basic 的內容)
-        infoFilename = "../info/%s.txt" % (stock.id,)
-        info = getFromCache (infoFilename, {})
-        if "三大法人" in info : 
-            info.pop ("三大法人")
-            saveCache (infoFilename, info)
-        
-else:
-    print ("【不更新】三大法人")
-
-
 
