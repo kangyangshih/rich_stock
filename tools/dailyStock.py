@@ -295,6 +295,7 @@ if controlMap[5] == True:
         tmpList = changeDict2List (newsMap)
         for news in tmpList:
             writeNews (file, news)
+            allstock[news["id"]].dumpInfo(file)
         write (file, "")
         file.close()
 
