@@ -217,6 +217,9 @@ if controlMap[4] == True:
         realtime = stock.getTodayPrice ()
         # 暫時借塞
         stock.now_sd_rate = (stock.sd2021 / realtime["end_price"] * 100) + stock.sd2021_stock * 10
+        # 配太少就暫時不列入
+        if stock.now_sd_rate < 3:
+            continue
         if stock.now_sd_rate not in tmp:
             tmp[stock.now_sd_rate] = []
         tmp[stock.now_sd_rate].append (stockID) 
@@ -234,6 +237,7 @@ if controlMap[4] == True:
 # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
 if controlMap[5] == True:
     def writeNews (file, news):
+        file.writelines ("========================\n")
         # 把內容寫下來
         write (file, 
             "* [%s(%s)](%s) %s [%s](%s)<br/>", 
@@ -244,6 +248,7 @@ if controlMap[5] == True:
             news["title"], 
             news["url"]
         )
+        file.writelines ("========================\n")
     # 以日期來做
     newsMap = {}
 
@@ -276,22 +281,6 @@ if controlMap[5] == True:
                         if news["date"] not in newsMap:
                             newsMap[news["date"]] = []
                         newsMap[news["date"]].append (news)
-                # # 沒有指定字不做處理
-                # if news["title"].find ("列注意股") != -1:
-                #     if news["date"] not in newsMap:
-                #         newsMap[news["date"]] = []
-                #     newsMap[news["date"]].append (news)
-                #     continue
-                # if news["title"].find ("稅前每股") != -1:
-                #     if news["date"] not in newsMap:
-                #         newsMap[news["date"]] = []
-                #     newsMap[news["date"]].append (news)
-                #     continue
-                # if news["title"].find ("稅前EPS") != -1:
-                #     if news["date"] not in newsMap:
-                #         newsMap[news["date"]] = []
-                #     newsMap[news["date"]].append (news)
-                #     continue
         tmpList = changeDict2List (newsMap)
         for news in tmpList:
             writeNews (file, news)
