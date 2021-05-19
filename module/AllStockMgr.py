@@ -249,15 +249,48 @@ class cSingleStock :
         )
 
         self._write (file, res, "")
+
         #------------------------
         self._write (file, res, "[EPS/殖利率表現]")
+        # 2021 預估 EPS
+        if self.getInfo ("QEPS", "2021Q1", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q1", "EPS") != None \
+            and self.getInfoFloat ("QEPS", "2020Q1", "EPS") != 0:
+            # 2021Q1 的EPS
+            eps2021Q1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS")
+            eps2020Q1 = self.getInfoFloat ("QEPS", "2020Q1", "EPS")
+            uprate = eps2021Q1 / eps2020Q1
+            # 預估 EPS
+            eps2021Q1Q4EPST1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
+                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") ) * uprate
+            eps2021Q1Q4EPST2 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
+                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") )
+            eps2021Q1Q4EPST3 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") * 4
+            
+            self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f 【累加】%.2f/%.2f 【平均】 %.2f/%.2f)" % (
+                self.getInfo ("QEPS", "2021Q1", "EPS"), 
+                self.getInfo ("QEPS", "2020Q1", "EPS"), 
+                eps2021Q1Q4EPST1,
+                eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
+                eps2021Q1Q4EPST2,
+                eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
+                eps2021Q1Q4EPST3,
+                eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
+            ))
+        else:
+            self._write (file, res, "暫時無法估 2021 EPS")
         # 2020 預估 EPS
         tmp, eps2020 = self._get2020EPS ()
         if tmp == 3:
             self._write (file, res, "無法預估2020 EPS")
             eps2020 = 0
         elif tmp == 0:
-            self._write (file, res, "2020Q4 EPS (%.2f) 公告，全年EPS : %.2f", self.getInfoFloat ("QEPS", "2020Q4", "EPS"), eps2020)
+            self._write (file, res, "【公告】2020 全年EPS : %.2f", eps2020)
         elif tmp == 1:
             self._write (file, res, "2020 新聞公告EPS : %.2f", eps2020)
         else:
@@ -448,7 +481,7 @@ class cSingleStock :
             )
 
         #------------------------
-        # 2020 Q1~Q3 EPS
+        # 2020 Q1~Q4 EPS
         if self.getInfo ("QEPS", "2020Q1", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
             and self.getInfo ("QEPS", "2020Q4", "EPS") != None \
@@ -459,17 +492,6 @@ class cSingleStock :
                 + self.getInfoFloat ("QEPS", "2020Q3", "EPS")
             self._write (file, res, "2020 Q1~Q4 EPS : %.2f 元", Q1Q4EPS)
 
-        elif self.getInfo ("QEPS", "2020Q1", "EPS") != None \
-            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
-            and self.getInfo ("QEPS", "2020Q3", "EPS") != None:
-            Q1Q3EPS = self.getInfoFloat ("QEPS", "2020Q1", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q3", "EPS")
-            self._write (file, res, "2020 Q1~Q3 EPS : %.2f 元", Q1Q3EPS)
-
-        #------------------------
-        # 去年EPS
-        self._write (file, res, "2019 EPS : %s 元", self.getInfo ("QEPS", "2019", "EPS"))
         self._write (file, res, "")
 
         #------------------------
