@@ -41,7 +41,7 @@ def getNewsFromYahoo (stockID, pageNum=1):
             #print (timeNodes[index].text, node.text)
             #print (node.get_attribute ("href"))
             newsList.append ({
-                "title" : node.text,
+                "title" : node.text.replace ("'", "\""),
                 "date" : timeNodes[index].text.split (" ")[0][1:],
                 "dateStr" : timeNodes[index].text,
                 "url" : node.get_attribute ("href"),
