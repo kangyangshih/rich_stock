@@ -412,9 +412,13 @@ class cSingleStock :
         self._write (file, res, "[前四季EPS]")
         # 先計算2021Q1 的平均營收
         total = 0
-        for monthIndex in ["2021/01", "2021/02", "2021/03"]:
+        counter = 0
+        for monthIndex in ["2021/04", "2021/05", "2021/06"]:
+            if self.getInfoInt ("月營收", monthIndex, "月營收") == None:
+                break
             total += self.getInfoInt ("月營收", monthIndex, "月營收")/100000.0
-        self._write (file, res, "2021Q1 季營收: %.2f 億, 平均月營收: %.2f 億" %(total, total/3))
+            counter += 1
+        self._write (file, res, "2021Q2 季營收: %.2f 億, 平均月營收: %.2f 億" %(total, total/counter))
         # 顯示近4季EPS
         QEPSNum = 0
         tmpList = changeDict2List (self.netInfo["QEPS"])

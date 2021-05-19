@@ -47,6 +47,7 @@ def getNewsFromYahoo (stockID, pageNum=1):
                 "url" : node.get_attribute ("href"),
             })
     return newsList
+
 stockIDList = [stockID for stockID in allstock.keys()]
 random.shuffle (stockIDList)
 for stockID, stock in allstock.items():
@@ -58,7 +59,13 @@ for stockID, stock in allstock.items():
         continue
     print ("=== %s (%s) ===" % (stock.name, stock.location))
     # 載入暫存資料
-    newsList = getNewsFromYahoo (stockID)
+    for retryCounter in range (3):
+        newsList = getNewsFromYahoo (stockID)
+        if len(newsList) == 0:
+            print ("no news... retry")
+            printCountDown (3)
+        else:
+            break
     #----------------------------------------------
     #print ("===== cache information =====")
     #for cache in cacheInfo:
