@@ -206,7 +206,17 @@ class cSingleStock :
             res += line + "\n"
         # 回傳頭+尾
         return res + tail
-
+    
+    # 每季的賺錢類型
+    def getQBusinessType (self):
+        if self.QBType.find ("平均") != -1:
+            return "平均"
+        if self.QBType.find ("成長") != -1:
+            return "成長"
+        if self.QBType.find ("累加") != -1:
+            return "累加"
+        return None
+    
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
@@ -271,17 +281,40 @@ class cSingleStock :
                 + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
                 + self.getInfoFloat ("QEPS", "2020Q3", "EPS") )
             eps2021Q1Q4EPST3 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") * 4
-            
-            self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f 【累加】%.2f/%.2f 【平均】 %.2f/%.2f)" % (
-                self.getInfo ("QEPS", "2021Q1", "EPS"), 
-                self.getInfo ("QEPS", "2020Q1", "EPS"), 
-                eps2021Q1Q4EPST1,
-                eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
-                eps2021Q1Q4EPST2,
-                eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
-                eps2021Q1Q4EPST3,
-                eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
-            ))
+            # 依照不同的商業類型做修改
+            #self._write (file , res, "%s -> %s", self.QBType, self.getQBusinessType())
+            if self.getQBusinessType () == "成長":
+                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f" % (
+                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
+                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
+                    eps2021Q1Q4EPST1,
+                    eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
+                ))
+            elif self.getQBusinessType() == "累加":
+                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【累加】%.2f/%.2f " % (
+                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
+                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
+                    eps2021Q1Q4EPST2,
+                    eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
+                ))
+            elif self.getQBusinessType() == "平均":
+                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【平均】 %.2f/%.2f" % (
+                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
+                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
+                    eps2021Q1Q4EPST3,
+                    eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
+                ))
+            else:
+                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f 【累加】%.2f/%.2f 【平均】 %.2f/%.2f)" % (
+                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
+                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
+                    eps2021Q1Q4EPST1,
+                    eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
+                    eps2021Q1Q4EPST2,
+                    eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
+                    eps2021Q1Q4EPST3,
+                    eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
+                ))
         else:
             self._write (file, res, "暫時無法估 2021 EPS")
         # 2020 預估 EPS
@@ -359,9 +392,7 @@ class cSingleStock :
 
         #------------------------
         # 個股簡評
-        self._write (file, res, "[個股相關資訊] %s", self.future)
-        # 分類類型
-        self._write (file, res, self.operationType)
+        self._write (file, res, "[個股相關資訊] %s", self.future.replace ("\n", "、"))
         # 描述
         if self.desc != "":
             self._write (file, res, self.getDesc())
@@ -699,12 +730,16 @@ class cAllStockMgr:
                 ["operationType", "", str],
                 # 狀態 : 核心、衛星、短期注意
                 ["future", "", str],
+                # 一年四季的營收類型
+                ["QBType", "", str],
                 # 手動買入價
                 ["buyPrice", 0, float],
                 # 手動賣出價
                 ["sellPrice", 0, float],
                 # 持有價
                 ["holdPrice", 0, float],
+                # 高點
+                ["highPrice", 0, float],
                 # 取得一點影響到大盤的點數
                 ["pointToAll", 0, float],
                 # 雜項
@@ -718,6 +753,8 @@ class cAllStockMgr:
                     tmp = tmp.replace ("%", "%%")
                 #single[keyword] = tmp
                 setattr (single, keyword, tmp)
+                #if keyword == "desc" and tmp != "":
+                #    print (single.id, single.name, single.desc)
             # 2021 公告的配股配息
             sdList = StockDBMgr.getSD (single.id)
             if len(sdList) > 0 and sdList[0]["years"] == "2021":
