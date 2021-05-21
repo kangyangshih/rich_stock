@@ -84,10 +84,10 @@ if controlMap[0] == True:
             # 換個判定寫法
             if stock.future.find (key) != -1:
                 value[stockID] = stock
-                break
+                #break
             if stock.operationType.find (key) != -1:
                 value[stockID] = stock
-                break
+                #break
 
     # 依照重要性來做處理
     for key in priorityKey:
