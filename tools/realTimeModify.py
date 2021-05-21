@@ -56,11 +56,12 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     if stockType == "持有":
         #print (stock.holdPrice, type(stock.holdPrice))
         # 鈊象(3293) 770(750) -3.0 4,950 
-        command = "%s(%s) %s(%s) %.1f %.1f%% 量:%s" % (
+        command = "%s(%s) %s(%s)(%s) %.1f %.1f%% 量:%s" % (
             stock.name, 
             stock.id, 
             realtime["now_price"], 
             stock.holdPrice,
+            stock.get2021SD (realtime["now_price"]),
             realtime["now_result"], 
             realtime["now_result_rate"],
             realtime["now_vol"],
@@ -89,10 +90,11 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     #------------------------------
     if stockType == "短期注意":
         if stock.buyPrice == 0:
-            command = "%s(%s) %s %.1f %.1f%% 量:%s" % (
+            command = "%s(%s) %s(%s) %.1f %.1f%% 量:%s" % (
                 stock.name, 
                 stock.id, 
                 realtime["now_price"], 
+                stock.get2021SD (realtime["now_price"]),
                 realtime["now_result"], 
                 realtime["now_result_rate"],
                 realtime["now_vol"],
@@ -100,11 +102,12 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
             if isPrint == True:
                 print (command)
         else:
-            command = "%s(%s) %s(%s) %.1f %.1f%% 量:%s" % (
+            command = "%s(%s) %s(%s)(%s) %.1f %.1f%% 量:%s" % (
                 stock.name, 
                 stock.id, 
                 realtime["now_price"], 
                 stock.buyPrice,
+                stock.get2021SD (realtime["now_price"]),
                 realtime["now_result"], 
                 realtime["now_result_rate"],
                 realtime["now_vol"],
@@ -124,11 +127,12 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
             if stockID not in removeList:
                 removeList.append (stockID)
             return
-        command = "%s(%s) %s(%s) %.1f %.1f%% %s" % (
+        command = "%s(%s) %s(%s)(%s) %.1f %.1f%% %s" % (
             stock.name, 
             stock.id, 
             realtime["now_price"], 
             stock.buyPrice,
+            stock.get2021SD (realtime["now_price"]),
             realtime["now_result"], 
             realtime["now_result_rate"],
             realtime["now_vol"],
