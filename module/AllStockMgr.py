@@ -217,6 +217,19 @@ class cSingleStock :
             return "累加"
         return None
     
+    def getNowSDRate (self, price):
+        price = float (price)
+        return "%.2f" % (self.sd2021/ price * 100 + self.sd2021_stock * 10,)
+
+    # 取得 2021 配股配息
+    def get2021SD (self, price):
+        if self.sd2021 == None or self.sd2021_stock == None:
+            return "None"
+        if self.sd2021_stock == 0:
+            return "%s:%.2f" % (self.sd2021, self.getNowSDRate(price))
+        else:
+            return "%s+%s:%.2f" % (self.sd2021, self.sd2021_stock, self.getNowSDRate(price))
+    
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
