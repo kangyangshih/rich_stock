@@ -13,7 +13,7 @@ import csv
 
 # 季 EPS
 epsKey = "2020Q4"
-#epsKey = "2021Q1"
+epsKey = "2021Q1"
 # 月營收
 turnOverKey = "2021/04"
 # 股利分配
