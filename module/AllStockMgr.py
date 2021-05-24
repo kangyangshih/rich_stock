@@ -230,6 +230,43 @@ class cSingleStock :
         else:
             return "%s%%[%s+%s]" % (self.getNowSDRate(price), self.sd2021, self.sd2021_stock, )
     
+    # 取得 2022 年的配息預估
+    def get2022SD (self):
+        # 2021 預估 EPS
+        if self.getInfo ("QEPS", "2021Q1", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
+            and self.getInfo ("QEPS", "2020Q1", "EPS") != None \
+            and self.getInfoFloat ("QEPS", "2020Q1", "EPS") != 0:
+            # 2021Q1 的EPS
+            eps2021Q1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS")
+            eps2020Q1 = self.getInfoFloat ("QEPS", "2020Q1", "EPS")
+            uprate = eps2021Q1 / eps2020Q1
+            # 預估 EPS
+            # 累加成長
+            eps2021Q1Q4EPST1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
+                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") ) * uprate
+            # 累加
+            eps2021Q1Q4EPST2 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
+                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
+                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") )
+            # 平均
+            eps2021Q1Q4EPST3 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") * 4
+            # 依照不同的商業類型做修改
+            #self._write (file , res, "%s -> %s", self.QBType, self.getQBusinessType())
+            if self.getQBusinessType () == "累加成長":
+                return 1, eps2021Q1Q4EPST1, eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100
+            elif self.getQBusinessType() == "累加":
+                return 1, eps2021Q1Q4EPST2, eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100
+            elif self.getQBusinessType() == "平均":
+                return 1, eps2021Q1Q4EPST3, eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100
+            return 1, None, None
+        else:
+            return 0, None, None
+        
+    
     # 寫入單股資料
     def dumpInfo (self, file=None):
         res = []
@@ -275,61 +312,31 @@ class cSingleStock :
 
         #------------------------
         self._write (file, res, "[EPS/殖利率表現]")
+        #--------------------------------
         # 2021 預估 EPS
-        if self.getInfo ("QEPS", "2021Q1", "EPS") != None \
-            and self.getInfo ("QEPS", "2020Q2", "EPS") != None \
-            and self.getInfo ("QEPS", "2020Q1", "EPS") != None \
-            and self.getInfoFloat ("QEPS", "2020Q1", "EPS") != 0:
-            # 2021Q1 的EPS
-            eps2021Q1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS")
-            eps2020Q1 = self.getInfoFloat ("QEPS", "2020Q1", "EPS")
-            uprate = eps2021Q1 / eps2020Q1
-            # 預估 EPS
-            eps2021Q1Q4EPST1 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
-                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") ) * uprate
-            eps2021Q1Q4EPST2 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") \
-                + (self.getInfoFloat ("QEPS", "2020Q2", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q4", "EPS") \
-                + self.getInfoFloat ("QEPS", "2020Q3", "EPS") )
-            eps2021Q1Q4EPST3 = self.getInfoFloat ("QEPS", "2021Q1", "EPS") * 4
-            # 依照不同的商業類型做修改
-            #self._write (file , res, "%s -> %s", self.QBType, self.getQBusinessType())
-            if self.getQBusinessType () == "成長":
-                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f" % (
+        getRes, eps2022, sd2022 = self.get2022SD ()
+        if getRes == 1:
+            if eps2022 != None:
+                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【%s】%.2f/%.2f" % (
                     self.getInfo ("QEPS", "2021Q1", "EPS"), 
-                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
-                    eps2021Q1Q4EPST1,
-                    eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
-                ))
-            elif self.getQBusinessType() == "累加":
-                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【累加】%.2f/%.2f " % (
-                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
-                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
-                    eps2021Q1Q4EPST2,
-                    eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
-                ))
-            elif self.getQBusinessType() == "平均":
-                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【平均】 %.2f/%.2f" % (
-                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
-                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
-                    eps2021Q1Q4EPST3,
-                    eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
+                    self.getInfo ("QEPS", "2020Q1", "EPS"),
+                    self.getQBusinessType (),
+                    eps2022,
+                    sd2022,
                 ))
             else:
-                self._write (file, res, "2021Q1 EPS %s(%s), 估 EPS/配息 : 【成長】%.2f/%.2f 【累加】%.2f/%.2f 【平均】 %.2f/%.2f)" % (
-                    self.getInfo ("QEPS", "2021Q1", "EPS"), 
-                    self.getInfo ("QEPS", "2020Q1", "EPS"), 
-                    eps2021Q1Q4EPST1,
-                    eps2021Q1Q4EPST1 * self._getStockDividenRate() / 100,
-                    eps2021Q1Q4EPST2,
-                    eps2021Q1Q4EPST2 * self._getStockDividenRate() / 100,
-                    eps2021Q1Q4EPST3,
-                    eps2021Q1Q4EPST3 * self._getStockDividenRate() / 100,
-                ))
+                self._write (file, res, " all_stock.xlsx 請先設定【營業季類型】")
         else:
             self._write (file, res, "暫時無法估 2021 EPS")
+
+        #--------------------------------
+        # 2021 己知殖利率 6% ~ 8%
+        pass
+
+        #--------------------------------
+        # 2022 預估殖利率 6% ~ 8%
+        pass
+
         # 2020 預估 EPS
         tmp, eps2020 = self._get2020EPS ()
         if tmp == 3:
