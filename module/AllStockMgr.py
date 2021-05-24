@@ -226,9 +226,9 @@ class cSingleStock :
         if self.sd2021 == None or self.sd2021_stock == None:
             return "None"
         if self.sd2021_stock == 0:
-            return "%s:%.2f" % (self.sd2021, self.getNowSDRate(price))
+            return "%s%%[%s]" % (self.getNowSDRate(price), self.sd2021, )
         else:
-            return "%s+%s:%.2f" % (self.sd2021, self.sd2021_stock, self.getNowSDRate(price))
+            return "%s%%[%s+%s]" % (self.getNowSDRate(price), self.sd2021, self.sd2021_stock, )
     
     # 寫入單股資料
     def dumpInfo (self, file=None):
