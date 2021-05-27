@@ -193,17 +193,54 @@ def getRangeTotalRate (day):
     return out_total_map, in_total_map, total_total_map
 
 if controlMap[3] == True:
+    #-----------------------
     file = open ("../data/3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
     for day in (5,):
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
     file.close()
 
+    #-----------------------
     file = open ("../data/3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
     for day in (20,):
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
     file.close()
+
+    #-----------------------
+    out_continueMap = {}
+    in_continueMap = {}
+    for stockID, stock in allstock.items():
+        out_counter, in_counter = stock.getContinueBuy ()
+        if out_counter >= 3:
+            if out_counter not in out_continueMap:
+                out_continueMap[out_counter] = []
+            out_continueMap[out_counter].append (stockID)
+        if in_counter >= 3:
+            if in_counter not in in_continueMap:
+                in_continueMap[in_counter] = []
+            in_continueMap[in_counter].append (stockID)
+    
+    #-----------------------
+    keyList = [key for key in out_continueMap.keys()]
+    keyList.sort (reverse=True)
+    file = open ("../data/3.99 外資連買超.txt", "w", encoding="utf-8")
+    for key, stockIDList in out_continueMap.items():
+        for stockID in stockIDList:
+            write (file, "外資連買超 %s 天\n====================\n" % (key,))
+            allstock[stockID].dumpInfo (file)
+    file.close()
+
+    #-----------------------
+    keyList = [key for key in in_continueMap.keys()]
+    keyList.sort (reverse=True)
+    file = open ("../data/3.99 投信連買超.txt", "w", encoding="utf-8")
+    for key, stockIDList in in_continueMap.items():
+        for stockID in stockIDList:
+            write (file, "投信連買超 %s 天\n====================\n" % (key,))
+            allstock[stockID].dumpInfo (file)
+    file.close()
+
 
 #--------------------------------------------------
 # 4. 2021 公告後有殖利率的排行榜

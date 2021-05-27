@@ -663,6 +663,23 @@ class cSingleStock :
         
         # 回傳平均結果
         return out_total, in_total
+    
+    def getContinueBuy (self):
+        out_counter = 0
+        for index in range (30):
+            tmp = self.getInfo ("三大法人")[index]["out"]
+            if tmp > 0:
+                out_counter += 1
+            else:
+                break
+        in_counter = 0
+        for index in range (30):
+            tmp = self.getInfo ("三大法人")[index]["credit"]
+            if tmp > 0:
+                in_counter += 1
+            else:
+                break
+        return out_counter, in_counter
 
     #---------------------------------------
     # 取得外資買賣超
