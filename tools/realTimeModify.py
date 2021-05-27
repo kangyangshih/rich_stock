@@ -56,11 +56,12 @@ def printRealtimeStock (stockType, stock, removeList, realtime, isPrint=True):
     if stockType == "持有":
         #print (stock.holdPrice, type(stock.holdPrice))
         # 鈊象(3293) 770(750) -3.0 4,950 
-        command = "%s(%s) %s(%s)(%s) %.1f %.1f%% 量:%s" % (
+        command = "%s(%s) %s(%s->%s)(%s) %.1f %.1f%% 量:%s" % (
             stock.name, 
             stock.id, 
             realtime["now_price"], 
             stock.holdPrice,
+            stock.highPrice,
             stock.get2021SD (realtime["now_price"]),
             realtime["now_result"], 
             realtime["now_result_rate"],
