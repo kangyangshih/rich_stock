@@ -47,7 +47,7 @@ controlMap = {
     4:True,
     # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
     5:True,
-    # 
+    # 2021 除權息日
     6:True,
     # 7. 帶量突破5日線
     7:True,
@@ -193,19 +193,32 @@ def getRangeTotalRate (day):
     return out_total_map, in_total_map, total_total_map
 
 if controlMap[3] == True:
-    #-----------------------
-    file = open ("../data/3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    for day in (5,):
+    for day in (5, 20, 60):
+        file = open ("../data/3.%s外資加投信累計買賣超.txt" % (day,), "w", encoding="utf-8")
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    file.close()
+        file.close()
 
-    #-----------------------
-    file = open ("../data/3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    for day in (20,):
-        out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-        printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    file.close()
+    # #-----------------------
+    # file = open ("../data/3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
+    # for day in (5,):
+    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
+    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
+    # file.close()
+
+    # #-----------------------
+    # file = open ("../data/3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
+    # for day in (20,):
+    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
+    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
+    # file.close()
+
+    # #-----------------------
+    # file = open ("../data/3.60外資加投信累計買賣超.txt", "w", encoding="utf-8")
+    # for day in (60,):
+    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
+    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
+    # file.close()
 
     #-----------------------
     out_continueMap = {}
@@ -272,20 +285,20 @@ if controlMap[4] == True:
 
 #--------------------------------------------------
 # 5. 過去五天的新聞 (希望可以貼到 notion 去看的)
+def writeNews (file, news):
+    file.writelines ("========================\n")
+    # 把內容寫下來
+    write (file, 
+        "* [%s(%s)]( %s ) %s [%s]( %s )", 
+        news["name"], 
+        news["id"],
+        'https://tw.stock.yahoo.com/q/ta?s='+news["id"], 
+        news["dateStr"],
+        news["title"], 
+        news["url"]
+    )
+    file.writelines ("========================\n")
 if controlMap[5] == True:
-    def writeNews (file, news):
-        file.writelines ("========================\n")
-        # 把內容寫下來
-        write (file, 
-            "* [%s(%s)](%s) %s [%s](%s)<br/>", 
-            news["name"], 
-            news["id"],
-            'https://tw.stock.yahoo.com/q/ta?s='+news["id"], 
-            news["dateStr"],
-            news["title"], 
-            news["url"]
-        )
-        file.writelines ("========================\n")
     # 以日期來做
     newsMap = {}
 
@@ -296,7 +309,6 @@ if controlMap[5] == True:
         "稅前EPS", 
         "發債",
         "庫藏股",
-        #"Q1每股",
     ]
     for index in range (2):
         # 取得時間字串
@@ -324,6 +336,56 @@ if controlMap[5] == True:
             allstock[news["id"]].dumpInfo(file)
         write (file, "")
         file.close()
+
+#--------------------------------------------------
+# 6. 除權息
+def writeSDNews (file, news):
+    file.writelines ("========================\n")
+    # 把內容寫下來
+    write (file, 
+        "* [%s(%s)]( %s ) %s [%s]( %s )\n%s", 
+        news["name"], 
+        news["id"],
+        'https://tw.stock.yahoo.com/q/ta?s='+news["id"], 
+        news["dateStr"],
+        news["title"], 
+        news["url"],
+        'https://goodinfo.tw/StockInfo/StockDividendSchedule.asp?STOCK_ID=' + news["id"],
+    )
+    file.writelines ("========================\n")
+if controlMap[6] == True:
+    keywordList = [
+        "除權基準日",
+        "除息基準日",
+        "除權息基準日",
+    ]
+    newsMap = {}
+    file = open ("../data/6.除權息日期.txt", "w", encoding="utf-8")
+    # 每個股票都去找
+    for stockID, stock in allstock.items():
+        # 有填過 Excel 就不需要處理
+        if stock.sdDate != "":
+            continue
+        tmp, newsList = StockDBMgr.getNews (stockID)
+        for news in newsList:
+            news["id"] = stock.id
+            news["name"] = stock.name
+            # 日期不對不做處理
+            if news["date"].find ("2021/") == -1:
+                continue
+            for keyword in keywordList:
+                # 沒有指定字不做處理
+                if news["title"].find (keyword) != -1:
+                    if news["date"] not in newsMap:
+                        newsMap[news["date"]] = []
+                    newsMap[news["date"]].append (news)
+    tmpList = changeDict2List (newsMap)
+    for news in tmpList:
+        writeSDNews (file, news)
+        allstock[news["id"]].dumpInfo(file)
+    write (file, "")
+    file.close()
+
 
 #--------------------------------------------------
 # 7. 帶量突破5日線, 且均線排好

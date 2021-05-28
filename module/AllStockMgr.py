@@ -276,19 +276,22 @@ class cSingleStock :
         #------------------------
         # 營業比重
         self._write (file, res, "%s", self.getInfo ("營業比重"))
+        # 除權息日
+        if self.sdDate != "":
+            self._write (file, res, "[2021 除權息最後買進日] %s", self.sdDate.split (" ")[0][5:].replace ("-", "/"))
+
         self._write (file, res, "")
         
         #------------------------
         # 持有價
         if self.holdPrice > 0:
-            self._write (file, res, "[持有價] %s", self.holdPrice)
+            self._write (file, res, "[持有價] %s\n", self.holdPrice)
         # 買入價或是空單價
         if self.buyPrice > 0:
-            self._write (file, res, "[手動設定買入價] %s", self.buyPrice)
+            self._write (file, res, "[手動設定買入價] %s\n", self.buyPrice)
         elif self.emptyPrice > 0:
-            self._write (file, res, "[手動設定空單價] %s", self.emptyPrice)
-        self._write (file, res, "")
-
+            self._write (file, res, "[手動設定空單價] %s\n", self.emptyPrice)
+        
         #------------------------
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
@@ -769,6 +772,8 @@ class cAllStockMgr:
                 ["holdPrice", 0, float],
                 # 高點
                 ["highPrice", 0, float],
+                # 2021 除權息日
+                ["sdDate", "", str],
                 # 取得一點影響到大盤的點數
                 ["pointToAll", 0, float],
                 # 雜項
