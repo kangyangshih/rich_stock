@@ -12,10 +12,14 @@ import json
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 for stockID, stock in allstock.items():
-    tmp, newsList = StockDBMgr.getNews (stockID)
-    for news in newsList:
-        print (news["dateStr"], news["title"])
-    break
+    if stockID != "2809":
+        continue
+    print (NetStockInfo.getSDDate (stockID, 2021))
+    # 取得今年度的配息日
+    # 取得新聞
+    #tmp, newsList = StockDBMgr.getNews (stockID)
+    #for news in newsList:
+    #    print (news["dateStr"], news["title"])
     #if stockID != "3293":
     #    continue
     # 及時報價
@@ -33,6 +37,7 @@ for stockID, stock in allstock.items():
     # 取得配股配息
     #print (NetStockInfo.getHistockStockDivide (stockID))
     # 取得
+    break
 
 
 

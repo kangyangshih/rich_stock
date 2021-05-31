@@ -1,3 +1,6 @@
+# DESC : 更新配股配息
+# Author : nick.shih
+
 # 載入所有 python 共用模組
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")

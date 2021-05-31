@@ -9,6 +9,8 @@ from WebViewMgr import WebViewMgr
 #WebViewMgr.debugMode ()
 from bs4 import BeautifulSoup
 from lxml import etree
+from datetime import datetime
+from datetime import timedelta
 
 class cNetStockInfo:
 
@@ -250,6 +252,47 @@ class cNetStockInfo:
         # 回傳結果
         return True, info
     
+    #--------------------------------------------
+    # 除權息日
+    #--------------------------------------------
+    def getImportantDate (self, stockID):
+        # 打開首頁
+        url = 'https://histock.tw/stock/' + str(stockID)
+        WebViewMgr.start()
+        WebViewMgr.loadURL (url)
+        # 取得行事歷
+        xpath = '//*[@id="RBlock_1"]/div[2]/div/b'
+        source_nodes = WebViewMgr.getNodes (xpath)
+        res = []
+        for source_node in source_nodes:
+            #print (source_node.text)
+            res.append (source_node.text)
+        return res
+    
+    def getSDDate (self, stockID, year):
+        year = str(year)
+        IPDateList = self.getImportantDate(stockID)
+        for IPDate in IPDateList:
+            if IPDate.find (year) != -1 and IPDate.find ("除權息") != -1:
+                return IPDate.split (" ")[0]
+        return None
+
+    def getSDLastBuyDate (self, stockID, year):
+        dateStr = self.getSDDate (stockID, year)
+        if dateStr == None:
+            return None
+        # 轉換字串格式
+        date_time_obj = datetime.strptime(dateStr, '%Y-%m-%d')
+        if date_time_obj.weekday() == 5:
+            return (date_time_obj - timedelta(days=1)).strftime("%Y-%m-%d")
+        elif date_time_obj.weekday() == 6:
+            return (date_time_obj - timedelta(days=2)).strftime("%Y-%m-%d")
+        elif date_time_obj.weekday() == 0:
+            return (date_time_obj - timedelta(days=2)).strftime("%Y-%m-%d")
+        else:
+            return dateStr
+
+        
     #--------------------------------------------
     # 配股配息
     #--------------------------------------------
