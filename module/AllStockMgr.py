@@ -359,6 +359,8 @@ class cSingleStock :
                 # 6% ~ 8%
                 target_price6 = sd2022 / 0.06
                 target_price8 = sd2022 / 0.08
+                now_sd_rate = sd2022 / realtime["end_price"] * 100
+                self._write (file, res, "目前 %.2f 殖利率 : %.2f %%",  realtime["end_price"], now_sd_rate)
                 self._write (file, res, "[2021安全價] %.2f(8%%) ~ %.2f(6%%)",  target_price8, target_price6)
             else:
                 self._write (file, res, " all_stock.xlsx 請先設定【營業季類型】")

@@ -236,9 +236,10 @@ if controlMap[3] == True:
     
     #-----------------------
     keyList = [key for key in out_continueMap.keys()]
-    keyList.sort (reverse=False)
+    keyList.sort (reverse=True)
     file = open ("../data/3.99 外資連買超.txt", "w", encoding="utf-8")
-    for key, stockIDList in out_continueMap.items():
+    for key in keyList:
+        stockIDList = out_continueMap[key]
         for stockID in stockIDList:
             write (file, "外資連買超 %s 天\n====================\n" % (key,))
             allstock[stockID].dumpInfo (file)
@@ -246,9 +247,10 @@ if controlMap[3] == True:
 
     #-----------------------
     keyList = [key for key in in_continueMap.keys()]
-    keyList.sort (reverse=False)
+    keyList.sort (reverse=True)
     file = open ("../data/3.99 投信連買超.txt", "w", encoding="utf-8")
-    for key, stockIDList in in_continueMap.items():
+    for key in keyList:
+        stockIDList = in_continueMap[key]
         for stockID in stockIDList:
             write (file, "投信連買超 %s 天\n====================\n" % (key,))
             allstock[stockID].dumpInfo (file)
