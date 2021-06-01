@@ -236,7 +236,7 @@ if controlMap[3] == True:
     
     #-----------------------
     keyList = [key for key in out_continueMap.keys()]
-    keyList.sort (reverse=True)
+    keyList.sort (reverse=False)
     file = open ("../data/3.99 外資連買超.txt", "w", encoding="utf-8")
     for key, stockIDList in out_continueMap.items():
         for stockID in stockIDList:
@@ -246,7 +246,7 @@ if controlMap[3] == True:
 
     #-----------------------
     keyList = [key for key in in_continueMap.keys()]
-    keyList.sort (reverse=True)
+    keyList.sort (reverse=False)
     file = open ("../data/3.99 投信連買超.txt", "w", encoding="utf-8")
     for key, stockIDList in in_continueMap.items():
         for stockID in stockIDList:
