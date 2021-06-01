@@ -669,21 +669,27 @@ class cSingleStock :
         # 回傳平均結果
         return out_total, in_total
     
-    def getContinueBuy (self):
+    def getContinueBuy (self, errorBufferIn=0):
         out_counter = 0
+        errorBuffer = errorBufferIn
         for index in range (30):
             tmp = self.getInfo ("三大法人")[index]["out"]
             if tmp > 0:
                 out_counter += 1
             else:
-                break
+                if errorBuffer == 0:
+                    break
+                errorBuffer -= 1
         in_counter = 0
+        errorBuffer = errorBufferIn
         for index in range (30):
             tmp = self.getInfo ("三大法人")[index]["credit"]
             if tmp > 0:
                 in_counter += 1
             else:
-                break
+                if errorBuffer == 0:
+                    break
+                errorBuffer -= 1
         return out_counter, in_counter
 
     #---------------------------------------

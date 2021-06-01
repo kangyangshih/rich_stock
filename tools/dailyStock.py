@@ -224,7 +224,7 @@ if controlMap[3] == True:
     out_continueMap = {}
     in_continueMap = {}
     for stockID, stock in allstock.items():
-        out_counter, in_counter = stock.getContinueBuy ()
+        out_counter, in_counter = stock.getContinueBuy (1)
         if out_counter >= 3:
             if out_counter not in out_continueMap:
                 out_continueMap[out_counter] = []
