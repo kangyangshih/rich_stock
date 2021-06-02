@@ -672,17 +672,17 @@ class cSingleStock :
     def getContinueBuy (self, errorBufferIn=0):
         out_counter = 0
         errorBuffer = errorBufferIn
-        for index in range (30):
+        for index in range (60):
             tmp = self.getInfo ("三大法人")[index]["out"]
             if tmp > 0:
                 out_counter += 1
             else:
-                if errorBuffer == 0:
+                if errorBuffer <= 0:
                     break
                 errorBuffer -= 1
         in_counter = 0
         errorBuffer = errorBufferIn
-        for index in range (30):
+        for index in range (60):
             tmp = self.getInfo ("三大法人")[index]["credit"]
             if tmp > 0:
                 in_counter += 1
