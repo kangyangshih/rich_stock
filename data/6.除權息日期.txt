@@ -833,7 +833,7 @@ MA60 : 31.89 ↑ 乖離率:3.94%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid2886.html
 
-[個股相關資訊] 定存
+[個股相關資訊] 核心
 近5年大概配 1.5
 
 
@@ -4423,7 +4423,7 @@ MA60 : 771.15 ↑ 乖離率:5.82%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid6488.html
 
-[個股相關資訊] 核心
+[個股相關資訊] 衛星
 磊晶矽晶圓
 短線上看 1000
 
@@ -4824,7 +4824,7 @@ MA60 : 23.95 ↑ 乖離率:8.34%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid2885.html
 
-[個股相關資訊] 定存
+[個股相關資訊] 核心
 以証券為主
 
 
@@ -4927,7 +4927,7 @@ MA60 : 31.89 ↑ 乖離率:3.94%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid2886.html
 
-[個股相關資訊] 定存
+[個股相關資訊] 核心
 近5年大概配 1.5
 
 
@@ -5228,7 +5228,7 @@ MA60 : 31.89 ↑ 乖離率:3.94%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid2886.html
 
-[個股相關資訊] 定存
+[個股相關資訊] 核心
 近5年大概配 1.5
 
 
@@ -6219,7 +6219,7 @@ MA60 : 23.95 ↑ 乖離率:8.34%
 [技術線型]
 技術線型區: https://stock.pchome.com.tw/stock/sto0/ock1/sid2885.html
 
-[個股相關資訊] 定存
+[個股相關資訊] 核心
 以証券為主
 
 
