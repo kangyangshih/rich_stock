@@ -51,6 +51,7 @@ controlMap = {
     6:True,
     # 7. 帶量突破5日線
     7:True,
+    # 8. 突破近20日高點 / 取得近10日低點
     8:True,
     # 9. 全部股票
     9:True,
@@ -442,6 +443,84 @@ if controlMap[7] == True:
             stock.dumpInfo(file)
     file.close()
     print ("[7.2 突破後帶量上攻] ", counter)
+
+#--------------------------------------------------
+# 8. 海龜交易法則
+if controlMap[8] == True:
+    counter = 0
+    file = open ("../data/8. [短期] 海龜交易法則.txt", "w", encoding="utf-8")
+    for stockID, stock in allstock.items():
+        # 取得今日價
+        todayPrice = stock.getTodayPrice ()
+        vol5 = stock.getdayVolAvg (0, 5)
+        # 量能要比較大
+        if todayPrice["vol"] < vol5:
+            continue
+        # 外資有買進
+        out_total5, in_total5 = stock._getThreeTotal (5)
+        out_total20, in_total20 = stock._getThreeTotal (20)
+        out_total60, in_total60 = stock._getThreeTotal (60)
+        if out_total5 < 0 or out_total20 < 0 or out_total60 < 0:
+            continue
+        # 取得20日高點
+        isHigh20 = True
+        for index in range (1, 21):
+            oldPrice = stock.getTodayPrice (index)
+            if todayPrice["high_price"] < oldPrice["high_price"]:
+                isHigh20 = False
+                break
+        if isHigh20 == False:
+            continue
+        low_price = 10000000
+        for index in range (11):
+            oldPrice = stock.getTodayPrice (index)
+            if oldPrice["low_price"] < low_price:
+                low_price = oldPrice["low_price"]
+        file.writelines ("%s[%s] 突破近20日高點，近10日低點為 %s\n" % (stock.name, stock.id, low_price))
+        stock.dumpInfo (file)
+        counter += 1
+
+    file.close()
+    print ("total number:", counter)
+
+    counter = 0
+    file = open ("../data/8. [長期] 海龜交易法則.txt", "w", encoding="utf-8")
+    for stockID, stock in allstock.items():
+        # 取得今日價
+        todayPrice = stock.getTodayPrice ()
+        vol5 = stock.getdayVolAvg (0, 5)
+        # 量能要比較大
+        if todayPrice["vol"] < vol5:
+            continue
+        # 外資有買進
+        out_total5, in_total5 = stock._getThreeTotal (5)
+        out_total20, in_total20 = stock._getThreeTotal (20)
+        out_total60, in_total60 = stock._getThreeTotal (60)
+        if out_total5 < 0 or out_total20 < 0 or out_total60 < 0:
+            continue
+        if in_total5 < 0 or in_total20 < 0 or in_total60 < 0:
+            continue
+        # 取得55日高點
+        isHigh20 = True
+        for index in range (1, 56):
+            oldPrice = stock.getTodayPrice (index)
+            if todayPrice["high_price"] < oldPrice["high_price"]:
+                isHigh20 = False
+                break
+        if isHigh20 == False:
+            continue
+        low_price = 10000000
+        for index in range (21):
+            oldPrice = stock.getTodayPrice (index)
+            if oldPrice["low_price"] < low_price:
+                low_price = oldPrice["low_price"]
+        file.writelines ("%s[%s] 突破近55日高點，近20日低點為 %s\n" % (stock.name, stock.id, low_price))
+        stock.dumpInfo (file)
+        counter += 1
+
+    file.close()
+    print ("total number:", counter)
+
 
 #--------------------------------------------------
 # 9. 所有的股票
