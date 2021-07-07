@@ -3,7 +3,6 @@
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
 from utility import *
-#WebViewMgr.debugMode ()
 # 載入這個專案共用模組
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr
@@ -13,6 +12,7 @@ import json
 import csv
 import random
 
+#WebViewMgr.debugMode ()
 # 取得時間日期 (每天只更新一次新聞)
 updateTimeStr = get_hour_str (6)
 print ("[updateTimeStr] "+ updateTimeStr)
@@ -23,12 +23,14 @@ allstock = AllStockMgr.getAllStock ()
 #------------------------------------------------
 print ("=== [更新新聞] ===")
 # 取得新聞
-def getNewsFromYahoo (stockID, pageNum=1):
+def getNewsFromYahoo (stockID, cacheInfo=[], pageNum=1):
+    if len(cacheInfo) == 0:
+        pageNum = 2
     # 載入暫存資料
     newsList = []
     #----------------------------------------------
     # 新聞
-    newsURLTemplate = "https://tw.stock.yahoo.com/q/h?s=%s&pg=%s"
+    newsURLTemplate = "https://tw.stock.yahoo.com/q/h?s=%s&pg=%s&random="+str(random.randint (1, 99999))
     for pageIndex in range (pageNum):
         # 取得新聞頁
         url = newsURLTemplate % (stockID, pageIndex+1)
@@ -60,10 +62,10 @@ for stockID, stock in allstock.items():
     print ("=== %s (%s) ===" % (stock.name, stock.location))
     # 載入暫存資料
     for retryCounter in range (3):
-        newsList = getNewsFromYahoo (stockID)
+        newsList = getNewsFromYahoo (stockID, cacheInfo, 1)
         if len(newsList) == 0:
             print ("no news... retry")
-            printCountDown (3)
+            printCountDown (10)
         else:
             break
     #----------------------------------------------
@@ -81,16 +83,12 @@ for stockID, stock in allstock.items():
             print ("found!, index=%s" % (index,))
             newList = newsList[:index]
             break
-    if len(newsList) == len(newList):
-        print ("[need more news]")
-        exit_program ()
+        else:
+            newList = newsList[:]
     print ("新資料數量:%s" % (len(newList),))
     for cache in newList:
         print (cache["dateStr"], cache["title"])
     # 把資料存起來
     newList.extend (cacheInfo)
-    #print ("===== save cache =====")
-    #for cache in newList:
-    #    print (cache["title"])
-    # 做儲存的動作
     StockDBMgr.saveNews (stockID, updateTimeStr, newList)
+    #break
