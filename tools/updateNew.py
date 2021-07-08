@@ -60,6 +60,7 @@ for stockID, stock in allstock.items():
         print ("%s 己更新" % (stock.name,))
         continue
     print ("=== %s (%s) ===" % (stock.name, stock.location))
+    isGetNews = True
     # 載入暫存資料
     for retryCounter in range (3):
         newsList = getNewsFromYahoo (stockID, cacheInfo, 1)
@@ -67,7 +68,10 @@ for stockID, stock in allstock.items():
             print ("no news... retry")
             printCountDown (10)
         else:
+            isGetNews = False
             break
+    if isGetNews == False:
+        continue
     #----------------------------------------------
     #print ("===== cache information =====")
     #for cache in cacheInfo:
@@ -91,4 +95,5 @@ for stockID, stock in allstock.items():
     # 把資料存起來
     newList.extend (cacheInfo)
     StockDBMgr.saveNews (stockID, updateTimeStr, newList)
+    printCountDown (2)
     #break
