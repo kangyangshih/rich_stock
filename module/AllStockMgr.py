@@ -772,6 +772,8 @@ class cAllStockMgr:
                 ["future", "", str],
                 # 一年四季的營收類型
                 ["QBType", "", str],
+                #  觀察價
+                ["modifyPrice", 0, float],
                 # 手動買入價
                 ["buyPrice", 0, float],
                 # 手動賣出價
@@ -797,6 +799,9 @@ class cAllStockMgr:
                 setattr (single, keyword, tmp)
                 #if keyword == "desc" and tmp != "":
                 #    print (single.id, single.name, single.desc)
+            # 如果沒有填入觀察價，就設定和買入價一樣
+            if single.modifyPrice == 0:
+                single.modifyPrice = single.buyPrice
             # 2021 公告的配股配息
             sdList = StockDBMgr.getSD (single.id)
             if len(sdList) > 0 and sdList[0]["years"] == "2021":
