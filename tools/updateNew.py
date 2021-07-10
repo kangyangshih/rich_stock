@@ -67,8 +67,9 @@ for stockID, stock in allstock.items():
         if len(newsList) == 0:
             print ("no news... retry")
             printCountDown (10)
+            if retryCounter == 2:
+                isGetNews = False
         else:
-            isGetNews = False
             break
     if isGetNews == False:
         continue
