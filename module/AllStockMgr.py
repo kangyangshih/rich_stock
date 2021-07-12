@@ -491,7 +491,7 @@ class cSingleStock :
         #------------------------
         # 前三季 EPS
         self._write (file, res, "[前四季EPS]")
-        # 先計算2021Q1 的平均營收
+        # 先計算2021Q2 的平均營收
         total = 0
         counter = 0
         for monthIndex in ["2021/04", "2021/05", "2021/06"]:
