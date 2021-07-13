@@ -269,30 +269,6 @@ class cNetStockInfo:
             res.append (source_node.text)
         return res
     
-    def getSDDate (self, stockID, year):
-        year = str(year)
-        IPDateList = self.getImportantDate(stockID)
-        for IPDate in IPDateList:
-            if IPDate.find (year) != -1 and IPDate.find ("除權息") != -1:
-                return IPDate.split (" ")[0]
-        return None
-
-    def getSDLastBuyDate (self, stockID, year):
-        dateStr = self.getSDDate (stockID, year)
-        if dateStr == None:
-            return None
-        # 轉換字串格式
-        date_time_obj = datetime.strptime(dateStr, '%Y-%m-%d')
-        if date_time_obj.weekday() == 5:
-            return (date_time_obj - timedelta(days=1)).strftime("%Y-%m-%d")
-        elif date_time_obj.weekday() == 6:
-            return (date_time_obj - timedelta(days=2)).strftime("%Y-%m-%d")
-        elif date_time_obj.weekday() == 0:
-            return (date_time_obj - timedelta(days=2)).strftime("%Y-%m-%d")
-        else:
-            return dateStr
-
-        
     #--------------------------------------------
     # 配股配息
     #--------------------------------------------

@@ -18,26 +18,6 @@ keywordList = [
 # 取得所有的股票清單
 allstock = AllStockMgr.getAllStock ()
 for stockID, stock in allstock.items():
-    #if stockID != "2809":
-    #    continue
-    # 由新聞先去查
-    isFound = False
-    tmp, newsList = StockDBMgr.getNews (stockID)
-    for news in newsList:
-        # 日期不對不做處理
-        if news["date"].find ("2020/") != -1:
-            break
-        for keyword in keywordList:
-            # 沒有指定字不做處理
-            if news["title"].find (keyword) != -1:
-                isFound = True
-                break
-        if isFound == True:
-            break
-    if isFound == True:
-        date = NetStockInfo.getSDDate (stockID, 2021)
-        print (date)
-        break
     # 取得今年度的配息日
     # 取得新聞
     #tmp, newsList = StockDBMgr.getNews (stockID)
@@ -61,6 +41,7 @@ for stockID, stock in allstock.items():
     #print (NetStockInfo.getHistockStockDivide (stockID))
     # 取得
     #break
+    pass
 
 
 

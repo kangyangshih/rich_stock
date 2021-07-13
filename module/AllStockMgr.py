@@ -276,21 +276,18 @@ class cSingleStock :
         #------------------------
         # 營業比重
         self._write (file, res, "%s", self.getInfo ("營業比重"))
-        # 除權息日
-        if self.sdDate != "":
-            self._write (file, res, "[2021 除權息最後買進日] %s", self.sdDate.split (" ")[0][5:].replace ("-", "/"))
 
         self._write (file, res, "")
         
         #------------------------
-        # 持有價
-        if self.holdPrice > 0:
-            self._write (file, res, "[持有價] %s\n", self.holdPrice)
-        # 買入價或是空單價
-        if self.buyPrice > 0:
-            self._write (file, res, "[手動設定買入價] %s\n", self.buyPrice)
-        elif self.emptyPrice > 0:
-            self._write (file, res, "[手動設定空單價] %s\n", self.emptyPrice)
+        priceMap = {
+            "holdPrice":"持有價",
+            "buyPrice":"想買入價",
+            "modifyPrice":"注意價",
+            "emptyPrice":"空單價",
+        }
+        for key, value in priceMap.items():
+            self._write (file, res, "[%s] %s\n", value, key)
         
         #------------------------
         # 今天的漲跌幅
@@ -782,8 +779,6 @@ class cAllStockMgr:
                 ["holdPrice", 0, float],
                 # 高點
                 ["highPrice", 0, float],
-                # 2021 除權息日
-                ["sdDate", "", str],
                 # 取得一點影響到大盤的點數
                 ["pointToAll", 0, float],
                 # 雜項
@@ -800,8 +795,8 @@ class cAllStockMgr:
                 #if keyword == "desc" and tmp != "":
                 #    print (single.id, single.name, single.desc)
             # 如果沒有填入觀察價，就設定和買入價一樣
-            if single.modifyPrice == 0:
-                single.modifyPrice = single.buyPrice
+            if single.modifyPrice == 0 and single.buyPrice > 0:
+                single.modifyPrice = single.buyPrice * 1.1
             # 2021 公告的配股配息
             sdList = StockDBMgr.getSD (single.id)
             if len(sdList) > 0 and sdList[0]["years"] == "2021":
@@ -849,7 +844,6 @@ class cAllStockMgr:
             res[value.id] = value
         print ("[getRealTimeStock] 共有 %d 筆" % (len(res),))
         return res
-
 
 # 實作 singleton
 AllStockMgr = cAllStockMgr()

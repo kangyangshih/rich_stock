@@ -231,7 +231,7 @@ class cStockDBMgr:
                 "id" : 1101,
             },
             # order
-            " date desc"
+            " date desc limit 70"
         )
     
     #---------------------------------------------------------
