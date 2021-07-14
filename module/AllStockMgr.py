@@ -287,8 +287,11 @@ class cSingleStock :
             "emptyPrice":"空單價",
         }
         for key, value in priceMap.items():
-            self._write (file, res, "[%s] %s\n", value, key)
+            tmp = getattr (self, key)
+            if tmp > 0:
+                self._write (file, res, "[%s] %.1f", value, getattr (self, key))
         
+        self._write (file, res, "")
         #------------------------
         # 今天的漲跌幅
         self._write (file, res, "[本日股價表現]")
