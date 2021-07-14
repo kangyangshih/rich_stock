@@ -583,7 +583,6 @@ for stockID, stock in allstock.items():
             infoList[index]["high_price"] = infoList[next_index]["end_price"]
             infoList[index]["low_price"] = infoList[next_index]["end_price"]
             infoList[index]["end_price"] = infoList[next_index]["end_price"]
-            #infoList[index]["pre_price"] = infoList[next_index]["end_price"]
             # 強制做更新的動作
             StockDBMgr.saveDaily (stockID, infoList[index], True)
             break

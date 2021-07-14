@@ -341,56 +341,6 @@ if controlMap[5] == True:
         file.close()
 
 #--------------------------------------------------
-# 6. 除權息
-def writeSDNews (file, news):
-    file.writelines ("========================\n")
-    # 把內容寫下來
-    write (file, 
-        "* [%s(%s)]( %s ) %s [%s]( %s )\n%s", 
-        news["name"], 
-        news["id"],
-        'https://tw.stock.yahoo.com/q/ta?s='+news["id"], 
-        news["dateStr"],
-        news["title"], 
-        news["url"],
-        'https://goodinfo.tw/StockInfo/StockDividendSchedule.asp?STOCK_ID=' + news["id"],
-    )
-    file.writelines ("========================\n")
-if controlMap[6] == True:
-    keywordList = [
-        "除權基準日",
-        "除息基準日",
-        "除權息基準日",
-    ]
-    newsMap = {}
-    file = open ("../data/6.除權息日期.txt", "w", encoding="utf-8")
-    # 每個股票都去找
-    for stockID, stock in allstock.items():
-        # 有填過 Excel 就不需要處理
-        if stock.sdDate != "":
-            continue
-        tmp, newsList = StockDBMgr.getNews (stockID)
-        for news in newsList:
-            news["id"] = stock.id
-            news["name"] = stock.name
-            # 日期不對不做處理
-            if news["date"].find ("2021/") == -1:
-                continue
-            for keyword in keywordList:
-                # 沒有指定字不做處理
-                if news["title"].find (keyword) != -1:
-                    if news["date"] not in newsMap:
-                        newsMap[news["date"]] = []
-                    newsMap[news["date"]].append (news)
-    tmpList = changeDict2List (newsMap)
-    for news in tmpList:
-        writeSDNews (file, news)
-        allstock[news["id"]].dumpInfo(file)
-    write (file, "")
-    file.close()
-
-
-#--------------------------------------------------
 # 7. 帶量突破5日線, 且均線排好
 if controlMap[7] == True:
     # 7.1 帶量突破5日線
