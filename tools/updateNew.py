@@ -65,11 +65,10 @@ for stockID, stock in allstock.items():
     for retryCounter in range (3):
         newsList = getNewsFromYahoo (stockID, cacheInfo, 1)
         if len(newsList) == 0:
+            # 重開試看看
+            WebViewMgr.restart()
             print ("no news... retry")
-            #printCountDown (10)
-            #WebViewMgr.debugMode ()
-            #os.system ("pause")
-            exit_program()
+            printCountDown (10)
             if retryCounter == 2:
                 isGetNews = False
         else:
