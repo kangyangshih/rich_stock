@@ -551,9 +551,11 @@ class cSingleStock :
             if index >= len(sdList):
                 break
             self._write (file, res, 
-                "%s EPS:%s, 股票股利:%s, 現金股利:%s, 配息率:%s",
+                "%s EPS:%s, 日期:[%s/%s], 股票股利:%s, 現金股利:%s, 配息率:%s",
                 sdList[index]["所屬年度"],
                 sdList[index]["EPS"],
+                sdList[index]["除息日"],
+                sdList[index]["除權日"],
                 sdList[index]["股票股利"],
                 sdList[index]["現金股利"],
                 sdList[index]["配息率"],

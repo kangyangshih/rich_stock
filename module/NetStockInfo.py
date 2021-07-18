@@ -133,6 +133,7 @@ class cNetStockInfo:
 
     #--------------------------------------------
     # 從 Histock 取得每季的EPS資訊
+    # 註: 需要被修正。
     #--------------------------------------------
     def getHistockQEPS (self, stockID, checkKey=None):
         #------------------------------
@@ -292,6 +293,9 @@ class cNetStockInfo:
                 tmp.append (node.text)
             res.append ({
                 '所屬年度':tmp[0],
+                'sdPayYear':tmp[1],
+                '除權日':tmp[2],
+                '除息日':tmp[3],
                 '除權息前股價':tmp[4],
                 '股票股利':tmp[5],
                 '現金股利':tmp[6],
