@@ -17,6 +17,8 @@ epsKey = "2021Q1"
 turnOverKey = "2021/06"
 # 股利分配
 sdKey = "2019"
+# 
+isSDUpdate = False
 
 # 取得內容
 # isPage : 是不是股 -> 張
@@ -108,9 +110,10 @@ for stockID, stock in allstock.items():
 
     #------------------------------------------
     # 取得配股息進出 (每年一次，不會太頻繁)
-    #if isSDUpdate == True:
     #print (info["配股配息"][0])
-    if "配股配息" not in info or len(info["配股配息"]) == 0 or 'sdPayYear' not in info["配股配息"][0] or info["配股配息"][0]['sdPayYear'] != "2021":
+    #if "配股配息" not in info or len(info["配股配息"]) == 0 or 'sdPayYear' not in info["配股配息"][0] or info["配股配息"][0]['sdPayYear'] != "2021":
+    if isSDUpdate == True:
+    #if "配股配息" not in info:
         if "配股配息" not in info:
             info["配股配息"] = []
         res, tmp = NetStockInfo.getHistockStockDivide (stockID)
@@ -118,7 +121,7 @@ for stockID, stock in allstock.items():
             continue
         info["配股配息"] = tmp
         if len(info["配股配息"]) > 0:
-            print ("配股配息", json.dumps(info["配股配息"][0]))
+            print ("配股配息", info["配股配息"][0])
         else:
             print (stock.name, "還未有配股配息")
 
