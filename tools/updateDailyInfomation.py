@@ -17,7 +17,7 @@ epsKey = "2021Q1"
 turnOverKey = "2021/06"
 # 股利分配
 sdKey = "2019"
-# 
+# 是否更新資料
 isSDUpdate = False
 
 # 取得內容
@@ -66,6 +66,10 @@ for stockID, stock in allstock.items():
 print ("[月營收 %s] 更新進度 %s/%s" % (turnOverKey, leave, len(allstock)))
 # 更新基本資料
 for stockID, stock in allstock.items():
+    #print (type(stockID), stockID)
+    if stockID != "1609":
+        continue
+
     # 載入暫存資料
     info = getFromCache ("../info/%s.txt" % (stockID,), {})
 
@@ -113,7 +117,6 @@ for stockID, stock in allstock.items():
     #print (info["配股配息"][0])
     #if "配股配息" not in info or len(info["配股配息"]) == 0 or 'sdPayYear' not in info["配股配息"][0] or info["配股配息"][0]['sdPayYear'] != "2021":
     if isSDUpdate == True:
-    #if "配股配息" not in info:
         if "配股配息" not in info:
             info["配股配息"] = []
         res, tmp = NetStockInfo.getHistockStockDivide (stockID)
