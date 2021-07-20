@@ -35,7 +35,12 @@ def printTotalRate (file, title, header, tmpMap, num=15):
 allstock = AllStockMgr.getAllStock ()
 # 輸出控制
 controlMap = {
-    # 0. 觀注的個股
+    # 0. 觀注的個股 
+    # 0.1 : 持有
+    # 0.2 : 短期注意
+    # 0.3 : 核心
+    # 0.4 : 衛星
+    # 0.5 : 定存類
     0:True,
     # 1. 有設定觀注價格的股票
     1:True,
@@ -59,21 +64,22 @@ controlMap = {
 #--------------------------------------------------
 # 0. 觀注的個股
 if controlMap[0] == True:
-    priorityKey = [
+    # 條列出來的優先順序
+    priorityKey = {
         # 持有的股票
-        "持有",
+        "持有":1,
         # 從核心、衛星選出來做操作的股票
-        "短期注意",
+        "短期注意":2,
         # 比較有愛, 比較了解的股票
-        "核心", 
+        "核心":3, 
         # 比較不熟, 或是偏牛的股票
-        "衛星",
+        "衛星":4,
         # 股性比較牛
-        "定存",
-    ]
+        "定存":5,
+    }
 
     stockOrder = {}
-    for key in priorityKey:
+    for key, value in priorityKey.items():
         stockOrder[key] = {}
 
     for stockID, stock in allstock.items():
@@ -91,8 +97,8 @@ if controlMap[0] == True:
                 #break
 
     # 依照重要性來做處理
-    for key in priorityKey:
-        file = open("../data/0.觀注個股_%s.txt"%(key,), "w", encoding="utf-8")
+    for key, value in priorityKey.items():
+        file = open("../data/0.%s.%s.txt"%(value, key,), "w", encoding="utf-8")
         write (file, "#-------------------------------")
         write (file, "# %s", key)
         write (file, "#-------------------------------")
@@ -194,34 +200,16 @@ def getRangeTotalRate (day):
     return out_total_map, in_total_map, total_total_map
 
 if controlMap[3] == True:
+    #-----------------------
+    # 累計 5, 20, 60 買超
     for day in (5, 20, 60):
         file = open ("../data/3.%s外資加投信累計買賣超.txt" % (day,), "w", encoding="utf-8")
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
         file.close()
 
-    # #-----------------------
-    # file = open ("../data/3.5外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    # for day in (5,):
-    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    # file.close()
-
-    # #-----------------------
-    # file = open ("../data/3.20外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    # for day in (20,):
-    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    # file.close()
-
-    # #-----------------------
-    # file = open ("../data/3.60外資加投信累計買賣超.txt", "w", encoding="utf-8")
-    # for day in (60,):
-    #     out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
-    #     printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)
-    # file.close()
-
     #-----------------------
+    # 連續買超
     out_continueMap = {}
     in_continueMap = {}
     for stockID, stock in allstock.items():
@@ -256,7 +244,6 @@ if controlMap[3] == True:
             write (file, "投信連買超 %s 天\n====================\n" % (key,))
             allstock[stockID].dumpInfo (file)
     file.close()
-
 
 #--------------------------------------------------
 # 4. 2021 公告後有殖利率的排行榜
