@@ -1,4 +1,11 @@
-# 更新每日資訊
+# DESC : 更新資訊用的
+# 1. 三大法人資料
+# 2. 每日資訊
+# 3. 融資融券 (待實作)
+# 4. 月營收 (應該換到別的地方?)
+# 5. 季EPS (應該換到別的地方?)
+# 6. 基本資料 (應該換到別的地方?)
+# 7. 配股配息 (應該換到別的地方?)
 import sys
 sys.path.append(r"c:\download\ranb_gametowner\python_module")
 from utility import *
@@ -15,8 +22,6 @@ import csv
 epsKey = "2021Q1"
 # 月營收
 turnOverKey = "2021/06"
-# 股利分配
-sdKey = "2019"
 # 是否更新資料
 isSDUpdate = False
 
@@ -66,9 +71,6 @@ for stockID, stock in allstock.items():
 print ("[月營收 %s] 更新進度 %s/%s" % (turnOverKey, leave, len(allstock)))
 # 更新基本資料
 for stockID, stock in allstock.items():
-    #print (type(stockID), stockID)
-    if stockID != "1609":
-        continue
 
     # 載入暫存資料
     info = getFromCache ("../info/%s.txt" % (stockID,), {})
