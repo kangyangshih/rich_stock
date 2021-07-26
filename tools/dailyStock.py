@@ -136,6 +136,21 @@ if controlMap[1] == True:
 #--------------------------------------------------
 # 2. 外本比 / 投本比
 
+# 檢查是不是有符合資格
+def checkThreeRangeBuy (stockID, status):
+    stock = allstock[stockID]
+    for day in (5, 20, 60):
+        out_total, in_total = stock._getThreeTotal (day)
+        out_total_rate = stock._getBuyRate (out_total)
+        in_total_rate = stock._getBuyRate (in_total)
+        if status == 0 and out_total_rate > 0.05:
+            return True
+        if status == 1 and in_total_rate > 0.05:
+            return True
+        if status == 2 and out_total_rate + in_total_rate > 0.05:
+            return True
+    return False
+    
 # 取得今天的外本比、投本比前 10 名
 def getInOutRate ():
     out_map = {}
@@ -144,17 +159,17 @@ def getInOutRate ():
     for stockID, stock in allstock.items():
         out_total, in_total = stock._getThreeTotal (1)
         out_total_rate = stock._getBuyRate (out_total)
-        if out_total_rate >= 0.001:
+        if out_total_rate >= 0.01 and checkThreeRangeBuy (stockID, 0) == True:
             if out_total_rate not in out_map:
                 out_map[out_total_rate] = []
             out_map[out_total_rate].append (stockID)
         in_total_rate = stock._getBuyRate (in_total)
-        if in_total_rate >= 0.001:
+        if in_total_rate >= 0.01 and checkThreeRangeBuy (stockID, 1) == True:
             if in_total_rate not in in_map:
                 in_map[in_total_rate] = []
             in_map[in_total_rate].append (stockID)
         all_total_rate = stock._getBuyRate (out_total + in_total)
-        if all_total_rate >= 0.001:
+        if all_total_rate >= 0.05 and checkThreeRangeBuy (stockID, 2) == True:
             if all_total_rate not in all_map:
                 all_map[all_total_rate] = []
             all_map[all_total_rate].append (stockID)
@@ -181,19 +196,19 @@ def getRangeTotalRate (day):
         out_total, in_total = stock._getThreeTotal (day)
         # 取得 5 日的外本比
         out_total_rate = stock._getBuyRate (out_total)
-        if out_total_rate > 0.01:
+        if out_total_rate > 0.01 and checkThreeRangeBuy (stockID, 0) == True:
             if out_total_rate not in out_total_map:
                 out_total_map[out_total_rate] = []
             out_total_map[out_total_rate].append (stockID)
         # 取得 5 日的投本比
         in_total_rate = stock._getBuyRate (in_total)
-        if in_total_rate > 0.01:
+        if in_total_rate > 0.01 and checkThreeRangeBuy (stockID, 1) == True:
             if in_total_rate not in in_total_map:
                 in_total_map[in_total_rate] = []
             in_total_map[in_total_rate].append (stockID)
         # 取得 5 日的總合比
         all_total_rate = stock._getBuyRate (out_total + in_total)
-        if all_total_rate > 0.01:
+        if all_total_rate > 0.01 and checkThreeRangeBuy (stockID, 2) == True:
             if all_total_rate not in total_total_map:
                 total_total_map[all_total_rate] = []
             total_total_map[all_total_rate].append (stockID)
@@ -202,7 +217,7 @@ def getRangeTotalRate (day):
 if controlMap[3] == True:
     #-----------------------
     # 累計 5, 20, 60 買超
-    for day in (5, 20, 60):
+    for day in (5, 20, 60, 90):
         file = open ("../data/3.%s外資加投信累計買賣超.txt" % (day,), "w", encoding="utf-8")
         out_total_map, in_total_map, total_total_map = getRangeTotalRate (day)
         printTotalRate (file, "外資+投信累計 %s 日買超排行榜" % (day,), "外資+投信累計 %s 日買超" % (day,), total_total_map, 15)

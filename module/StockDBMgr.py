@@ -73,7 +73,7 @@ class cStockDBMgr:
         self.getDB("three").commit()
 
     # 取得三大法人
-    def getThree (self, stockID, limit=65):
+    def getThree (self, stockID, limit=95):
         rows = self.getDB ("three").get (
             "three",
             [
@@ -189,7 +189,7 @@ class cStockDBMgr:
         # 做更新的動作
         self.getDB("daily").commit()
     
-    def getDaily (self, stockID, limit=70):
+    def getDaily (self, stockID, limit=95):
         # 從資料庫取得新聞
         rows = self.getDB("daily").get (
             # 表單
