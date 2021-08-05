@@ -475,7 +475,7 @@ for filename in filelist:
                 continue
             info = StockDBMgr.getDaily (stockID)
             if dailyKey != info[0]["date"]:
-                print (stock.name, stock.id)
+                #print (stock.name, stock.id)
                 # 存進去資料庫中
                 StockDBMgr.saveDaily (stockID, tmp)
 
