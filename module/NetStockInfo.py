@@ -1,7 +1,7 @@
 # DESC : 取得一些網路資料
 
 import sys
-sys.path.append(r"c:\download\ranb_gametowner\python_module")
+sys.path.append(r"c:\company\ranb_gametowner\python_module")
 from utility import *
 from excel_utility import *
 import json

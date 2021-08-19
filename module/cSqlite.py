@@ -3,7 +3,7 @@
 # vacuum : sqlite reduce file size after delete
 
 import sys
-sys.path.append(r"c:\download\ranb_gametowner\python_module")
+sys.path.append(r"c:\company\ranb_gametowner\python_module")
 from utility import *
 from excel_utility import *
 import sqlite3

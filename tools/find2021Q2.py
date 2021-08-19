@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r"c:\download\ranb_gametowner\python_module")
+sys.path.append(r"c:\company\ranb_gametowner\python_module")
 from utility import *
 sys.path.append (r"..\module")
 from AllStockMgr import AllStockMgr

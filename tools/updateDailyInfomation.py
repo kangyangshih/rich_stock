@@ -7,7 +7,7 @@
 # 6. 基本資料 (應該換到別的地方?)
 # 7. 配股配息 (應該換到別的地方?)
 import sys
-sys.path.append(r"c:\download\ranb_gametowner\python_module")
+sys.path.append(r"c:\company\ranb_gametowner\python_module")
 from utility import *
 #WebViewMgr.debugMode ()
 # 載入這個專案共用模組

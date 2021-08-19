@@ -1,7 +1,7 @@
 # 更新新聞
 # 注 : 如果可以加上新聞日期更好
 import sys
-sys.path.append(r"c:\download\ranb_gametowner\python_module")
+sys.path.append(r"c:\company\ranb_gametowner\python_module")
 from utility import *
 # 載入這個專案共用模組
 sys.path.append (r"..\module")
