@@ -1,7 +1,7 @@
 # DESC : 暫用的工具，主要是拿來把資料轉存到 sqlite
 # DATE : 2021/3/11
 import sys
-sys.path.append(r"c:\company\ranb_gametowner\python_module")
+sys.path.append(r"..\..\ranb_gametowner\python_module")
 from utility import *
 from WebViewMgr import WebViewMgr
 # 載入這個專案共用模組

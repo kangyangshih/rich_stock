@@ -1,6 +1,6 @@
 # 載入所有 python 共用模組
 import sys
-sys.path.append(r"c:\company\ranb_gametowner\python_module")
+sys.path.append(r"..\..\ranb_gametowner\python_module")
 from utility import *
 # 載入這個專案共用模組
 sys.path.append (r"..\module")

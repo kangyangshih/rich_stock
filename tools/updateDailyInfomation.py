@@ -7,7 +7,7 @@
 # 6. 基本資料 (應該換到別的地方?)
 # 7. 配股配息 (應該換到別的地方?)
 import sys
-sys.path.append(r"c:\company\ranb_gametowner\python_module")
+sys.path.append(r"..\..\ranb_gametowner\python_module")
 from utility import *
 #WebViewMgr.debugMode ()
 # 載入這個專案共用模組
@@ -21,7 +21,7 @@ import csv
 # 季 EPS
 epsKey = "2021Q1"
 # 月營收
-turnOverKey = "2021/06"
+turnOverKey = "2021/07"
 # 是否更新資料
 isSDUpdate = False
 

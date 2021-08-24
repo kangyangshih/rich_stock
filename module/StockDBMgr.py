@@ -2,7 +2,7 @@
 # DATE : 2021/3/12
 
 import sys
-sys.path.append(r"c:\company\ranb_gametowner\python_module")
+sys.path.append(r"..\..\ranb_gametowner\python_module")
 from utility import *
 from excel_utility import *
 import json

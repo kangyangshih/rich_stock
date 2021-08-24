@@ -1,7 +1,7 @@
 # DESC : allstock.xlxs 裏沒有的股票，把暫存檔刪除。
 
 import sys
-sys.path.append(r"c:\company\ranb_gametowner\python_module")
+sys.path.append(r"..\..\ranb_gametowner\python_module")
 from utility import *
 #WebViewMgr.debugMode ()
 # 載入這個專案共用模組
