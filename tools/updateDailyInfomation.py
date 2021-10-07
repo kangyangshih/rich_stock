@@ -19,7 +19,7 @@ import json
 import csv
 
 # 季 EPS
-epsKey = "2021Q1"
+epsKey = "2021Q2"
 # 月營收
 turnOverKey = "2021/07"
 # 是否更新資料
